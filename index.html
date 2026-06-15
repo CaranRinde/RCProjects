@@ -202,8 +202,19 @@ loader.load('rcprojects.glb',
     console.log('Max dimension:', maxDim);
 
     // Set fog based on actual scene size
-    // Fog disabled for debugging
-    console.log("Max dimension:", maxDim, "Camera dist:", maxDim*0.5);
+    // Calculate camera distance from location spread, not total scene bounds
+    let locSpread = 0;
+    const locKeys = Object.keys(locPositions);
+    if(locKeys.length > 1){
+      for(let i=0;i<locKeys.length;i++){
+        for(let j=i+1;j<locKeys.length;j++){
+          const d = locPositions[locKeys[i]].distanceTo(locPositions[locKeys[j]]);
+          if(d > locSpread) locSpread = d;
+        }
+      }
+    }
+    const viewDist = locSpread > 0 ? locSpread * 0.8 : maxDim * 0.3;
+    console.log("Scene maxDim:", maxDim, "Location spread:", locSpread, "Camera dist:", viewDist);
 
     // Find location positions
     const locNames = Object.keys(locationInfo);
@@ -223,7 +234,7 @@ loader.load('rcprojects.glb',
     } else {
       camTarget.copy(sceneCenter);
     }
-    camDist = maxDim * 0.5;
+    camDist = viewDist;
     updateCamera();
 
     // Done loading
@@ -307,7 +318,7 @@ function flyTo(name){
   const pos=locPositions[name];if(!pos)return;
   const st=camTheta,sp=camPhi,sd=camDist,stgt=camTarget.clone();
   const etgt=new THREE.Vector3(pos.x,pos.y,pos.z);
-  const eDist=2000;
+  const eDist=viewDist*0.3;
   const dur=1200,t0=performance.now();
   function step(now){
     const t=Math.min(1,(now-t0)/dur);
