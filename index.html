@@ -38,7 +38,7 @@ body{background:#D8CCA8;overflow:hidden;font-family:'Cormorant Garamond',serif;c
 .bottom-text{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:0.95rem;line-height:1.6;color:rgba(212,197,160,0.85);}
 .bottom-instructions{margin-left:auto;font-family:'MedievalSharp',cursive;font-size:0.75rem;color:rgba(196,160,78,0.5);white-space:nowrap;flex-shrink:0;}
 
-.loc-label{position:fixed;z-index:15;pointer-events:auto;cursor:pointer;text-align:center;transform:translate(-50%,-100%);display:none;}
+.loc-label{position:fixed;z-index:15;pointer-events:auto;cursor:pointer;text-align:center;transform:translate(-50%,-100%);display:block;opacity:0;transition:opacity 0.5s;}
 .loc-label:hover .loc-name{color:#B03030;}
 .loc-name{font-family:'Cinzel',serif;font-size:0.75rem;font-weight:600;color:#3B2F20;letter-spacing:0.06em;text-shadow:0 1px 3px rgba(243,234,205,0.95),0 0 8px rgba(243,234,205,0.8),0 0 15px rgba(243,234,205,0.6);white-space:nowrap;}
 .loc-dot{width:8px;height:8px;border-radius:50%;background:#B03030;margin:3px auto 0;box-shadow:0 0 6px rgba(176,48,48,0.4);transition:transform 0.3s;}
@@ -146,6 +146,7 @@ const renderer = new THREE.WebGLRenderer({canvas, antialias:true});
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
 renderer.setClearColor(0xC8DDE8);
+renderer.toneMapping = THREE.NoToneMapping;
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
@@ -213,7 +214,7 @@ loader.load('rcprojects.glb',
         }
       }
     }
-    const viewDist = locSpread > 0 ? locSpread * 0.8 : maxDim * 0.3;
+    const viewDist = locSpread > 0 ? locSpread * 0.45 : maxDim * 0.15;
     console.log("Scene maxDim:", maxDim, "Location spread:", locSpread, "Camera dist:", viewDist);
 
     // Find location positions
@@ -242,7 +243,7 @@ loader.load('rcprojects.glb',
     setTimeout(()=>{
       document.getElementById('loading').classList.add('hidden');
       document.getElementById('bottomBanner').classList.add('visible');
-      document.querySelectorAll('.loc-label').forEach(el=>el.style.display='block');
+      document.querySelectorAll('.loc-label').forEach(el=>{el.style.opacity='1';});
     },500);
   },
   function(progress){
@@ -318,7 +319,7 @@ function flyTo(name){
   const pos=locPositions[name];if(!pos)return;
   const st=camTheta,sp=camPhi,sd=camDist,stgt=camTarget.clone();
   const etgt=new THREE.Vector3(pos.x,pos.y,pos.z);
-  const eDist=viewDist*0.3;
+  const eDist=Math.min(viewDist*0.3, 1500);
   const dur=1200,t0=performance.now();
   function step(now){
     const t=Math.min(1,(now-t0)/dur);
@@ -343,8 +344,9 @@ canvas.addEventListener('click',e=>{
   const hits=raycaster.intersectObjects(scene.children,true);
   if(hits.length>0){
     let obj=hits[0].object;
-    while(obj){
-      if(locationInfo[obj.name]){showPanel(obj.name);flyTo(obj.name);return;}
+    let found=false;
+    while(obj&&!found){
+      if(locationInfo[obj.name]){showPanel(obj.name);flyTo(obj.name);found=true;}
       obj=obj.parent;
     }
   }
