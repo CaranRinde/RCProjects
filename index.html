@@ -206,15 +206,15 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 var scene = new THREE.Scene();
 
 // Fog — fades edges gently (tuned for ~174 unit scene)
-scene.fog = new THREE.Fog(0xC8DDE8, 8000, 18000);
+scene.fog = new THREE.Fog(0xC8DDE8, 10000, 22000);
 
 // Camera
 var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 10, 30000);
 
 // Camera orbit state
 var camTheta = -0.5;
-var camPhi = 0.75;
-var camDist = 6000;
+var camPhi = 0.85;
+var camDist = 12000;
 var camTarget = new THREE.Vector3(2031, 0, 1907); // Approximate Red Circle position
 var locPositions = {};
 
@@ -428,7 +428,7 @@ function updateLabels() {
 
     // Position label slightly above the location
     var labelPos = pos.clone();
-    labelPos.y += 150;
+    labelPos.y += 500;
 
     var sp = labelPos.project(camera);
     var x = (sp.x * 0.5 + 0.5) * window.innerWidth;
@@ -457,7 +457,7 @@ function flyTo(locName) {
   var startDist = camDist;
   var startTarget = camTarget.clone();
   var endTarget = new THREE.Vector3(pos.x, 0, pos.z);
-  var endDist = 2000;
+  var endDist = 3000;
   var duration = 1200;
   var t0 = performance.now();
 
