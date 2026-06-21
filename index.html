@@ -214,8 +214,8 @@ var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHei
 // Camera orbit state
 var camTheta = -0.5;
 var camPhi = 0.85;
-var camDist = 6000;
-var camTarget = new THREE.Vector3(2031, 0, 1907); // Approximate Red Circle position
+var camDist = 9000;
+var camTarget = new THREE.Vector3(1500, 0, 3500); // Approximate Red Circle position
 var locPositions = {};
 
 function updateCamera() {
@@ -428,7 +428,7 @@ function updateLabels() {
 
     // Position label slightly above the location
     var labelPos = pos.clone();
-    labelPos.y += 500;
+    labelPos.y += 300;
 
     var sp = labelPos.project(camera);
     var x = (sp.x * 0.5 + 0.5) * window.innerWidth;
