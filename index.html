@@ -214,7 +214,7 @@ var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHei
 // Camera orbit state
 var camTheta = -0.5;
 var camPhi = 0.85;
-var camDist = 30000;
+var camDist = 150000;
 var camTarget = new THREE.Vector3(1500, 0, 3500); // Approximate Red Circle position
 var locPositions = {};
 
@@ -277,7 +277,7 @@ loader.load('rcprojects.glb',
       }
     });
 
-    model.scale.set(10, 10, 10);
+    model.scale.set(50, 50, 50);
     scene.add(model);
 
     // Find location positions
@@ -295,7 +295,7 @@ loader.load('rcprojects.glb',
     // Centre camera on Red Circle if found
     if (locPositions.TheRedCircle) {
       camTarget.set(locPositions.TheRedCircle.x, 0, locPositions.TheRedCircle.z);
-      camDist = 30000;
+      camDist = 150000;
       updateCamera();
     }
 
