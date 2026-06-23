@@ -206,7 +206,7 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 var scene = new THREE.Scene();
 
 // Fog — fades edges gently (tuned for ~174 unit scene)
-scene.fog = new THREE.Fog(0xC8DDE8, 30000, 150000);
+scene.fog = new THREE.Fog(0xC8DDE8, 500000, 1500000);
 
 // Camera
 var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 10, 500000);
