@@ -294,7 +294,8 @@ loader.load('rcprojects_optimized.glb',
 
     // Centre camera on Red Circle if found
     if (locPositions.TheRedCircle) {
-      camTarget.set(locPositions.TheRedCircle.x, 0, locPositions.TheRedCircle.z);
+      // camTarget.set(locPositions.TheRedCircle.x, 0, locPositions.TheRedCircle.z);
+      camTarget.set(500, 0, 4000);
       camDist = 200000;
       updateCamera();
     }
