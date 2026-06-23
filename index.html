@@ -214,7 +214,7 @@ var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHei
 // Camera orbit state
 var camTheta = 0;
 var camPhi = 1;
-var camDist = 250000;
+var camDist = 10000;
 var camTarget = new THREE.Vector3(2031, 0, 1907); // Approximate Red Circle position (500, 0, 4000)
 var locPositions = {};
 
@@ -296,7 +296,7 @@ loader.load('rcprojects_optimized.glb',
     if (locPositions.TheRedCircle) {
       // camTarget.set(locPositions.TheRedCircle.x, 0, locPositions.TheRedCircle.z);
       camTarget.set(500, 0, 4000);
-      camDist = 250000;
+      camDist = 10000;
       updateCamera();
     }
 
