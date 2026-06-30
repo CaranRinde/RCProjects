@@ -205,8 +205,7 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 var scene = new THREE.Scene();
 
-// Fog — fades edges gently (tuned for ~174 unit scene)
-scene.fog = new THREE.Fog(0xC8DDE8, 200000, 450000);
+// No distance fog — edge fade handled by gradient overlay below
 
 // Camera
 var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 10, 500000);
@@ -279,6 +278,50 @@ loader.load('rcprojects_optimized.glb',
 
     model.scale.set(100, 100, 100);
     scene.add(model);
+
+    // === EDGE FADE — soft gradient border around the map ===
+    var fadeShader = new THREE.ShaderMaterial({
+      transparent: true,
+      depthTest: false,
+      depthWrite: false,
+      side: THREE.DoubleSide,
+      uniforms: {
+        bgColor: { value: new THREE.Color(0xC8DDE8) },
+        mapCenter: { value: new THREE.Vector2(1500.0, 3450.0) },
+        mapHalf: { value: new THREE.Vector2(2800.0, 4000.0) },
+        fadeWidth: { value: 1500.0 }
+      },
+      vertexShader: [
+        'varying vec2 vWorldXZ;',
+        'void main() {',
+        '  vec4 wp = modelMatrix * vec4(position, 1.0);',
+        '  vWorldXZ = wp.xz;',
+        '  gl_Position = projectionMatrix * viewMatrix * wp;',
+        '}'
+      ].join('\n'),
+      fragmentShader: [
+        'uniform vec3 bgColor;',
+        'uniform vec2 mapCenter;',
+        'uniform vec2 mapHalf;',
+        'uniform float fadeWidth;',
+        'varying vec2 vWorldXZ;',
+        'void main() {',
+        '  vec2 d = abs(vWorldXZ - mapCenter) - mapHalf;',
+        '  float dist = length(max(d, 0.0));',
+        '  float alpha = smoothstep(0.0, fadeWidth, dist);',
+        '  if (alpha < 0.01) discard;',
+        '  gl_FragColor = vec4(bgColor, alpha);',
+        '}'
+      ].join('\n')
+    });
+    var fadePlane = new THREE.Mesh(
+      new THREE.PlaneGeometry(25000, 25000),
+      fadeShader
+    );
+    fadePlane.rotation.x = -Math.PI / 2;
+    fadePlane.position.set(1500, 200, 3450);
+    fadePlane.renderOrder = 10;
+    scene.add(fadePlane);
 
     // Find location positions
     var locNames = Object.keys(locationInfo);
@@ -377,7 +420,7 @@ window.addEventListener('mousemove', function(e) {
 
 canvas.addEventListener('wheel', function(e) {
   e.preventDefault();
-  camDist = Math.max(500, Math.min(500000, camDist + e.deltaY * camDist * 0.001));
+  camDist = Math.max(500, Math.min(15000, camDist + e.deltaY * camDist * 0.001));
   updateCamera();
 }, { passive: false });
 
@@ -408,7 +451,7 @@ canvas.addEventListener('touchmove', function(e) {
     var dx = e.touches[0].clientX - e.touches[1].clientX;
     var dy = e.touches[0].clientY - e.touches[1].clientY;
     var d = Math.sqrt(dx * dx + dy * dy);
-    camDist = Math.max(500, Math.min(500000, camDist - (d - touchDist) * camDist * 0.003));
+    camDist = Math.max(500, Math.min(15000, camDist - (d - touchDist) * camDist * 0.003));
     touchDist = d;
     updateCamera();
   }
