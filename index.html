@@ -231,7 +231,8 @@ updateCamera();
 // ============================================================
 // Warm ambient
 // scene.add(new THREE.AmbientLight(0xF5E6C8, 0.45));
-scene.add(new THREE.AmbientLight(0xFFFFFF, 0.30));
+//scene.add(new THREE.AmbientLight(0xFFFFFF, 0.30));
+scene.add(new THREE.HemisphereLight(0xC8DDE8, 0x806040, 0.3));
 
 // Sun — directional with shadows (top-left, shadows fall bottom-right)
 // var sun = new THREE.DirectionalLight(0xFFFAF0, 0.60);
@@ -249,7 +250,7 @@ sun.shadow.bias = -0.002;
 scene.add(sun);
 
 // Subtle fill light from opposite side
-var fill = new THREE.DirectionalLight(0xC8D8F0, 0.05);
+//var fill = new THREE.DirectionalLight(0xC8D8F0, 0.05);
 fill.position.set(3000, 3000, 3000);
 scene.add(fill);
 
