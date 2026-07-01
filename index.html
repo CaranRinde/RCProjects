@@ -279,7 +279,22 @@ loader.load('rcprojects_optimized.glb',
     model.scale.set(100, 100, 100);
     scene.add(model);
 
-    // === EDGE FADE — overlay plane, very generous ellipse ===
+    // === EDGE FADE — bowl-shaped overlay, curves above mountains at edges ===
+    var fadeGeo = new THREE.PlaneGeometry(40000, 40000, 64, 64);
+    fadeGeo.rotateX(-Math.PI / 2);
+    // Raise edges into a bowl: flat centre, curves up at edges
+    var positions = fadeGeo.attributes.position;
+    for (var i = 0; i < positions.count; i++) {
+      var x = positions.getX(i);
+      var z = positions.getZ(i);
+      var dx = x / 20000;
+      var dz = z / 20000;
+      var d = Math.sqrt(dx * dx + dz * dz);
+      positions.setY(i, positions.getY(i) + d * d * 5000);
+    }
+    positions.needsUpdate = true;
+    fadeGeo.computeVertexNormals();
+
     var fadeShader = new THREE.ShaderMaterial({
       transparent: true,
       depthTest: false,
@@ -288,8 +303,9 @@ loader.load('rcprojects_optimized.glb',
       uniforms: {
         bgColor: { value: new THREE.Color(0xC8DDE8) },
         mapCenter: { value: new THREE.Vector2(1500.0, 2000.0) },
-        mapHalf: { value: new THREE.Vector2(3000.0, 6000.0) },
-        fadeWidth: { value: 2000.0 }
+        mapHalf: { value: new THREE.Vector2(4500.0, 5500.0) },
+        fadeWidth: { value: 2000.0 },
+        cornerRadius: { value: 1500.0 }
       },
       vertexShader: [
         'varying vec2 vWorldXZ;',
@@ -304,23 +320,19 @@ loader.load('rcprojects_optimized.glb',
         'uniform vec2 mapCenter;',
         'uniform vec2 mapHalf;',
         'uniform float fadeWidth;',
+        'uniform float cornerRadius;',
         'varying vec2 vWorldXZ;',
         'void main() {',
-        '  vec2 norm = (vWorldXZ - mapCenter) / mapHalf;',
-        '  float dist = length(norm);',
-        '  float fadeNorm = fadeWidth / min(mapHalf.x, mapHalf.y);',
-        '  float alpha = smoothstep(1.0, 1.0 + fadeNorm, dist);',
+        '  vec2 d = abs(vWorldXZ - mapCenter) - (mapHalf - cornerRadius);',
+        '  float dist = length(max(d, 0.0)) - cornerRadius;',
+        '  float alpha = smoothstep(0.0, fadeWidth, dist);',
         '  if (alpha < 0.01) discard;',
         '  gl_FragColor = vec4(bgColor, alpha);',
         '}'
       ].join('\n')
     });
-    var fadePlane = new THREE.Mesh(
-      new THREE.PlaneGeometry(40000, 40000),
-      fadeShader
-    );
-    fadePlane.rotation.x = -Math.PI / 2;
-    fadePlane.position.set(1500, 200, 2000);
+    var fadePlane = new THREE.Mesh(fadeGeo, fadeShader);
+    fadePlane.position.set(1500, 100, 2000);
     fadePlane.renderOrder = 10;
     scene.add(fadePlane);
 
