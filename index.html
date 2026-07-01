@@ -229,10 +229,12 @@ updateCamera();
 // LIGHTING
 // ============================================================
 // Warm ambient
-scene.add(new THREE.AmbientLight(0xF5E6C8, 0.45));
+// scene.add(new THREE.AmbientLight(0xF5E6C8, 0.45));
+scene.add(new THREE.AmbientLight(0xFFFFFF, 0.25));
 
 // Sun — directional with shadows (top-left, shadows fall bottom-right)
-var sun = new THREE.DirectionalLight(0xFFFAF0, 0.60);
+// var sun = new THREE.DirectionalLight(0xFFFAF0, 0.60);
+var sun = new THREE.DirectionalLight(0xFFFAF0, 0.45);
 sun.position.set(-3000, 5000, -3000);
 sun.castShadow = true;
 sun.shadow.mapSize.set(4096, 4096);
