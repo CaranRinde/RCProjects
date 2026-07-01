@@ -279,49 +279,56 @@ loader.load('rcprojects_optimized.glb',
     model.scale.set(100, 100, 100);
     scene.add(model);
 
-    // === EDGE FADE — overlay at ground level, objects render on top ===
-    var fadeShader = new THREE.ShaderMaterial({
-      transparent: true,
-      depthTest: true,
-      depthWrite: false,
-      side: THREE.DoubleSide,
-      uniforms: {
-        bgColor: { value: new THREE.Color(0xC8DDE8) },
-        mapCenter: { value: new THREE.Vector2(1500.0, 3000.0) },
-        mapHalf: { value: new THREE.Vector2(4000.0, 5500.0) },
-        fadeWidth: { value: 1500.0 }
-      },
-      vertexShader: [
-        'varying vec2 vWorldXZ;',
-        'void main() {',
-        '  vec4 wp = modelMatrix * vec4(position, 1.0);',
-        '  vWorldXZ = wp.xz;',
-        '  gl_Position = projectionMatrix * viewMatrix * wp;',
-        '}'
-      ].join('\n'),
-      fragmentShader: [
-        'uniform vec3 bgColor;',
-        'uniform vec2 mapCenter;',
-        'uniform vec2 mapHalf;',
-        'uniform float fadeWidth;',
-        'varying vec2 vWorldXZ;',
-        'void main() {',
-        '  vec2 norm = (vWorldXZ - mapCenter) / mapHalf;',
-        '  float dist = length(norm);',
-        '  float fadeNorm = fadeWidth / min(mapHalf.x, mapHalf.y);',
-        '  float alpha = smoothstep(1.0, 1.0 + fadeNorm, dist);',
-        '  if (alpha < 0.01) discard;',
-        '  gl_FragColor = vec4(bgColor, alpha);',
-        '}'
-      ].join('\n')
+    // === EDGE FADE — objects themselves fade near map edges ===
+    var fadeCenter = new THREE.Vector2(1500.0, 2000.0);
+    var fadeHalf = new THREE.Vector2(5000.0, 6000.0);
+    var fadeDist = 2500.0;
+
+    model.traverse(function(child) {
+      if (child.isMesh && child.material) {
+        var mats = Array.isArray(child.material) ? child.material : [child.material];
+        mats.forEach(function(mat) {
+          mat.onBeforeCompile = function(shader) {
+            // Only modify if shader has the includes we need
+            if (shader.vertexShader.indexOf('#include <begin_vertex>') === -1 ||
+                shader.fragmentShader.indexOf('#include <dithering_fragment>') === -1) {
+              return;
+            }
+
+            shader.uniforms.fadeCenter = { value: fadeCenter };
+            shader.uniforms.fadeHalf = { value: fadeHalf };
+            shader.uniforms.fadeDist = { value: fadeDist };
+
+            shader.vertexShader = 'varying vec2 vFadeXZ;\n' + shader.vertexShader;
+            shader.vertexShader = shader.vertexShader.replace(
+              '#include <begin_vertex>',
+              '#include <begin_vertex>\nvFadeXZ = (modelMatrix * vec4(position, 1.0)).xz;'
+            );
+
+            shader.fragmentShader = [
+              'uniform vec2 fadeCenter;',
+              'uniform vec2 fadeHalf;',
+              'uniform float fadeDist;',
+              'varying vec2 vFadeXZ;'
+            ].join('\n') + '\n' + shader.fragmentShader;
+
+            shader.fragmentShader = shader.fragmentShader.replace(
+              '#include <dithering_fragment>',
+              '#include <dithering_fragment>\n' +
+              'vec2 fadeNorm = (vFadeXZ - fadeCenter) / fadeHalf;\n' +
+              'float eDist = length(fadeNorm);\n' +
+              'float fadeN = fadeDist / min(fadeHalf.x, fadeHalf.y);\n' +
+              'float fadeAlpha = 1.0 - smoothstep(1.0, 1.0 + fadeN, eDist);\n' +
+              'if (fadeAlpha < 0.01) discard;\n' +
+              'gl_FragColor.a *= fadeAlpha;'
+            );
+
+            mat.transparent = true;
+            mat.depthWrite = true;
+          };
+        });
+      }
     });
-    var fadePlane = new THREE.Mesh(
-      new THREE.PlaneGeometry(30000, 30000),
-      fadeShader
-    );
-    fadePlane.rotation.x = -Math.PI / 2;
-    fadePlane.position.set(1500, 10, 3000);
-    scene.add(fadePlane);
 
     // Find location positions
     var locNames = Object.keys(locationInfo);
