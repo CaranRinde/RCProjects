@@ -198,7 +198,7 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.setClearColor(0xC8DDE8);
 renderer.toneMapping = THREE.NoToneMapping;
-
+renderer.outputEncoding = THREE.sRGBEncoding;
 // Shadows
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
