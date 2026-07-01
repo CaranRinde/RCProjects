@@ -205,7 +205,7 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 var scene = new THREE.Scene();
 
-// No distance fog — edge fade handled by gradient overlay below
+// Background colour matches the page
 
 // Camera
 var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 10, 500000);
@@ -229,25 +229,25 @@ updateCamera();
 // LIGHTING
 // ============================================================
 // Warm ambient
-scene.add(new THREE.AmbientLight(0xF5E6C8, 0.5));
+scene.add(new THREE.AmbientLight(0xF5E6C8, 0.35));
 
-// Sun — directional with shadows
-var sun = new THREE.DirectionalLight(0xFFF8E0, 0.8);
-sun.position.set(3000, 5000, 2000);
+// Sun — directional with shadows (top-left, shadows fall bottom-right)
+var sun = new THREE.DirectionalLight(0xFFFAF0, 0.5);
+sun.position.set(-3000, 5000, -3000);
 sun.castShadow = true;
-sun.shadow.mapSize.set(2048, 2048);
-sun.shadow.camera.left = -6000;
-sun.shadow.camera.right = 6000;
-sun.shadow.camera.top = 6000;
-sun.shadow.camera.bottom = -6000;
+sun.shadow.mapSize.set(4096, 4096);
+sun.shadow.camera.left = -10000;
+sun.shadow.camera.right = 10000;
+sun.shadow.camera.top = 10000;
+sun.shadow.camera.bottom = -10000;
 sun.shadow.camera.near = 1;
-sun.shadow.camera.far = 15000;
+sun.shadow.camera.far = 30000;
 sun.shadow.bias = -0.002;
 scene.add(sun);
 
 // Subtle fill light from opposite side
-var fill = new THREE.DirectionalLight(0xC8D8F0, 0.25);
-fill.position.set(-2000, 3000, -2000);
+var fill = new THREE.DirectionalLight(0xC8D8F0, 0.15);
+fill.position.set(3000, 3000, 3000);
 scene.add(fill);
 
 // ============================================================
@@ -256,7 +256,7 @@ scene.add(fill);
 var loadBar = document.getElementById('loadBar');
 var loader = new THREE.GLTFLoader();
 
-loader.load('rcprojects_optimized.glb',
+loader.load('rcprojects_island.glb',
   // Success
   function(gltf) {
     var model = gltf.scene;
@@ -278,63 +278,6 @@ loader.load('rcprojects_optimized.glb',
 
     model.scale.set(100, 100, 100);
     scene.add(model);
-
-    // === EDGE FADE — bowl-shaped overlay, curves above mountains at edges ===
-    var fadeGeo = new THREE.PlaneGeometry(40000, 40000, 64, 64);
-    fadeGeo.rotateX(-Math.PI / 2);
-    // Raise edges into a bowl: flat centre, curves up at edges
-    var positions = fadeGeo.attributes.position;
-    for (var i = 0; i < positions.count; i++) {
-      var x = positions.getX(i);
-      var z = positions.getZ(i);
-      var dx = x / 20000;
-      var dz = z / 20000;
-      var d = Math.sqrt(dx * dx + dz * dz);
-      positions.setY(i, positions.getY(i) + d * d * 5000);
-    }
-    positions.needsUpdate = true;
-    fadeGeo.computeVertexNormals();
-
-    var fadeShader = new THREE.ShaderMaterial({
-      transparent: true,
-      depthTest: false,
-      depthWrite: false,
-      side: THREE.DoubleSide,
-      uniforms: {
-        bgColor: { value: new THREE.Color(0xC8DDE8) },
-        mapCenter: { value: new THREE.Vector2(1500.0, 2000.0) },
-        mapHalf: { value: new THREE.Vector2(4500.0, 5500.0) },
-        fadeWidth: { value: 2000.0 },
-        cornerRadius: { value: 1500.0 }
-      },
-      vertexShader: [
-        'varying vec2 vWorldXZ;',
-        'void main() {',
-        '  vec4 wp = modelMatrix * vec4(position, 1.0);',
-        '  vWorldXZ = wp.xz;',
-        '  gl_Position = projectionMatrix * viewMatrix * wp;',
-        '}'
-      ].join('\n'),
-      fragmentShader: [
-        'uniform vec3 bgColor;',
-        'uniform vec2 mapCenter;',
-        'uniform vec2 mapHalf;',
-        'uniform float fadeWidth;',
-        'uniform float cornerRadius;',
-        'varying vec2 vWorldXZ;',
-        'void main() {',
-        '  vec2 d = abs(vWorldXZ - mapCenter) - (mapHalf - cornerRadius);',
-        '  float dist = length(max(d, 0.0)) - cornerRadius;',
-        '  float alpha = smoothstep(0.0, fadeWidth, dist);',
-        '  if (alpha < 0.01) discard;',
-        '  gl_FragColor = vec4(bgColor, alpha);',
-        '}'
-      ].join('\n')
-    });
-    var fadePlane = new THREE.Mesh(fadeGeo, fadeShader);
-    fadePlane.position.set(1500, 100, 2000);
-    fadePlane.renderOrder = 10;
-    scene.add(fadePlane);
 
     // Find location positions
     var locNames = Object.keys(locationInfo);
