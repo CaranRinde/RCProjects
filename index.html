@@ -594,11 +594,12 @@ animate();
 
     '<label>Tone mapping<br><select id="llTone" style="width:100%">' +
     '<option value="none">None</option>' +
+    '<option value="linear">Linear (colours kept, exposure works)</option>' +
     '<option value="aces">ACES Filmic</option>' +
     '<option value="reinhard">Reinhard</option>' +
     '</select></label><br><br>' +
 
-    '<label>Exposure <span id="llExpV">1.00</span><br>' +
+    '<label>Exposure <span id="llExpV">1.00</span> <span style="opacity:.5">(not with None)</span><br>' +
     '<input id="llExp" type="range" min="0.3" max="2" step="0.05" value="1" style="width:100%"></label><br>' +
 
     '<hr style="opacity:.2"><b>Hemisphere (ambient)</b><br>' +
@@ -616,6 +617,12 @@ animate();
     '<label>Direction (azimuth°) <span id="llSunAV">231</span><br>' +
     '<input id="llSunA" type="range" min="0" max="360" step="1" value="231" style="width:100%"></label><br>' +
 
+    '<hr style="opacity:.2"><b>Shadows</b><br>' +
+    '<label>Softness <span id="llShSoftV">0</span> <span style="opacity:.5">(0 = crisp)</span><br>' +
+    '<input id="llShSoft" type="range" min="0" max="25" step="1" value="0" style="width:100%"></label>' +
+    '<label>Lightness <span id="llShLightV">0</span>% <span style="opacity:.5">(0 = deep)</span><br>' +
+    '<input id="llShLight" type="range" min="0" max="70" step="5" value="0" style="width:100%"></label><br>' +
+
     '<hr style="opacity:.2"><label>Background <input id="llBg" type="color" value="#C8DDE8"></label><br><br>' +
 
     '<b>Current values</b> (copy these to Claude):<br>' +
@@ -623,6 +630,14 @@ animate();
   document.body.appendChild(panel);
 
   function $(id) { return document.getElementById(id); }
+
+  // Second sun — same direction, casts NO shadows.
+  // Splitting the sun's intensity between the two lifts shadowed
+  // areas without changing overall brightness.
+  var sun2 = new THREE.DirectionalLight(0xFFFAF0, 0);
+  scene.add(sun2);
+
+  var currentShadowType = 'pcf';
 
   function refreshMaterials() {
     scene.traverse(function(o) {
@@ -637,26 +652,50 @@ animate();
     var el = parseFloat($('llSunE').value) * Math.PI / 180;
     var d = 7000;
     sun.position.set(d * Math.cos(el) * Math.sin(az), d * Math.sin(el), d * Math.cos(el) * Math.cos(az));
+    sun2.position.copy(sun.position);
+  }
+
+  function setShadows() {
+    var radius = parseFloat($('llShSoft').value);
+    var wanted = (radius > 0) ? 'vsm' : 'pcf';
+    if (wanted !== currentShadowType) {
+      currentShadowType = wanted;
+      renderer.shadowMap.type = (wanted === 'vsm') ? THREE.VSMShadowMap : THREE.PCFSoftShadowMap;
+      sun.shadow.bias = (wanted === 'vsm') ? 0 : -0.002;
+      if (sun.shadow.map) { sun.shadow.map.dispose(); sun.shadow.map = null; }
+      refreshMaterials();
+    }
+    sun.shadow.radius = radius;
   }
 
   function apply() {
     renderer.outputEncoding = ($('llEnc').value === 'srgb') ? THREE.sRGBEncoding : THREE.LinearEncoding;
-    renderer.toneMapping = { none: THREE.NoToneMapping, aces: THREE.ACESFilmicToneMapping, reinhard: THREE.ReinhardToneMapping }[$('llTone').value];
+    renderer.toneMapping = { none: THREE.NoToneMapping, linear: THREE.LinearToneMapping, aces: THREE.ACESFilmicToneMapping, reinhard: THREE.ReinhardToneMapping }[$('llTone').value];
     renderer.toneMappingExposure = parseFloat($('llExp').value);
     hemi.color.set($('llHemiSky').value);
     hemi.groundColor.set($('llHemiGnd').value);
     hemi.intensity = parseFloat($('llHemiI').value);
+
+    // Split total sun intensity between shadowing and non-shadowing suns
+    var totalSun = parseFloat($('llSunI').value);
+    var lightness = parseFloat($('llShLight').value) / 100;
     sun.color.set($('llSunC').value);
-    sun.intensity = parseFloat($('llSunI').value);
+    sun2.color.set($('llSunC').value);
+    sun.intensity = totalSun * (1 - lightness);
+    sun2.intensity = totalSun * lightness;
+
     setSun();
+    setShadows();
     renderer.setClearColor($('llBg').value);
     refreshMaterials();
 
     $('llExpV').textContent = parseFloat($('llExp').value).toFixed(2);
     $('llHemiIV').textContent = parseFloat($('llHemiI').value).toFixed(2);
-    $('llSunIV').textContent = parseFloat($('llSunI').value).toFixed(2);
+    $('llSunIV').textContent = totalSun.toFixed(2);
     $('llSunEV').textContent = $('llSunE').value;
     $('llSunAV').textContent = $('llSunA').value;
+    $('llShSoftV').textContent = $('llShSoft').value;
+    $('llShLightV').textContent = $('llShLight').value;
 
     $('llOut').value = JSON.stringify({
       encoding: $('llEnc').value,
@@ -666,9 +705,11 @@ animate();
       hemiGround: $('llHemiGnd').value,
       hemiIntensity: parseFloat($('llHemiI').value),
       sunColour: $('llSunC').value,
-      sunIntensity: parseFloat($('llSunI').value),
+      sunIntensity: totalSun,
       sunElevation: parseFloat($('llSunE').value),
       sunAzimuth: parseFloat($('llSunA').value),
+      shadowSoftness: parseFloat($('llShSoft').value),
+      shadowLightness: parseFloat($('llShLight').value),
       background: $('llBg').value
     }, null, 1);
   }
