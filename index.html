@@ -225,20 +225,11 @@ function updateCamera() {
 updateCamera();
 
 // ============================================================
-// LIGHTING + ENVIRONMENT
+// LIGHTING
 // ============================================================
-// Generate a warm environment map for PBR materials
-// (this is what Spline provides — soft indirect light from all directions)
-var pmremGenerator = new THREE.PMREMGenerator(renderer);
-pmremGenerator.compileEquirectangularShader();
-var envScene = new THREE.Scene();
-envScene.add(new THREE.HemisphereLight(0xF5E6C8, 0x806040, 1.0));
-var envMap = pmremGenerator.fromScene(envScene, 0, 0.1, 100).texture;
-scene.environment = envMap;
-pmremGenerator.dispose();
-
-// Soft hemisphere light — warm sky, earthy ground
-scene.add(new THREE.HemisphereLight(0xF5E6C8, 0x806040, 0.4));
+// Soft hemisphere light — warm sky colour from above, earthy tone from below
+var hemi = new THREE.HemisphereLight(0xF5E6C8, 0x806040, 0.4);
+scene.add(hemi);
 
 // Sun — low angle for long dramatic shadows (morning/evening feel)
 var sun = new THREE.DirectionalLight(0xFFFAF0, 0.55);
@@ -583,6 +574,113 @@ function animate() {
   renderer.render(scene, camera);
 }
 animate();
+
+// ============================================================
+// LIGHT LAB — temporary tuning panel (press L to show/hide)
+// Once you find your look, send me the values from the readout
+// and I'll bake them in permanently and remove this panel.
+// ============================================================
+(function() {
+  var panel = document.createElement('div');
+  panel.id = 'lightLab';
+  panel.style.cssText = 'position:fixed;top:60px;right:12px;z-index:9999;background:rgba(30,26,22,0.92);color:#F0E6D2;padding:14px;border-radius:10px;font:12px/1.5 monospace;width:250px;max-height:80vh;overflow-y:auto;';
+  panel.innerHTML =
+    '<b style="font-size:13px">Light Lab</b> <span style="opacity:.6">(L to hide)</span><br><br>' +
+
+    '<label>Colour encoding<br><select id="llEnc" style="width:100%">' +
+    '<option value="linear">Linear (punchy)</option>' +
+    '<option value="srgb">sRGB (accurate)</option>' +
+    '</select></label><br><br>' +
+
+    '<label>Tone mapping<br><select id="llTone" style="width:100%">' +
+    '<option value="none">None</option>' +
+    '<option value="aces">ACES Filmic</option>' +
+    '<option value="reinhard">Reinhard</option>' +
+    '</select></label><br><br>' +
+
+    '<label>Exposure <span id="llExpV">1.00</span><br>' +
+    '<input id="llExp" type="range" min="0.3" max="2" step="0.05" value="1" style="width:100%"></label><br>' +
+
+    '<hr style="opacity:.2"><b>Hemisphere (ambient)</b><br>' +
+    '<label>Sky colour <input id="llHemiSky" type="color" value="#F5E6C8"></label><br>' +
+    '<label>Ground colour <input id="llHemiGnd" type="color" value="#806040"></label><br>' +
+    '<label>Intensity <span id="llHemiIV">0.40</span><br>' +
+    '<input id="llHemiI" type="range" min="0" max="1.5" step="0.05" value="0.4" style="width:100%"></label><br>' +
+
+    '<hr style="opacity:.2"><b>Sun</b><br>' +
+    '<label>Colour <input id="llSunC" type="color" value="#FFFAF0"></label><br>' +
+    '<label>Intensity <span id="llSunIV">0.55</span><br>' +
+    '<input id="llSunI" type="range" min="0" max="1.5" step="0.05" value="0.55" style="width:100%"></label>' +
+    '<label>Height (elevation°) <span id="llSunEV">21</span><br>' +
+    '<input id="llSunE" type="range" min="5" max="85" step="1" value="21" style="width:100%"></label>' +
+    '<label>Direction (azimuth°) <span id="llSunAV">231</span><br>' +
+    '<input id="llSunA" type="range" min="0" max="360" step="1" value="231" style="width:100%"></label><br>' +
+
+    '<hr style="opacity:.2"><label>Background <input id="llBg" type="color" value="#C8DDE8"></label><br><br>' +
+
+    '<b>Current values</b> (copy these to Claude):<br>' +
+    '<textarea id="llOut" readonly style="width:100%;height:90px;font:10px monospace;background:#1a1613;color:#B0E0B0;border:1px solid #555"></textarea>';
+  document.body.appendChild(panel);
+
+  function $(id) { return document.getElementById(id); }
+
+  function refreshMaterials() {
+    scene.traverse(function(o) {
+      if (o.isMesh && o.material) {
+        (Array.isArray(o.material) ? o.material : [o.material]).forEach(function(m) { m.needsUpdate = true; });
+      }
+    });
+  }
+
+  function setSun() {
+    var az = parseFloat($('llSunA').value) * Math.PI / 180;
+    var el = parseFloat($('llSunE').value) * Math.PI / 180;
+    var d = 7000;
+    sun.position.set(d * Math.cos(el) * Math.sin(az), d * Math.sin(el), d * Math.cos(el) * Math.cos(az));
+  }
+
+  function apply() {
+    renderer.outputEncoding = ($('llEnc').value === 'srgb') ? THREE.sRGBEncoding : THREE.LinearEncoding;
+    renderer.toneMapping = { none: THREE.NoToneMapping, aces: THREE.ACESFilmicToneMapping, reinhard: THREE.ReinhardToneMapping }[$('llTone').value];
+    renderer.toneMappingExposure = parseFloat($('llExp').value);
+    hemi.color.set($('llHemiSky').value);
+    hemi.groundColor.set($('llHemiGnd').value);
+    hemi.intensity = parseFloat($('llHemiI').value);
+    sun.color.set($('llSunC').value);
+    sun.intensity = parseFloat($('llSunI').value);
+    setSun();
+    renderer.setClearColor($('llBg').value);
+    refreshMaterials();
+
+    $('llExpV').textContent = parseFloat($('llExp').value).toFixed(2);
+    $('llHemiIV').textContent = parseFloat($('llHemiI').value).toFixed(2);
+    $('llSunIV').textContent = parseFloat($('llSunI').value).toFixed(2);
+    $('llSunEV').textContent = $('llSunE').value;
+    $('llSunAV').textContent = $('llSunA').value;
+
+    $('llOut').value = JSON.stringify({
+      encoding: $('llEnc').value,
+      toneMapping: $('llTone').value,
+      exposure: parseFloat($('llExp').value),
+      hemiSky: $('llHemiSky').value,
+      hemiGround: $('llHemiGnd').value,
+      hemiIntensity: parseFloat($('llHemiI').value),
+      sunColour: $('llSunC').value,
+      sunIntensity: parseFloat($('llSunI').value),
+      sunElevation: parseFloat($('llSunE').value),
+      sunAzimuth: parseFloat($('llSunA').value),
+      background: $('llBg').value
+    }, null, 1);
+  }
+
+  panel.addEventListener('input', apply);
+  window.addEventListener('keydown', function(e) {
+    if (e.key === 'l' || e.key === 'L') {
+      panel.style.display = (panel.style.display === 'none') ? 'block' : 'none';
+    }
+  });
+  apply();
+})();
 
 // ============================================================
 // RESIZE
