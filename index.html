@@ -198,8 +198,6 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.setClearColor(0xC8DDE8);
 renderer.toneMapping = THREE.NoToneMapping;
-//renderer.toneMapping = THREE.ACESFilmicToneMapping;
-//renderer.outputEncoding = THREE.sRGBEncoding;
 // Shadows
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -227,17 +225,24 @@ function updateCamera() {
 updateCamera();
 
 // ============================================================
-// LIGHTING
+// LIGHTING + ENVIRONMENT
 // ============================================================
-// Warm ambient
-// scene.add(new THREE.AmbientLight(0xF5E6C8, 0.45));
-//scene.add(new THREE.AmbientLight(0xFFFFFF, 0.30));
-scene.add(new THREE.HemisphereLight(0xC8DDE8, 0x806040, 0.6));
+// Generate a warm environment map for PBR materials
+// (this is what Spline provides — soft indirect light from all directions)
+var pmremGenerator = new THREE.PMREMGenerator(renderer);
+pmremGenerator.compileEquirectangularShader();
+var envScene = new THREE.Scene();
+envScene.add(new THREE.HemisphereLight(0xF5E6C8, 0x806040, 1.0));
+var envMap = pmremGenerator.fromScene(envScene, 0, 0.1, 100).texture;
+scene.environment = envMap;
+pmremGenerator.dispose();
 
-// Sun — directional with shadows (top-left, shadows fall bottom-right)
-// var sun = new THREE.DirectionalLight(0xFFFAF0, 0.60);
-var sun = new THREE.DirectionalLight(0xFFFAF0, 0.8);
-sun.position.set(-3000, 5000, -3000);
+// Soft hemisphere light — warm sky, earthy ground
+scene.add(new THREE.HemisphereLight(0xF5E6C8, 0x806040, 0.4));
+
+// Sun — low angle for long dramatic shadows (morning/evening feel)
+var sun = new THREE.DirectionalLight(0xFFFAF0, 0.55);
+sun.position.set(-5000, 2500, -4000);
 sun.castShadow = true;
 sun.shadow.mapSize.set(4096, 4096);
 sun.shadow.camera.left = -10000;
@@ -275,8 +280,6 @@ loader.load('rcprojects_island.glb',
           var mats = Array.isArray(child.material) ? child.material : [child.material];
           mats.forEach(function(m) {
             m.side = THREE.DoubleSide;
-            m.metalness = 0;
-            m.roughness = 0.85;
           });
         }
       }
