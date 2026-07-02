@@ -608,20 +608,24 @@ animate();
     '<label>Intensity <span id="llHemiIV">0.40</span><br>' +
     '<input id="llHemiI" type="range" min="0" max="1.5" step="0.05" value="0.4" style="width:100%"></label><br>' +
 
-    '<hr style="opacity:.2"><b>Sun</b><br>' +
+    '<hr style="opacity:.2"><b>Sun (colour & brightness)</b><br>' +
     '<label>Colour <input id="llSunC" type="color" value="#FFFAF0"></label><br>' +
-    '<label>Intensity <span id="llSunIV">0.55</span><br>' +
+    '<label>Total intensity <span id="llSunIV">0.55</span><br>' +
     '<input id="llSunI" type="range" min="0" max="1.5" step="0.05" value="0.55" style="width:100%"></label>' +
-    '<label>Height (elevation°) <span id="llSunEV">21</span><br>' +
-    '<input id="llSunE" type="range" min="5" max="85" step="1" value="21" style="width:100%"></label>' +
-    '<label>Direction (azimuth°) <span id="llSunAV">231</span><br>' +
-    '<input id="llSunA" type="range" min="0" max="360" step="1" value="231" style="width:100%"></label><br>' +
+    '<label>Height (elevation°) <span id="llSunEV">80</span><br>' +
+    '<input id="llSunE" type="range" min="5" max="85" step="1" value="80" style="width:100%"></label>' +
+    '<label>Direction (azimuth°) <span id="llSunAV">225</span><br>' +
+    '<input id="llSunA" type="range" min="0" max="360" step="1" value="225" style="width:100%"></label><br>' +
 
-    '<hr style="opacity:.2"><b>Shadows</b><br>' +
+    '<hr style="opacity:.2"><b>Shadows (from a separate low sun)</b><br>' +
+    '<label>Shadow height (elevation°) <span id="llShEV">15</span><br>' +
+    '<input id="llShE" type="range" min="5" max="85" step="1" value="15" style="width:100%"></label>' +
+    '<label>Shadow direction (azimuth°) <span id="llShAV">231</span><br>' +
+    '<input id="llShA" type="range" min="0" max="360" step="1" value="231" style="width:100%"></label>' +
     '<label>Softness <span id="llShSoftV">0</span> <span style="opacity:.5">(0 = crisp)</span><br>' +
     '<input id="llShSoft" type="range" min="0" max="25" step="1" value="0" style="width:100%"></label>' +
-    '<label>Lightness <span id="llShLightV">0</span>% <span style="opacity:.5">(0 = deep)</span><br>' +
-    '<input id="llShLight" type="range" min="0" max="70" step="5" value="0" style="width:100%"></label><br>' +
+    '<label>Lightness <span id="llShLightV">50</span>% <span style="opacity:.5">(share of light from high sun)</span><br>' +
+    '<input id="llShLight" type="range" min="0" max="90" step="5" value="50" style="width:100%"></label><br>' +
 
     '<hr style="opacity:.2"><label>Background <input id="llBg" type="color" value="#C8DDE8"></label><br><br>' +
 
@@ -648,11 +652,15 @@ animate();
   }
 
   function setSun() {
+    // Shadow-casting sun — low, its angle controls shadow direction/length
+    var shAz = parseFloat($('llShA').value) * Math.PI / 180;
+    var shEl = parseFloat($('llShE').value) * Math.PI / 180;
+    var d = 7000;
+    sun.position.set(d * Math.cos(shEl) * Math.sin(shAz), d * Math.sin(shEl), d * Math.cos(shEl) * Math.cos(shAz));
+    // Fill sun — high, carries most colour, casts no shadows
     var az = parseFloat($('llSunA').value) * Math.PI / 180;
     var el = parseFloat($('llSunE').value) * Math.PI / 180;
-    var d = 7000;
-    sun.position.set(d * Math.cos(el) * Math.sin(az), d * Math.sin(el), d * Math.cos(el) * Math.cos(az));
-    sun2.position.copy(sun.position);
+    sun2.position.set(d * Math.cos(el) * Math.sin(az), d * Math.sin(el), d * Math.cos(el) * Math.cos(az));
   }
 
   function setShadows() {
@@ -694,6 +702,8 @@ animate();
     $('llSunIV').textContent = totalSun.toFixed(2);
     $('llSunEV').textContent = $('llSunE').value;
     $('llSunAV').textContent = $('llSunA').value;
+    $('llShEV').textContent = $('llShE').value;
+    $('llShAV').textContent = $('llShA').value;
     $('llShSoftV').textContent = $('llShSoft').value;
     $('llShLightV').textContent = $('llShLight').value;
 
@@ -708,6 +718,8 @@ animate();
       sunIntensity: totalSun,
       sunElevation: parseFloat($('llSunE').value),
       sunAzimuth: parseFloat($('llSunA').value),
+      shadowElevation: parseFloat($('llShE').value),
+      shadowAzimuth: parseFloat($('llShA').value),
       shadowSoftness: parseFloat($('llShSoft').value),
       shadowLightness: parseFloat($('llShLight').value),
       background: $('llBg').value
