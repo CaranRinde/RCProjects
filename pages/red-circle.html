@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Red Circle — RC Projects</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@400;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=MedievalSharp&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/page-flip@2.0.7/dist/js/page-flip.browser.js"></script>
+<style>
+/* ============================================================
+   THE RED CIRCLE — a book, not a webpage.
+   Colours match the island: parchment #F3EACD, ink #3B2F20,
+   gold #C4A04E, red #B03030, dark wood #2A2218.
+   ============================================================ */
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;}
+body{
+  background:radial-gradient(ellipse at 50% 40%, #3a2f21 0%, #2A2218 55%, #1c1610 100%);
+  font-family:'Cormorant Garamond',serif;color:#3B2F20;
+  overflow:hidden;
+}
+
+/* ===== TOP BAR (return + sound) ===== */
+.book-nav{position:fixed;top:0;left:0;right:0;height:44px;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;padding:0 1.2rem;
+  background:rgba(42,34,24,0.88);backdrop-filter:blur(6px);
+  border-bottom:1px solid rgba(196,160,78,0.15);}
+.back-link{font-family:'Cinzel',serif;font-size:0.75rem;letter-spacing:0.18em;
+  color:#C4A04E;text-decoration:none;transition:color .3s;}
+.back-link:hover{color:#F3EACD;}
+.sound-toggle{font-family:'Cinzel',serif;font-size:0.72rem;letter-spacing:0.14em;
+  color:#C4A04E;background:none;border:1px solid rgba(196,160,78,0.45);
+  padding:0.35rem 0.9rem;cursor:pointer;transition:all .3s;}
+.sound-toggle:hover{color:#F3EACD;border-color:#C4A04E;background:rgba(196,160,78,0.12);}
+
+/* ===== BOOK STAGE ===== */
+.stage{height:100%;display:flex;align-items:center;justify-content:center;padding:60px 10px 30px;}
+#book{filter:drop-shadow(0 18px 40px rgba(0,0,0,0.55));}
+
+/* ===== PAGES ===== */
+.page{
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(255,252,240,0.55), transparent 60%),
+    linear-gradient(105deg, rgba(59,47,32,0.06) 0%, transparent 8%, transparent 92%, rgba(59,47,32,0.10) 100%),
+    #F3EACD;
+  color:#3B2F20;border:1px solid rgba(139,111,78,0.25);overflow:hidden;
+}
+.page-inner{height:100%;padding:clamp(1.4rem,4.5%,2.6rem) clamp(1.2rem,5%,2.4rem);
+  display:flex;flex-direction:column;overflow:hidden;}
+.page-num{margin-top:auto;padding-top:0.6rem;text-align:center;
+  font-family:'Cinzel',serif;font-size:0.65rem;letter-spacing:0.3em;color:#A89070;}
+
+/* chapter furniture */
+.ornament{display:block;width:46px;height:46px;margin:0 auto 0.6rem;}
+.chapter-label{font-family:'MedievalSharp',cursive;font-size:0.85rem;color:#8A7344;
+  text-align:center;letter-spacing:0.12em;margin-bottom:0.15rem;}
+h2{font-family:'Cinzel Decorative',serif;font-weight:700;font-size:clamp(1.05rem,2.6vw,1.45rem);
+  color:#B03030;text-align:center;letter-spacing:0.06em;margin-bottom:0.9rem;}
+p{font-size:clamp(0.95rem,1.9vw,1.12rem);line-height:1.75;margin-bottom:0.85rem;text-align:justify;}
+p.first::first-letter{font-family:'Cinzel Decorative',serif;font-size:2.6em;float:left;
+  line-height:0.85;padding:0.05em 0.12em 0 0;color:#B03030;}
+em{font-style:italic;color:#5a4630;}
+.small-note{font-family:'MedievalSharp',cursive;font-size:0.8rem;color:#A89070;text-align:center;}
+
+/* image plates — replace these divs with <img class="plate-img" src="..."> */
+.plate{border:1px dashed rgba(176,48,48,0.45);background:rgba(196,160,78,0.08);
+  padding:1.2rem 0.8rem;margin:0.6rem 0 0.9rem;text-align:center;}
+.plate .small-note{color:#8A7344;}
+.plate-img{display:block;width:100%;height:auto;margin:0.6rem 0 0.9rem;
+  border:4px solid #fffdf5;box-shadow:0 2px 8px rgba(59,47,32,0.3);}
+.plate-caption{font-family:'MedievalSharp',cursive;font-size:0.78rem;color:#8A7344;
+  text-align:center;margin-top:-0.5rem;margin-bottom:0.8rem;}
+
+/* the realms list */
+.realm{margin-bottom:0.65rem;}
+.realm-name{font-family:'Cinzel',serif;font-weight:700;font-size:0.92rem;
+  letter-spacing:0.08em;color:#8A7344;}
+.realm-name .rc-dot{color:#B03030;}
+.realm p{margin:0.1rem 0 0;font-size:clamp(0.88rem,1.7vw,1.02rem);line-height:1.55;}
+
+/* letter-writing desk (contact) */
+.seal-link{display:block;width:150px;margin:1.1rem auto;padding:0.7rem 0;text-align:center;
+  font-family:'Cinzel',serif;font-size:0.85rem;letter-spacing:0.18em;color:#F3EACD;
+  background:radial-gradient(circle at 35% 30%, #c94040, #B03030 55%, #7d1f1f);
+  border-radius:50%/42%;box-shadow:0 3px 10px rgba(0,0,0,0.35), inset 0 0 12px rgba(0,0,0,0.35);
+  text-decoration:none;transition:transform .3s;}
+.seal-link:hover{transform:scale(1.06) rotate(-2deg);}
+.ext-link{color:#B03030;text-decoration:none;border-bottom:1px dotted #B03030;}
+.ext-link:hover{color:#8A7344;border-color:#8A7344;}
+
+/* ===== COVERS ===== */
+.cover{
+  background:
+    radial-gradient(ellipse at 50% 35%, rgba(196,160,78,0.14), transparent 65%),
+    linear-gradient(135deg, #5e1f1f 0%, #4a1717 45%, #351010 100%);
+  color:#F3EACD;border:1px solid #2c0d0d;}
+.cover .page-inner{align-items:center;justify-content:center;text-align:center;
+  border:2px solid rgba(196,160,78,0.55);outline:1px solid rgba(196,160,78,0.25);
+  outline-offset:-10px;margin:14px;height:calc(100% - 28px);}
+.cover-title{font-family:'Cinzel Decorative',serif;font-weight:700;
+  font-size:clamp(1.3rem,3.4vw,2rem);letter-spacing:0.12em;color:#E8CE96;
+  text-shadow:0 2px 6px rgba(0,0,0,0.5);margin:1rem 0 0.4rem;}
+.cover-sub{font-family:'Cormorant Garamond',serif;font-style:italic;
+  font-size:clamp(0.9rem,2vw,1.1rem);color:rgba(232,206,150,0.75);}
+.cover .ornament{width:96px;height:96px;margin-bottom:0.5rem;}
+
+@media(max-width:600px){
+  .page-inner{padding:1.1rem 1rem;}
+  p{text-align:left;}
+}
+</style>
+</head>
+<body>
+
+<nav class="book-nav">
+  <a class="back-link" href="../index.html">&#8592; RETURN TO THE MAP</a>
+  <button class="sound-toggle" id="soundToggle">SOUND: ON</button>
+</nav>
+
+<div class="stage">
+  <div id="book">
+
+    <!-- ================================================================
+         HOW THIS BOOK WORKS (a note from Fable to Caran)
+         Every <div class="page"> below is one page of the book.
+         To ADD a page: copy a whole page div (from <div class="page">
+         to its closing </div>) and paste it before the back cover.
+         To ADD an image: replace a <div class="plate">...</div> block
+         with:  <img class="plate-img" src="images/yourphoto.jpg" alt="...">
+                <div class="plate-caption">your caption</div>
+         Heavy files (music, PDFs) live on files.rcprojects.net and are
+         simply linked, like the thesis example on the contact page.
+         ================================================================ -->
+
+    <!-- ========== FRONT COVER (hard) ========== -->
+    <div class="page cover" data-density="hard">
+      <div class="page-inner">
+        <svg class="ornament" viewBox="0 0 100 100">
+          <path d="M50 8 C 78 6, 96 30, 92 55 C 88 82, 60 96, 36 90 C 12 84, 2 58, 10 36 C 16 19, 30 9, 46 8"
+                fill="none" stroke="#E8CE96" stroke-width="6" stroke-linecap="round" opacity="0.9"/>
+        </svg>
+        <div class="cover-title">THE RED CIRCLE</div>
+        <div class="cover-sub">the story of a mark</div>
+      </div>
+    </div>
+
+    <!-- ========== PAGE 1 : TITLE PAGE ========== -->
+    <div class="page">
+      <div class="page-inner">
+        <div style="margin:auto 0;text-align:center;">
+          <svg class="ornament" viewBox="0 0 100 100">
+            <path d="M50 8 C 78 6, 96 30, 92 55 C 88 82, 60 96, 36 90 C 12 84, 2 58, 10 36 C 16 19, 30 9, 46 8"
+                  fill="none" stroke="#B03030" stroke-width="6" stroke-linecap="round"/>
+          </svg>
+          <h2 style="margin-bottom:0.4rem;">The Red Circle</h2>
+          <p style="text-align:center;font-style:italic;">Not a brand. A compass.<br>
+          A promise that somewhere beneath the noise,<br>there is meaning.</p>
+          <p class="small-note" style="margin-top:2rem;">~ drag a corner, or click the page edge, to turn ~</p>
+        </div>
+        <div class="page-num">i</div>
+      </div>
+    </div>
+
+    <!-- ========== PAGE 2 : CHAPTER I — THE ORIGIN OF THE NAME ========== -->
+    <div class="page">
+      <div class="page-inner">
+        <div class="chapter-label">chapter one</div>
+        <h2>The Origin of the Name</h2>
+        <p class="first">Write the true story here, in your own voice — the moment, at the age of ten, when the Red Circle first appeared, and why it never left. This placeholder text is only holding the page warm for you. Replace every word of it; the book is patient.</p>
+        <p>A second paragraph can carry the story onward — what the mark meant then, and what it has come to mean across the decades since.</p>
+        <div class="page-num">1</div>
+      </div>
+    </div>
+
+    <!-- ========== PAGE 3 : ORIGIN — THE PICTURES ========== -->
+    <div class="page">
+      <div class="page-inner">
+        <div class="plate">
+          <div class="small-note">[ a picture will live here ]</div>
+          <div class="small-note">replace this box with an &lt;img class="plate-img"&gt; — see the note at the top of this file</div>
+        </div>
+        <div class="plate">
+          <div class="small-note">[ and perhaps a second one here ]</div>
+        </div>
+        <p style="font-style:italic;text-align:center;">Captions in your own hand go beneath each picture.</p>
+        <div class="page-num">2</div>
+      </div>
+    </div>
+
+    <!-- ========== PAGE 4 : CHAPTER II — WHO I AM ========== -->
+    <div class="page">
+      <div class="page-inner">
+        <div class="chapter-label">chapter two</div>
+        <h2>Who I Am</h2>
+        <p class="first">Your brief history goes here — psychologist, teacher of mathematics, doctor of informatics, painter, writer of worlds. Tell it as a story, not a list; the Lectern will hold the formal record, this page holds the person.</p>
+        <p><em>The full, formal curriculum vitae lives in The Lectern — this page is only the heart of it.</em></p>
+        <div class="page-num">3</div>
+      </div>
+    </div>
+
+    <!-- ========== PAGE 5 : CHAPTER III — THE REALMS (part one) ========== -->
+    <div class="page">
+      <div class="page-inner">
+        <div class="chapter-label">chapter three</div>
+        <h2>What the Map Holds</h2>
+        <div class="realm"><div class="realm-name"><span class="rc-dot">&#9679;</span> THE LECTERN</div>
+          <p>A lifetime of teaching — mathematics, computing, the language of patterns. Publications, talks, and the formal record.</p></div>
+        <div class="realm"><div class="realm-name"><span class="rc-dot">&#9679;</span> THE PLAYGROUNDS</div>
+          <p>Educational RPGs that turn mathematics into adventure — where learning is play, and play is learning.</p></div>
+        <div class="realm"><div class="realm-name"><span class="rc-dot">&#9679;</span> THE ATELIER</div>
+          <p>Murals, gardens, and things made by hand — where imagination meets the physical world.</p></div>
+        <div class="realm"><div class="realm-name"><span class="rc-dot">&#9679;</span> THE PONDERING</div>
+          <p>A quiet place by the water, for thoughts on how the world ought to be.</p></div>
+        <div class="page-num">4</div>
+      </div>
+    </div>
+
+    <!-- ========== PAGE 6 : THE REALMS (part two) ========== -->
+    <div class="page">
+      <div class="page-inner">
+        <div class="realm" style="margin-top:1rem;"><div class="realm-name"><span class="rc-dot">&#9679;</span> EDGEWOOD</div>
+          <p>Five regions, thirty characters — a fictional world built over a lifetime, soon to become a book, now rising in Unreal Engine.</p></div>
+        <div class="realm"><div class="realm-name"><span class="rc-dot">&#9679;</span> THE COMPANION</div>
+          <p>The bridge between the two worlds — and the story of an intelligence that listens, truly listens.</p></div>
+        <div class="realm"><div class="realm-name"><span class="rc-dot">&#9679;</span> THE FOREST</div>
+          <p>Still growing. Something will take root there soon.</p></div>
+        <p class="small-note" style="margin-top:1.6rem;">Cross the river on the map to walk between the real and the imagined.</p>
+        <div class="page-num">5</div>
+      </div>
+    </div>
+
+    <!-- ========== PAGE 7 : CHAPTER IV — WRITE TO ME ========== -->
+    <div class="page">
+      <div class="page-inner">
+        <div class="chapter-label">chapter four</div>
+        <h2>Write to Me</h2>
+        <p style="text-align:center;">Letters are welcome at this desk.<br>Press the seal, and one will begin itself.</p>
+        <a class="seal-link" id="sealMail" href="#">WRITE</a>
+        <p style="text-align:center;font-size:0.95rem;">
+          Or find me at
+          <a class="ext-link" href="https://www.linkedin.com" target="_blank" rel="noopener">LinkedIn</a>
+          <!-- ^ replace with your real LinkedIn profile URL -->
+        </p>
+        <p class="small-note" style="margin-top:0.6rem;">
+          <!-- Example of a heavy-file link once files.rcprojects.net is ready:
+          <a class="ext-link" href="https://files.rcprojects.net/thesis.pdf">read the thesis</a> -->
+        </p>
+        <div class="page-num">6</div>
+      </div>
+    </div>
+
+    <!-- ========== PAGE 8 : COLOPHON ========== -->
+    <div class="page">
+      <div class="page-inner">
+        <div style="margin:auto 0;text-align:center;">
+          <p style="text-align:center;font-style:italic;">This book was begun in July 2026,<br>
+          ten years after its address was first promised.</p>
+          <p class="small-note">rcprojects.net</p>
+        </div>
+        <div class="page-num">7</div>
+      </div>
+    </div>
+
+    <!-- To add more pages, paste copies of a page div HERE, before the back cover. -->
+
+    <!-- ========== BACK COVER (hard) ========== -->
+    <div class="page cover" data-density="hard">
+      <div class="page-inner">
+        <svg class="ornament" viewBox="0 0 100 100" style="width:56px;height:56px;">
+          <path d="M50 8 C 78 6, 96 30, 92 55 C 88 82, 60 96, 36 90 C 12 84, 2 58, 10 36 C 16 19, 30 9, 46 8"
+                fill="none" stroke="#E8CE96" stroke-width="6" stroke-linecap="round" opacity="0.8"/>
+        </svg>
+        <div class="cover-sub">rcprojects.net</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ============================================================
+// SETTINGS — the two lines you may want to edit
+// ============================================================
+var MUSIC_URL = '';   // e.g. 'https://files.rcprojects.net/music/red-circle.mp3'
+var MUSIC_VOLUME = 0.22;
+
+// ============================================================
+// THE BOOK
+// ============================================================
+var pageFlip = new St.PageFlip(document.getElementById('book'), {
+  width: 480, height: 660,
+  size: 'stretch',
+  minWidth: 280, maxWidth: 560,
+  minHeight: 420, maxHeight: 740,
+  showCover: true,
+  usePortrait: true,
+  maxShadowOpacity: 0.5,
+  mobileScrollSupport: false
+});
+pageFlip.loadFromHTML(document.querySelectorAll('.page'));
+
+// ============================================================
+// SOUND — page-turn is synthesised (no audio file needed);
+// music plays if MUSIC_URL is set. One toggle rules both.
+// ============================================================
+var soundOn = localStorage.getItem('rc-sound') !== 'off';
+var toggleBtn = document.getElementById('soundToggle');
+var audioCtx = null;
+var music = null;
+
+function updateToggle() {
+  toggleBtn.textContent = soundOn ? 'SOUND: ON' : 'SOUND: OFF';
+}
+updateToggle();
+
+function pageTurnSound() {
+  if (!soundOn) return;
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    var dur = 0.28;
+    var buf = audioCtx.createBuffer(1, audioCtx.sampleRate * dur, audioCtx.sampleRate);
+    var data = buf.getChannelData(0);
+    for (var i = 0; i < data.length; i++) {
+      var t = i / data.length;
+      data[i] = (Math.random() * 2 - 1) * Math.pow(1 - t, 2.2) * (0.25 + 0.75 * Math.sin(t * 3.14));
+    }
+    var src = audioCtx.createBufferSource(); src.buffer = buf;
+    var filt = audioCtx.createBiquadFilter();
+    filt.type = 'bandpass'; filt.frequency.value = 1400; filt.Q.value = 0.7;
+    var gain = audioCtx.createGain(); gain.gain.value = 0.35;
+    src.connect(filt); filt.connect(gain); gain.connect(audioCtx.destination);
+    src.start();
+  } catch (e) { /* sound is a garnish, never a crash */ }
+}
+
+function startMusic() {
+  if (!MUSIC_URL || music) return;
+  music = new Audio(MUSIC_URL);
+  music.loop = true; music.volume = MUSIC_VOLUME;
+  if (soundOn) music.play().catch(function(){});
+}
+
+pageFlip.on('changeState', function (e) {
+  if (e.data === 'flipping') pageTurnSound();
+});
+document.addEventListener('pointerdown', startMusic, { once: true });
+
+toggleBtn.addEventListener('click', function () {
+  soundOn = !soundOn;
+  localStorage.setItem('rc-sound', soundOn ? 'on' : 'off');
+  updateToggle();
+  if (music) { soundOn ? music.play().catch(function(){}) : music.pause(); }
+});
+
+// ============================================================
+// CONTACT — the address is assembled here so spam robots
+// scraping the HTML never see it whole.
+// ============================================================
+(function () {
+  var a = 'hello', b = 'rcprojects', c = 'net';
+  var addr = a + '@' + b + '.' + c;
+  var link = document.getElementById('sealMail');
+  link.addEventListener('click', function (ev) {
+    ev.preventDefault();
+    window.location.href = 'mail' + 'to:' + addr + '?subject=' + encodeURIComponent('A letter from the map');
+  });
+})();
+
+// Keyboard page turns
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'ArrowRight') pageFlip.flipNext();
+  if (e.key === 'ArrowLeft') pageFlip.flipPrev();
+});
+</script>
+</body>
+</html>
