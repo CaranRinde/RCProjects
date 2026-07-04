@@ -9,8 +9,33 @@
 <style>
 /* ============================================================
    THE RED CIRCLE — a book, not a webpage.
-   Colours match the island: parchment #F3EACD, ink #3B2F20,
-   gold #C4A04E, red #B03030, dark wood #2A2218.
+   Parchment #F3EACD · ink #3B2F20 · gold #C4A04E · red #B03030
+   ============================================================
+
+   CARAN'S EDITING LEGEND — what does what:
+
+   TEXT
+   <p>...</p>                      one paragraph (justified by default)
+   <p class="centered">            centred paragraph
+   <p class="first">               paragraph with the big red drop capital
+   <br>                            line break inside a paragraph
+   <em>...</em>                    italics
+
+   SPACING  (add to any element as class="...")
+   class="space-above"             adds a gap before it
+   class="space-below"             adds a gap after it
+   or fine-tune by hand:  style="margin-bottom:1.5rem"  (any number)
+
+   IMAGES  (upload pictures into the pages folder, then:)
+   <img class="img-full"  src="myphoto.jpg" alt="">    full width
+   <img class="img-left"  src="myphoto.jpg" alt="">    left, text wraps round it
+   <img class="img-right" src="myphoto.jpg" alt="">    right, text wraps round it
+   <div class="plate-caption">caption text</div>        caption under any image
+
+   PAGES
+   One page = one <div class="page"> ... </div> block.
+   To add a page: copy a whole block, paste it before the back cover.
+   Keep the number of inner pages EVEN so spreads pair up nicely.
    ============================================================ */
 *{margin:0;padding:0;box-sizing:border-box;}
 html,body{height:100%;}
@@ -34,7 +59,7 @@ body{
 .sound-toggle:hover{color:#F3EACD;border-color:#C4A04E;background:rgba(196,160,78,0.12);}
 
 /* ===== BOOK STAGE ===== */
-.stage{height:100%;display:flex;align-items:center;justify-content:center;padding:60px 10px 30px;}
+.stage{height:100%;display:flex;align-items:center;justify-content:center;padding:52px 6px 12px;}
 #book{filter:drop-shadow(0 18px 40px rgba(0,0,0,0.55));}
 
 /* ===== PAGES ===== */
@@ -45,38 +70,54 @@ body{
     #F3EACD;
   color:#3B2F20;border:1px solid rgba(139,111,78,0.25);overflow:hidden;
 }
-.page-inner{height:100%;padding:clamp(1.4rem,4.5%,2.6rem) clamp(1.2rem,5%,2.4rem);
+.page-inner{height:100%;padding:clamp(1.4rem,4.5%,2.8rem) clamp(1.2rem,5%,2.6rem);
   display:flex;flex-direction:column;overflow:hidden;}
 .page-num{margin-top:auto;padding-top:0.6rem;text-align:center;
-  font-family:'Cinzel',serif;font-size:0.65rem;letter-spacing:0.3em;color:#A89070;}
+  font-family:'Cinzel',serif;font-size:0.82rem;letter-spacing:0.3em;color:#8A7344;}
 
 /* chapter furniture */
-.ornament{display:block;width:46px;height:46px;margin:0 auto 0.6rem;}
-.chapter-label{font-family:'MedievalSharp',cursive;font-size:0.85rem;color:#8A7344;
+.chapter-label{font-family:'MedievalSharp',cursive;font-size:0.9rem;color:#8A7344;
   text-align:center;letter-spacing:0.12em;margin-bottom:0.15rem;}
-h2{font-family:'Cinzel Decorative',serif;font-weight:700;font-size:clamp(1.05rem,2.6vw,1.45rem);
+h2{font-family:'Cinzel Decorative',serif;font-weight:700;font-size:clamp(1.1rem,2.6vw,1.55rem);
   color:#B03030;text-align:center;letter-spacing:0.06em;margin-bottom:0.9rem;}
-p{font-size:clamp(0.95rem,1.9vw,1.12rem);line-height:1.75;margin-bottom:0.85rem;text-align:justify;}
+p{font-size:clamp(0.98rem,1.9vw,1.18rem);line-height:1.75;margin-bottom:0.85rem;text-align:justify;}
+p.centered{text-align:center;}
 p.first::first-letter{font-family:'Cinzel Decorative',serif;font-size:2.6em;float:left;
   line-height:0.85;padding:0.05em 0.12em 0 0;color:#B03030;}
 em{font-style:italic;color:#5a4630;}
-.small-note{font-family:'MedievalSharp',cursive;font-size:0.8rem;color:#A89070;text-align:center;}
+.small-note{font-family:'MedievalSharp',cursive;font-size:0.82rem;color:#A89070;text-align:center;}
+.space-above{margin-top:1.4rem;}
+.space-below{margin-bottom:1.4rem;}
 
-/* image plates — replace these divs with <img class="plate-img" src="..."> */
+/* ===== THE LOGO =====
+   rc-logo.png must sit in this same pages folder.
+   .logo-red   = the PNG as it is (red), for inside pages
+   .logo-cream = the same PNG re-tinted cream by a colour filter, for the covers */
+.logo-red{display:block;margin:0 auto 0.7rem;width:36%;max-width:170px;height:auto;}
+.logo-cream{display:block;margin:0 auto 0.9rem;width:46%;max-width:230px;height:auto;
+  filter:grayscale(1) brightness(1.8) sepia(1);}
+.logo-cream.missing{filter:none;border:2px dashed rgba(232,206,150,0.55);
+  border-radius:50%;aspect-ratio:820/780;}
+
+/* ===== IMAGES ===== */
+.img-full{display:block;width:100%;height:auto;margin:0.6rem 0 0.9rem;
+  border:4px solid #fffdf5;box-shadow:0 2px 8px rgba(59,47,32,0.3);}
+.img-left{float:left;width:46%;height:auto;margin:0.25rem 1rem 0.5rem 0;
+  border:4px solid #fffdf5;box-shadow:0 2px 8px rgba(59,47,32,0.3);}
+.img-right{float:right;width:46%;height:auto;margin:0.25rem 0 0.5rem 1rem;
+  border:4px solid #fffdf5;box-shadow:0 2px 8px rgba(59,47,32,0.3);}
+.plate-caption{font-family:'MedievalSharp',cursive;font-size:0.8rem;color:#8A7344;
+  text-align:center;margin:-0.4rem 0 0.9rem;clear:both;}
 .plate{border:1px dashed rgba(176,48,48,0.45);background:rgba(196,160,78,0.08);
   padding:1.2rem 0.8rem;margin:0.6rem 0 0.9rem;text-align:center;}
 .plate .small-note{color:#8A7344;}
-.plate-img{display:block;width:100%;height:auto;margin:0.6rem 0 0.9rem;
-  border:4px solid #fffdf5;box-shadow:0 2px 8px rgba(59,47,32,0.3);}
-.plate-caption{font-family:'MedievalSharp',cursive;font-size:0.78rem;color:#8A7344;
-  text-align:center;margin-top:-0.5rem;margin-bottom:0.8rem;}
 
 /* the realms list */
-.realm{margin-bottom:0.65rem;}
-.realm-name{font-family:'Cinzel',serif;font-weight:700;font-size:0.92rem;
+.realm{margin-bottom:0.7rem;}
+.realm-name{font-family:'Cinzel',serif;font-weight:700;font-size:0.95rem;
   letter-spacing:0.08em;color:#8A7344;}
 .realm-name .rc-dot{color:#B03030;}
-.realm p{margin:0.1rem 0 0;font-size:clamp(0.88rem,1.7vw,1.02rem);line-height:1.55;}
+.realm p{margin:0.1rem 0 0;font-size:clamp(0.9rem,1.7vw,1.06rem);line-height:1.55;}
 
 /* letter-writing desk (contact) */
 .seal-link{display:block;width:150px;margin:1.1rem auto;padding:0.7rem 0;text-align:center;
@@ -98,15 +139,15 @@ em{font-style:italic;color:#5a4630;}
   border:2px solid rgba(196,160,78,0.55);outline:1px solid rgba(196,160,78,0.25);
   outline-offset:-10px;margin:14px;height:calc(100% - 28px);}
 .cover-title{font-family:'Cinzel Decorative',serif;font-weight:700;
-  font-size:clamp(1.3rem,3.4vw,2rem);letter-spacing:0.12em;color:#E8CE96;
-  text-shadow:0 2px 6px rgba(0,0,0,0.5);margin:1rem 0 0.4rem;}
+  font-size:clamp(1.4rem,3.4vw,2.2rem);letter-spacing:0.12em;color:#E8CE96;
+  text-shadow:0 2px 6px rgba(0,0,0,0.5);margin:0.8rem 0 0.4rem;}
 .cover-sub{font-family:'Cormorant Garamond',serif;font-style:italic;
-  font-size:clamp(0.9rem,2vw,1.1rem);color:rgba(232,206,150,0.75);}
-.cover .ornament{width:96px;height:96px;margin-bottom:0.5rem;}
+  font-size:clamp(0.95rem,2vw,1.2rem);color:rgba(232,206,150,0.75);}
 
 @media(max-width:600px){
   .page-inner{padding:1.1rem 1rem;}
   p{text-align:left;}
+  .img-left,.img-right{float:none;width:100%;margin:0.6rem 0 0.9rem;}
 }
 </style>
 </head>
@@ -120,25 +161,10 @@ em{font-style:italic;color:#5a4630;}
 <div class="stage">
   <div id="book">
 
-    <!-- ================================================================
-         HOW THIS BOOK WORKS (a note from Fable to Caran)
-         Every <div class="page"> below is one page of the book.
-         To ADD a page: copy a whole page div (from <div class="page">
-         to its closing </div>) and paste it before the back cover.
-         To ADD an image: replace a <div class="plate">...</div> block
-         with:  <img class="plate-img" src="images/yourphoto.jpg" alt="...">
-                <div class="plate-caption">your caption</div>
-         Heavy files (music, PDFs) live on files.rcprojects.net and are
-         simply linked, like the thesis example on the contact page.
-         ================================================================ -->
-
     <!-- ========== FRONT COVER (hard) ========== -->
     <div class="page cover" data-density="hard">
       <div class="page-inner">
-        <svg class="ornament" viewBox="0 0 100 100">
-          <path d="M50 8 C 78 6, 96 30, 92 55 C 88 82, 60 96, 36 90 C 12 84, 2 58, 10 36 C 16 19, 30 9, 46 8"
-                fill="none" stroke="#E8CE96" stroke-width="6" stroke-linecap="round" opacity="0.9"/>
-        </svg>
+        <img class="logo-cream" src="rc-logo.png" alt="">
         <div class="cover-title">THE RED CIRCLE</div>
         <div class="cover-sub">the story of a mark</div>
       </div>
@@ -148,16 +174,12 @@ em{font-style:italic;color:#5a4630;}
     <div class="page">
       <div class="page-inner">
         <div style="margin:auto 0;text-align:center;">
-          <svg class="ornament" viewBox="0 0 100 100">
-            <path d="M50 8 C 78 6, 96 30, 92 55 C 88 82, 60 96, 36 90 C 12 84, 2 58, 10 36 C 16 19, 30 9, 46 8"
-                  fill="none" stroke="#B03030" stroke-width="6" stroke-linecap="round"/>
-          </svg>
+          <img class="logo-red" src="rc-logo.png" alt="The Red Circle">
           <h2 style="margin-bottom:0.4rem;">The Red Circle</h2>
-          <p style="text-align:center;font-style:italic;">Not a brand. A compass.<br>
+          <p class="centered" style="font-style:italic;">Not a brand. A compass.<br>
           A promise that somewhere beneath the noise,<br>there is meaning.</p>
-          <p class="small-note" style="margin-top:2rem;">~ drag a corner, or click the page edge, to turn ~</p>
+          <p class="small-note space-above">~ drag a corner, or click the page edge, to turn ~</p>
         </div>
-        <div class="page-num">i</div>
       </div>
     </div>
 
@@ -177,12 +199,12 @@ em{font-style:italic;color:#5a4630;}
       <div class="page-inner">
         <div class="plate">
           <div class="small-note">[ a picture will live here ]</div>
-          <div class="small-note">replace this box with an &lt;img class="plate-img"&gt; — see the note at the top of this file</div>
+          <div class="small-note">replace this box with an &lt;img class="img-full"&gt; — see the legend at the top of this file</div>
         </div>
         <div class="plate">
           <div class="small-note">[ and perhaps a second one here ]</div>
         </div>
-        <p style="font-style:italic;text-align:center;">Captions in your own hand go beneath each picture.</p>
+        <p class="centered" style="font-style:italic;">Captions in your own hand go beneath each picture.</p>
         <div class="page-num">2</div>
       </div>
     </div>
@@ -218,13 +240,13 @@ em{font-style:italic;color:#5a4630;}
     <!-- ========== PAGE 6 : THE REALMS (part two) ========== -->
     <div class="page">
       <div class="page-inner">
-        <div class="realm" style="margin-top:1rem;"><div class="realm-name"><span class="rc-dot">&#9679;</span> EDGEWOOD</div>
+        <div class="realm space-above"><div class="realm-name"><span class="rc-dot">&#9679;</span> EDGEWOOD</div>
           <p>Five regions, thirty characters — a fictional world built over a lifetime, soon to become a book, now rising in Unreal Engine.</p></div>
         <div class="realm"><div class="realm-name"><span class="rc-dot">&#9679;</span> THE COMPANION</div>
           <p>The bridge between the two worlds — and the story of an intelligence that listens, truly listens.</p></div>
         <div class="realm"><div class="realm-name"><span class="rc-dot">&#9679;</span> THE FOREST</div>
           <p>Still growing. Something will take root there soon.</p></div>
-        <p class="small-note" style="margin-top:1.6rem;">Cross the river on the map to walk between the real and the imagined.</p>
+        <p class="small-note space-above">Cross the river on the map to walk between the real and the imagined.</p>
         <div class="page-num">5</div>
       </div>
     </div>
@@ -234,14 +256,14 @@ em{font-style:italic;color:#5a4630;}
       <div class="page-inner">
         <div class="chapter-label">chapter four</div>
         <h2>Write to Me</h2>
-        <p style="text-align:center;">Letters are welcome at this desk.<br>Press the seal, and one will begin itself.</p>
+        <p class="centered">Letters are welcome at this desk.<br>Press the seal, and one will begin itself.</p>
         <a class="seal-link" id="sealMail" href="#">WRITE</a>
-        <p style="text-align:center;font-size:0.95rem;">
+        <p class="centered" style="font-size:0.98rem;">
           Or find me at
           <a class="ext-link" href="https://www.linkedin.com" target="_blank" rel="noopener">LinkedIn</a>
           <!-- ^ replace with your real LinkedIn profile URL -->
         </p>
-        <p class="small-note" style="margin-top:0.6rem;">
+        <p class="small-note space-above">
           <!-- Example of a heavy-file link once files.rcprojects.net is ready:
           <a class="ext-link" href="https://files.rcprojects.net/thesis.pdf">read the thesis</a> -->
         </p>
@@ -253,7 +275,7 @@ em{font-style:italic;color:#5a4630;}
     <div class="page">
       <div class="page-inner">
         <div style="margin:auto 0;text-align:center;">
-          <p style="text-align:center;font-style:italic;">This book was begun in July 2026,<br>
+          <p class="centered" style="font-style:italic;">This book was begun in July 2026,<br>
           ten years after its address was first promised.</p>
           <p class="small-note">rcprojects.net</p>
         </div>
@@ -266,10 +288,7 @@ em{font-style:italic;color:#5a4630;}
     <!-- ========== BACK COVER (hard) ========== -->
     <div class="page cover" data-density="hard">
       <div class="page-inner">
-        <svg class="ornament" viewBox="0 0 100 100" style="width:56px;height:56px;">
-          <path d="M50 8 C 78 6, 96 30, 92 55 C 88 82, 60 96, 36 90 C 12 84, 2 58, 10 36 C 16 19, 30 9, 46 8"
-                fill="none" stroke="#E8CE96" stroke-width="6" stroke-linecap="round" opacity="0.8"/>
-        </svg>
+        <img class="logo-cream" src="rc-logo.png" alt="" style="width:26%;max-width:110px;opacity:0.85;">
         <div class="cover-sub">rcprojects.net</div>
       </div>
     </div>
@@ -279,25 +298,68 @@ em{font-style:italic;color:#5a4630;}
 
 <script>
 // ============================================================
-// SETTINGS — the two lines you may want to edit
+// SETTINGS — the lines you may want to edit
 // ============================================================
 var MUSIC_URL = '';   // e.g. 'https://files.rcprojects.net/music/red-circle.mp3'
 var MUSIC_VOLUME = 0.22;
+var BOOK_FILL = 0.94; // how much of the window height the book uses (0.85–0.98)
 
 // ============================================================
-// THE BOOK
+// SIZE THE BOOK TO THE WINDOW, THEN BUILD IT
 // ============================================================
+var PAGE_RATIO = 0.72; // page width : height, like a real hardback
+
+function fitBook() {
+  var availH = window.innerHeight - 56 - 14;         // minus the top bar and a breath
+  var pageH = availH * BOOK_FILL;
+  var pageW = pageH * PAGE_RATIO;
+  var el = document.getElementById('book');
+  if (window.innerWidth < 620) {                     // phones: one page wide
+    el.style.width = Math.min(pageW, window.innerWidth * 0.96) + 'px';
+  } else {                                           // desktops: the open spread
+    el.style.width = Math.min(pageW * 2, window.innerWidth * 0.97) + 'px';
+  }
+}
+fitBook();
+window.addEventListener('resize', fitBook);
+
 var pageFlip = new St.PageFlip(document.getElementById('book'), {
-  width: 480, height: 660,
+  width: 560, height: 778,
   size: 'stretch',
-  minWidth: 280, maxWidth: 560,
-  minHeight: 420, maxHeight: 740,
+  minWidth: 260, maxWidth: 900,
+  minHeight: 360, maxHeight: 1250,
   showCover: true,
   usePortrait: true,
   maxShadowOpacity: 0.5,
   mobileScrollSupport: false
 });
 pageFlip.loadFromHTML(document.querySelectorAll('.page'));
+
+// Some browsers hand the book slightly wrong measurements at birth;
+// once everything has loaded, nudge it with a synthetic resize so it
+// takes its full size without anyone touching the window.
+window.addEventListener('load', function () {
+  fitBook();
+  window.dispatchEvent(new Event('resize'));
+  setTimeout(function () {
+    fitBook();
+    window.dispatchEvent(new Event('resize'));
+  }, 500);
+});
+
+// If rc-logo.png is not found beside this file (e.g. when previewing
+// the html alone), show a dashed circle on the covers instead of nothing.
+(function () {
+  var probe = new Image();
+  probe.onerror = function () {
+    var els = document.querySelectorAll('.logo-cream');
+    for (var i = 0; i < els.length; i++) {
+      els[i].className += ' missing';
+      els[i].src = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
+    }
+  };
+  probe.src = 'rc-logo.png';
+})();
 
 // ============================================================
 // SOUND — page-turn is synthesised (no audio file needed);
