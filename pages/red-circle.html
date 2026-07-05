@@ -8,8 +8,9 @@
 <script src="https://unpkg.com/page-flip@2.0.7/dist/js/page-flip.browser.js"></script>
 <style>
 /* ============================================================
-   THE RED CIRCLE — a book, not a webpage. 
-   Parchment #F3EACD  · ink #3B2F20  · gold #C4A04E · red #B03030
+   The Red Circle — one volume in the library of rcprojects.net
+   Cover leather #4A1717 · pages #F3EACD · emblem rc-logo.png
+   Shared across the library: gold #C4A04E, ink #3B2F20, red #B03030
    ============================================================
 
    CARAN'S EDITING LEGEND — what does what:
@@ -32,9 +33,14 @@
    <img class="img-right" src="myphoto.jpg" alt="">    right, text wraps round it
    <div class="plate-caption">caption text</div>        caption under any image
 
-   PAGES
+   PAGES, CHAPTERS AND THE CONTENTS
    One page = one <div class="page"> ... </div> block.
    To add a page: copy a whole block, paste it before the back cover.
+   To make a page a CHAPTER (so it appears in the Contents):
+   give its opening div a title, like
+       <div class="page" data-title="AI and I">
+   Page numbers and the Contents write THEMSELVES every time the
+   book opens — insert or reorder pages freely, nothing breaks.
    Keep the number of inner pages EVEN so spreads pair up nicely.
    ============================================================ */
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -72,8 +78,16 @@ body{
 }
 .page-inner{height:100%;padding:clamp(1.4rem,4.5%,2.8rem) clamp(1.2rem,5%,2.6rem);
   display:flex;flex-direction:column;overflow:hidden;}
-.page-num{margin-top:auto;padding-top:0.6rem;text-align:center;
-  font-family:'Cinzel',serif;font-size:0.82rem;letter-spacing:0.3em;color:#8A7344;}
+
+/* footer: centred folio + quiet Contents return in the corner.
+   Both are inset well clear of the draggable page corner, and both
+   politely keep their clicks away from the flip engine. */
+.page-foot{margin-top:auto;padding-top:0.6rem;position:relative;text-align:center;}
+.page-num{font-family:'Cinzel',serif;font-size:0.82rem;letter-spacing:0.3em;color:#8A7344;
+  text-decoration:none;cursor:pointer;}
+.toc-return{position:absolute;right:0;bottom:0;font-family:'MedievalSharp',cursive;
+  font-size:0.78rem;color:#A89070;text-decoration:none;cursor:pointer;transition:color .3s;}
+.toc-return:hover{color:#B03030;}
 
 /* chapter furniture */
 .chapter-label{font-family:'MedievalSharp',cursive;font-size:0.9rem;color:#8A7344;
@@ -89,15 +103,37 @@ em{font-style:italic;color:#5a4630;}
 .space-above{margin-top:1.4rem;}
 .space-below{margin-bottom:1.4rem;}
 
-/* ===== THE LOGO =====
-   rc-logo.png must sit in this same pages folder.
-   .logo-red   = the PNG as it is (red), for inside pages
-   .logo-cream = the same PNG re-tinted cream by a colour filter, for the covers */
-.logo-red{display:block;margin:0 auto 0.7rem;width:36%;max-width:170px;height:auto;}
-.logo-cream{display:block;margin:0 auto 0.9rem;width:46%;max-width:230px;height:auto;
-  filter:grayscale(1) brightness(1.4) sepia(1) saturate(1.3) opacity(0.9);}
-.logo-cream.missing{filter:none;border:2px dashed rgba(232,206,150,0.55);
-  border-radius:50%;aspect-ratio:820/780;}
+/* ===== THE ENDPAPER (identity + Contents) ===== */
+.ep-head{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;
+  margin-bottom:1.2rem;}
+.ep-ident{text-align:center;flex:0 0 auto;max-width:38%;}
+.ep-emblem{display:block;width:72px;max-width:100%;height:auto;margin:0 auto 0.35rem;}
+.ep-name{font-family:'Cinzel',serif;font-weight:700;font-size:0.92rem;
+  letter-spacing:0.1em;color:#B03030;}
+.ep-epigraph{font-style:italic;text-align:right;color:#5a4630;
+  font-size:clamp(0.9rem,1.7vw,1.05rem);line-height:1.65;max-width:58%;padding-top:0.4rem;}
+.toc-heading{margin-top:0.4rem;}
+.toc{display:flex;flex-direction:column;gap:0.55rem;}
+.toc-row{display:flex;align-items:baseline;text-decoration:none;color:#3B2F20;
+  font-size:clamp(0.95rem,1.8vw,1.12rem);cursor:pointer;}
+.toc-row:hover .toc-title{color:#B03030;}
+.toc-title{font-family:'Cormorant Garamond',serif;transition:color .25s;}
+.toc-dots{flex:1;border-bottom:2px dotted #A89070;margin:0 0.5rem;transform:translateY(-4px);}
+.toc-num{font-family:'Cinzel',serif;font-size:0.85em;color:#8A7344;}
+.ep-note{margin-top:auto;padding-top:0.6rem;}
+
+/* ===== EMBLEM TINTS =====
+   .emb-gold  = as painted (no filter) — region covers
+   .emb-cream = tinted to cover-cream — the Red Circle on covers/backs
+   .emb-red   = tinted to library red — endpaper emblems
+   (in emb-red, the LAST brightness number is the dial:
+    lower = deeper red, higher = brighter) */
+.emb-cream{filter:grayscale(1) brightness(1.2) sepia(1) saturate(1.3) opacity(0.9);}
+.emb-red{filter:brightness(0) invert(0.2) sepia(1) saturate(30) brightness(0.69);}
+.logo-cover{display:block;margin:0 auto 0.9rem;width:52%;max-width:250px;height:auto;}
+.logo-back{display:block;margin:0 auto 0.6rem;width:30%;max-width:120px;height:auto;}
+.logo-cover.missing{border:2px dashed rgba(232,206,150,0.55);
+  border-radius:50%;aspect-ratio:1/1;}
 
 /* ===== IMAGES ===== */
 .img-full{display:block;width:100%;height:auto;margin:0.6rem 0 0.9rem;
@@ -112,14 +148,14 @@ em{font-style:italic;color:#5a4630;}
   padding:1.2rem 0.8rem;margin:0.6rem 0 0.9rem;text-align:center;}
 .plate .small-note{color:#8A7344;}
 
-/* the realms list */
+/* the realms list (Red Circle book) */
 .realm{margin-bottom:0.7rem;}
 .realm-name{font-family:'Cinzel',serif;font-weight:700;font-size:0.95rem;
   letter-spacing:0.08em;color:#8A7344;}
 .realm-name .rc-dot{color:#B03030;}
 .realm p{margin:0.1rem 0 0;font-size:clamp(0.9rem,1.7vw,1.06rem);line-height:1.55;}
 
-/* letter-writing desk (contact) */
+/* letter-writing desk (Red Circle book) */
 .seal-link{display:block;width:150px;margin:1.1rem auto;padding:0.7rem 0;text-align:center;
   font-family:'Cinzel',serif;font-size:0.85rem;letter-spacing:0.18em;color:#F3EACD;
   background:radial-gradient(circle at 35% 30%, #c94040, #B03030 55%, #7d1f1f);
@@ -133,8 +169,8 @@ em{font-style:italic;color:#5a4630;}
 .cover{
   background:
     radial-gradient(ellipse at 50% 35%, rgba(196,160,78,0.14), transparent 65%),
-    linear-gradient(135deg, #5e1f1f 0%, #4a1717 45%, #351010 100%);
-  color:#F3EACD;border:1px solid #2c0d0d;}
+    linear-gradient(135deg, #5F1D1D 0%, #4A1717 45%, #351111 100%);
+  color:#F3EACD;border:1px solid #250C0C;}
 .cover .page-inner{align-items:center;justify-content:center;text-align:center;
   border:2px solid rgba(196,160,78,0.55);outline:1px solid rgba(196,160,78,0.25);
   outline-offset:-10px;margin:14px;height:calc(100% - 28px);}
@@ -148,6 +184,9 @@ em{font-style:italic;color:#5a4630;}
   .page-inner{padding:1.1rem 1rem;}
   p{text-align:left;}
   .img-left,.img-right{float:none;width:100%;margin:0.6rem 0 0.9rem;}
+  .ep-head{flex-direction:column;align-items:center;}
+  .ep-ident{max-width:100%;}
+  .ep-epigraph{max-width:100%;text-align:center;padding-top:0;}
 }
 </style>
 </head>
@@ -164,37 +203,40 @@ em{font-style:italic;color:#5a4630;}
     <!-- ========== FRONT COVER (hard) ========== -->
     <div class="page cover" data-density="hard">
       <div class="page-inner">
-        <img class="logo-cream" src="rc-logo.png" alt="">
+        <img class="logo-cover emb-cream" src="rc-logo.png" alt="">
         <div class="cover-title">THE RED CIRCLE</div>
         <div class="cover-sub">the story of a mark</div>
       </div>
     </div>
 
-    <!-- ========== PAGE 1 : TITLE PAGE ========== -->
+    <!-- ========== ENDPAPER : identity + Contents (back of front cover) ========== -->
     <div class="page">
-      <div class="page-inner">
-        <div style="margin:auto 0;text-align:center;">
-          <img class="logo-red" src="rc-logo.png" alt="The Red Circle">
-          <h2 style="margin-bottom:0.4rem;">The Red Circle</h2>
-          <p class="centered" style="font-style:italic;">Not a brand. A compass.<br>
-          A promise that somewhere beneath the noise,<br>there is meaning.</p>
-          <p class="small-note space-above">~ drag a corner, or click the page edge, to turn ~</p>
+      <div class="page-inner endpaper">
+        <div class="ep-head">
+          <div class="ep-ident">
+            <img class="ep-emblem" src="rc-logo.png" alt="">
+            <div class="ep-name">The Red Circle</div>
+          </div>
+          <div class="ep-epigraph">Not a brand. A compass.<br>A promise that somewhere beneath the noise,<br>there is meaning.</div>
         </div>
+        <h2 class="toc-heading">Contents</h2>
+        <nav class="toc" id="tocList"></nav>
+        <p class="small-note ep-note">~ drag a corner, or click the page edge, to turn ~</p>
       </div>
     </div>
 
-    <!-- ========== PAGE 2 : CHAPTER I — THE ORIGIN OF THE NAME ========== -->
-    <div class="page">
+    <!-- ========== CHAPTER I : THE ORIGIN OF THE NAME ========== -->
+    <div class="page" data-title="The Origin of the Name">
       <div class="page-inner">
         <div class="chapter-label">chapter one</div>
         <h2>The Origin of the Name</h2>
         <p class="first">Write the true story here, in your own voice — the moment, at the age of ten, when the Red Circle first appeared, and why it never left. This placeholder text is only holding the page warm for you. Replace every word of it; the book is patient.</p>
         <p>A second paragraph can carry the story onward — what the mark meant then, and what it has come to mean across the decades since.</p>
-        <div class="page-num">1</div>
+        <div class="page-foot"><a class="page-num"></a><a class="toc-return">Contents</a></div>
       </div>
     </div>
 
-    <!-- ========== PAGE 3 : ORIGIN — THE PICTURES ========== -->
+    <!-- ========== THE PICTURES ========== -->
     <div class="page">
       <div class="page-inner">
         <div class="plate">
@@ -205,23 +247,23 @@ em{font-style:italic;color:#5a4630;}
           <div class="small-note">[ and perhaps a second one here ]</div>
         </div>
         <p class="centered" style="font-style:italic;">Captions in your own hand go beneath each picture.</p>
-        <div class="page-num">2</div>
+        <div class="page-foot"><a class="page-num"></a><a class="toc-return">Contents</a></div>
       </div>
     </div>
 
-    <!-- ========== PAGE 4 : CHAPTER II — WHO I AM ========== -->
-    <div class="page">
+    <!-- ========== CHAPTER II : WHO I AM ========== -->
+    <div class="page" data-title="Who I Am">
       <div class="page-inner">
         <div class="chapter-label">chapter two</div>
         <h2>Who I Am</h2>
         <p class="first">Your brief history goes here — psychologist, teacher of mathematics, doctor of informatics, painter, writer of worlds. Tell it as a story, not a list; the Lectern will hold the formal record, this page holds the person.</p>
         <p><em>The full, formal curriculum vitae lives in The Lectern — this page is only the heart of it.</em></p>
-        <div class="page-num">3</div>
+        <div class="page-foot"><a class="page-num"></a><a class="toc-return">Contents</a></div>
       </div>
     </div>
 
-    <!-- ========== PAGE 5 : CHAPTER III — THE REALMS (part one) ========== -->
-    <div class="page">
+    <!-- ========== CHAPTER III : WHAT THE MAP HOLDS (part one) ========== -->
+    <div class="page" data-title="What the Map Holds">
       <div class="page-inner">
         <div class="chapter-label">chapter three</div>
         <h2>What the Map Holds</h2>
@@ -233,11 +275,11 @@ em{font-style:italic;color:#5a4630;}
           <p>Murals, gardens, and things made by hand — where imagination meets the physical world.</p></div>
         <div class="realm"><div class="realm-name"><span class="rc-dot">&#9679;</span> THE PONDERING</div>
           <p>A quiet place by the water, for thoughts on how the world ought to be.</p></div>
-        <div class="page-num">4</div>
+        <div class="page-foot"><a class="page-num"></a><a class="toc-return">Contents</a></div>
       </div>
     </div>
 
-    <!-- ========== PAGE 6 : THE REALMS (part two) ========== -->
+    <!-- ========== THE REALMS (part two) ========== -->
     <div class="page">
       <div class="page-inner">
         <div class="realm space-above"><div class="realm-name"><span class="rc-dot">&#9679;</span> EDGEWOOD</div>
@@ -247,12 +289,12 @@ em{font-style:italic;color:#5a4630;}
         <div class="realm"><div class="realm-name"><span class="rc-dot">&#9679;</span> THE FOREST</div>
           <p>Still growing. Something will take root there soon.</p></div>
         <p class="small-note space-above">Cross the river on the map to walk between the real and the imagined.</p>
-        <div class="page-num">5</div>
+        <div class="page-foot"><a class="page-num"></a><a class="toc-return">Contents</a></div>
       </div>
     </div>
 
-    <!-- ========== PAGE 7 : CHAPTER IV — WRITE TO ME ========== -->
-    <div class="page">
+    <!-- ========== CHAPTER IV : WRITE TO ME ========== -->
+    <div class="page" data-title="Write to Me">
       <div class="page-inner">
         <div class="chapter-label">chapter four</div>
         <h2>Write to Me</h2>
@@ -263,32 +305,28 @@ em{font-style:italic;color:#5a4630;}
           <a class="ext-link" href="https://www.linkedin.com" target="_blank" rel="noopener">LinkedIn</a>
           <!-- ^ replace with your real LinkedIn profile URL -->
         </p>
-        <p class="small-note space-above">
-          <!-- Example of a heavy-file link once files.rcprojects.net is ready:
-          <a class="ext-link" href="https://files.rcprojects.net/thesis.pdf">read the thesis</a> -->
-        </p>
-        <div class="page-num">6</div>
+        <div class="page-foot"><a class="page-num"></a><a class="toc-return">Contents</a></div>
       </div>
     </div>
 
-    <!-- ========== PAGE 8 : COLOPHON ========== -->
+    <!-- ========== COLOPHON ========== -->
     <div class="page">
       <div class="page-inner">
-        <div style="margin:auto 0;text-align:center;">
+        <div style="margin:auto 0 0;text-align:center;">
           <p class="centered" style="font-style:italic;">This book was begun in July 2026,<br>
           ten years after its address was first promised.</p>
           <p class="small-note">rcprojects.net</p>
         </div>
-        <div class="page-num">7</div>
+        <div class="page-foot"><a class="page-num"></a><a class="toc-return">Contents</a></div>
       </div>
     </div>
 
     <!-- To add more pages, paste copies of a page div HERE, before the back cover. -->
 
-    <!-- ========== BACK COVER (hard) ========== -->
+    <!-- ========== BACK COVER (hard) — the library's shared mark ========== -->
     <div class="page cover" data-density="hard">
       <div class="page-inner">
-        <img class="logo-cream" src="rc-logo.png" alt="" style="width:26%;max-width:110px;opacity:0.85;">
+        <img class="logo-back emb-cream" src="rc-logo.png" alt="">
         <div class="cover-sub">rcprojects.net</div>
       </div>
     </div>
@@ -302,7 +340,8 @@ em{font-style:italic;color:#5a4630;}
 // ============================================================
 var MUSIC_URL = '';   // e.g. 'https://files.rcprojects.net/music/red-circle.mp3'
 var MUSIC_VOLUME = 0.22;
-var BOOK_FILL = 0.94; // how much of the window height the book uses (0.85–0.98)
+var BOOK_FILL = 0.94; // how much of the window height the book uses (0.85-0.98)
+var EMBLEM_FILE = 'rc-logo.png';
 
 // ============================================================
 // SIZE THE BOOK TO THE WINDOW, THEN BUILD IT
@@ -310,18 +349,20 @@ var BOOK_FILL = 0.94; // how much of the window height the book uses (0.85–0.9
 var PAGE_RATIO = 0.72; // page width : height, like a real hardback
 
 function fitBook() {
-  var availH = window.innerHeight - 56 - 14;         // minus the top bar and a breath
+  var availH = window.innerHeight - 56 - 14;
   var pageH = availH * BOOK_FILL;
   var pageW = pageH * PAGE_RATIO;
   var el = document.getElementById('book');
-  if (window.innerWidth < 620) {                     // phones: one page wide
+  if (window.innerWidth < 620) {
     el.style.width = Math.min(pageW, window.innerWidth * 0.96) + 'px';
-  } else {                                           // desktops: the open spread
+  } else {
     el.style.width = Math.min(pageW * 2, window.innerWidth * 0.97) + 'px';
   }
 }
 fitBook();
 window.addEventListener('resize', fitBook);
+
+var pageEls = Array.prototype.slice.call(document.querySelectorAll('.page'));
 
 var pageFlip = new St.PageFlip(document.getElementById('book'), {
   width: 560, height: 778,
@@ -333,11 +374,58 @@ var pageFlip = new St.PageFlip(document.getElementById('book'), {
   maxShadowOpacity: 0.5,
   mobileScrollSupport: false
 });
-pageFlip.loadFromHTML(document.querySelectorAll('.page'));
+pageFlip.loadFromHTML(pageEls);
 
-// Some browsers hand the book slightly wrong measurements at birth;
-// once everything has loaded, nudge it with a synthetic resize so it
-// takes its full size without anyone touching the window.
+// ============================================================
+// THE BOOK NUMBERS ITSELF — folios and the Contents are computed
+// fresh every time the book opens. Front matter (cover, endpaper)
+// is unnumbered; page 1 falls on the first chapter, as in real books.
+// ============================================================
+var ENDPAPER_INDEX = 1;
+
+(function () {
+  function guard(el, action) {
+    var evs = ['pointerdown', 'mousedown', 'touchstart'];
+    for (var i = 0; i < evs.length; i++) {
+      el.addEventListener(evs[i], function (e) { e.stopPropagation(); });
+    }
+    el.addEventListener('click', function (e) {
+      e.preventDefault(); e.stopPropagation(); action();
+    });
+  }
+
+  var chapters = [];
+  for (var i = ENDPAPER_INDEX + 1; i < pageEls.length - 1; i++) {
+    var folio = i - ENDPAPER_INDEX;
+    var numEl = pageEls[i].querySelector('.page-num');
+    if (numEl) numEl.textContent = folio;
+    var t = pageEls[i].getAttribute('data-title');
+    if (t) chapters.push({ title: t, idx: i, folio: folio });
+  }
+
+  var toc = document.getElementById('tocList');
+  if (toc) {
+    for (var c = 0; c < chapters.length; c++) {
+      (function (ch, n) {
+        var row = document.createElement('a');
+        row.className = 'toc-row';
+        row.innerHTML = '<span class="toc-title">' + n + '.&nbsp; ' + ch.title +
+          '</span><span class="toc-dots"></span><span class="toc-num">' + ch.folio + '</span>';
+        guard(row, function () { pageFlip.flip(ch.idx); });
+        toc.appendChild(row);
+      })(chapters[c], c + 1);
+    }
+  }
+
+  // the way back: the corner word, and (secretly) the folio itself
+  var returns = document.querySelectorAll('.toc-return, .page-num');
+  for (var r = 0; r < returns.length; r++) {
+    guard(returns[r], function () { pageFlip.flip(ENDPAPER_INDEX); });
+  }
+})();
+
+// Nudge the book once everything has loaded so it takes its full
+// size without anyone touching the window.
 window.addEventListener('load', function () {
   fitBook();
   window.dispatchEvent(new Event('resize'));
@@ -347,18 +435,18 @@ window.addEventListener('load', function () {
   }, 500);
 });
 
-// If rc-logo.png is not found beside this file (e.g. when previewing
-// the html alone), show a dashed circle on the covers instead of nothing.
+// If the emblem file is not found beside this file, show a dashed
+// circle on the cover instead of nothing.
 (function () {
   var probe = new Image();
   probe.onerror = function () {
-    var els = document.querySelectorAll('.logo-cream');
+    var els = document.querySelectorAll('.logo-cover');
     for (var i = 0; i < els.length; i++) {
       els[i].className += ' missing';
       els[i].src = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
     }
   };
-  probe.src = 'rc-logo.png';
+  probe.src = EMBLEM_FILE;
 })();
 
 // ============================================================
@@ -414,6 +502,12 @@ toggleBtn.addEventListener('click', function () {
   if (music) { soundOn ? music.play().catch(function(){}) : music.pause(); }
 });
 
+// Keyboard page turns
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'ArrowRight') pageFlip.flipNext();
+  if (e.key === 'ArrowLeft') pageFlip.flipPrev();
+});
+
 // ============================================================
 // CONTACT — the address is assembled here so spam robots
 // scraping the HTML never see it whole.
@@ -422,17 +516,13 @@ toggleBtn.addEventListener('click', function () {
   var a = 'hello', b = 'rcprojects', c = 'net';
   var addr = a + '@' + b + '.' + c;
   var link = document.getElementById('sealMail');
+  var evs = ['pointerdown','mousedown','touchstart'];
+  for (var i = 0; i < evs.length; i++) link.addEventListener(evs[i], function (e) { e.stopPropagation(); });
   link.addEventListener('click', function (ev) {
-    ev.preventDefault();
+    ev.preventDefault(); ev.stopPropagation();
     window.location.href = 'mail' + 'to:' + addr + '?subject=' + encodeURIComponent('A letter from the map');
   });
 })();
-
-// Keyboard page turns
-document.addEventListener('keydown', function (e) {
-  if (e.key === 'ArrowRight') pageFlip.flipNext();
-  if (e.key === 'ArrowLeft') pageFlip.flipPrev();
-});
 </script>
 </body>
 </html>

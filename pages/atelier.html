@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Atelier — RC Projects</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@400;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=MedievalSharp&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/page-flip@2.0.7/dist/js/page-flip.browser.js"></script>
+<style>
+/* ============================================================
+   The Atelier — one volume in the library of rcprojects.net
+   Cover leather #7A3B22 · pages #F6E9CF · emblem rc-atelier.png
+   Shared across the library: gold #C4A04E, ink #3B2F20, red #B03030
+   ============================================================
+
+   CARAN'S EDITING LEGEND — what does what:
+
+   TEXT
+   <p>...</p>                      one paragraph (justified by default)
+   <p class="centered">            centred paragraph
+   <p class="first">               paragraph with the big red drop capital
+   <br>                            line break inside a paragraph
+   <em>...</em>                    italics
+
+   SPACING  (add to any element as class="...")
+   class="space-above"             adds a gap before it
+   class="space-below"             adds a gap after it
+   or fine-tune by hand:  style="margin-bottom:1.5rem"  (any number)
+
+   IMAGES  (upload pictures into the pages folder, then:)
+   <img class="img-full"  src="myphoto.jpg" alt="">    full width
+   <img class="img-left"  src="myphoto.jpg" alt="">    left, text wraps round it
+   <img class="img-right" src="myphoto.jpg" alt="">    right, text wraps round it
+   <div class="plate-caption">caption text</div>        caption under any image
+
+   PAGES, CHAPTERS AND THE CONTENTS
+   One page = one <div class="page"> ... </div> block.
+   To add a page: copy a whole block, paste it before the back cover.
+   To make a page a CHAPTER (so it appears in the Contents):
+   give its opening div a title, like
+       <div class="page" data-title="AI and I">
+   Page numbers and the Contents write THEMSELVES every time the
+   book opens — insert or reorder pages freely, nothing breaks.
+   Keep the number of inner pages EVEN so spreads pair up nicely.
+   ============================================================ */
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;}
+body{
+  background:radial-gradient(ellipse at 50% 40%, #3a2f21 0%, #2A2218 55%, #1c1610 100%);
+  font-family:'Cormorant Garamond',serif;color:#3B2F20;
+  overflow:hidden;
+}
+
+/* ===== TOP BAR (return + sound) ===== */
+.book-nav{position:fixed;top:0;left:0;right:0;height:44px;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;padding:0 1.2rem;
+  background:rgba(42,34,24,0.88);backdrop-filter:blur(6px);
+  border-bottom:1px solid rgba(196,160,78,0.15);}
+.back-link{font-family:'Cinzel',serif;font-size:0.75rem;letter-spacing:0.18em;
+  color:#C4A04E;text-decoration:none;transition:color .3s;}
+.back-link:hover{color:#F3EACD;}
+.sound-toggle{font-family:'Cinzel',serif;font-size:0.72rem;letter-spacing:0.14em;
+  color:#C4A04E;background:none;border:1px solid rgba(196,160,78,0.45);
+  padding:0.35rem 0.9rem;cursor:pointer;transition:all .3s;}
+.sound-toggle:hover{color:#F3EACD;border-color:#C4A04E;background:rgba(196,160,78,0.12);}
+
+/* ===== BOOK STAGE ===== */
+.stage{height:100%;display:flex;align-items:center;justify-content:center;padding:52px 6px 12px;}
+#book{filter:drop-shadow(0 18px 40px rgba(0,0,0,0.55));}
+
+/* ===== PAGES ===== */
+.page{
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(255,252,240,0.55), transparent 60%),
+    linear-gradient(105deg, rgba(59,47,32,0.06) 0%, transparent 8%, transparent 92%, rgba(59,47,32,0.10) 100%),
+    #F6E9CF;
+  color:#3B2F20;border:1px solid rgba(139,111,78,0.25);overflow:hidden;
+}
+.page-inner{height:100%;padding:clamp(1.4rem,4.5%,2.8rem) clamp(1.2rem,5%,2.6rem);
+  display:flex;flex-direction:column;overflow:hidden;}
+
+/* footer: centred folio + quiet Contents return in the corner.
+   Both are inset well clear of the draggable page corner, and both
+   politely keep their clicks away from the flip engine. */
+.page-foot{margin-top:auto;padding-top:0.6rem;position:relative;text-align:center;}
+.page-num{font-family:'Cinzel',serif;font-size:0.82rem;letter-spacing:0.3em;color:#8A7344;
+  text-decoration:none;cursor:pointer;}
+.toc-return{position:absolute;right:0;bottom:0;font-family:'MedievalSharp',cursive;
+  font-size:0.78rem;color:#A89070;text-decoration:none;cursor:pointer;transition:color .3s;}
+.toc-return:hover{color:#B03030;}
+
+/* chapter furniture */
+.chapter-label{font-family:'MedievalSharp',cursive;font-size:0.9rem;color:#8A7344;
+  text-align:center;letter-spacing:0.12em;margin-bottom:0.15rem;}
+h2{font-family:'Cinzel Decorative',serif;font-weight:700;font-size:clamp(1.1rem,2.6vw,1.55rem);
+  color:#B03030;text-align:center;letter-spacing:0.06em;margin-bottom:0.9rem;}
+p{font-size:clamp(0.98rem,1.9vw,1.18rem);line-height:1.75;margin-bottom:0.85rem;text-align:justify;}
+p.centered{text-align:center;}
+p.first::first-letter{font-family:'Cinzel Decorative',serif;font-size:2.6em;float:left;
+  line-height:0.85;padding:0.05em 0.12em 0 0;color:#B03030;}
+em{font-style:italic;color:#5a4630;}
+.small-note{font-family:'MedievalSharp',cursive;font-size:0.82rem;color:#A89070;text-align:center;}
+.space-above{margin-top:1.4rem;}
+.space-below{margin-bottom:1.4rem;}
+
+/* ===== THE ENDPAPER (identity + Contents) ===== */
+.ep-head{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;
+  margin-bottom:1.2rem;}
+.ep-ident{text-align:center;flex:0 0 auto;max-width:38%;}
+.ep-emblem{display:block;width:72px;max-width:100%;height:auto;margin:0 auto 0.35rem;}
+.ep-name{font-family:'Cinzel',serif;font-weight:700;font-size:0.92rem;
+  letter-spacing:0.1em;color:#B03030;}
+.ep-epigraph{font-style:italic;text-align:right;color:#5a4630;
+  font-size:clamp(0.9rem,1.7vw,1.05rem);line-height:1.65;max-width:58%;padding-top:0.4rem;}
+.toc-heading{margin-top:0.4rem;}
+.toc{display:flex;flex-direction:column;gap:0.55rem;}
+.toc-row{display:flex;align-items:baseline;text-decoration:none;color:#3B2F20;
+  font-size:clamp(0.95rem,1.8vw,1.12rem);cursor:pointer;}
+.toc-row:hover .toc-title{color:#B03030;}
+.toc-title{font-family:'Cormorant Garamond',serif;transition:color .25s;}
+.toc-dots{flex:1;border-bottom:2px dotted #A89070;margin:0 0.5rem;transform:translateY(-4px);}
+.toc-num{font-family:'Cinzel',serif;font-size:0.85em;color:#8A7344;}
+.ep-note{margin-top:auto;padding-top:0.6rem;}
+
+/* ===== EMBLEM TINTS =====
+   .emb-gold  = as painted (no filter) — region covers
+   .emb-cream = tinted to cover-cream — the Red Circle on covers/backs
+   .emb-red   = tinted to library red — endpaper emblems
+   (in emb-red, the LAST brightness number is the dial:
+    lower = deeper red, higher = brighter) */
+.emb-cream{filter:grayscale(1) brightness(1.2) sepia(1) saturate(1.3) opacity(0.9);}
+.emb-red{filter:brightness(0) invert(0.2) sepia(1) saturate(30) brightness(0.69);}
+.logo-cover{display:block;margin:0 auto 0.9rem;width:52%;max-width:250px;height:auto;}
+.logo-back{display:block;margin:0 auto 0.6rem;width:30%;max-width:120px;height:auto;}
+.logo-cover.missing{border:2px dashed rgba(232,206,150,0.55);
+  border-radius:50%;aspect-ratio:1/1;}
+
+/* ===== IMAGES ===== */
+.img-full{display:block;width:100%;height:auto;margin:0.6rem 0 0.9rem;
+  border:4px solid #fffdf5;box-shadow:0 2px 8px rgba(59,47,32,0.3);}
+.img-left{float:left;width:46%;height:auto;margin:0.25rem 1rem 0.5rem 0;
+  border:4px solid #fffdf5;box-shadow:0 2px 8px rgba(59,47,32,0.3);}
+.img-right{float:right;width:46%;height:auto;margin:0.25rem 0 0.5rem 1rem;
+  border:4px solid #fffdf5;box-shadow:0 2px 8px rgba(59,47,32,0.3);}
+.plate-caption{font-family:'MedievalSharp',cursive;font-size:0.8rem;color:#8A7344;
+  text-align:center;margin:-0.4rem 0 0.9rem;clear:both;}
+.plate{border:1px dashed rgba(176,48,48,0.45);background:rgba(196,160,78,0.08);
+  padding:1.2rem 0.8rem;margin:0.6rem 0 0.9rem;text-align:center;}
+.plate .small-note{color:#8A7344;}
+
+/* the realms list (Red Circle book) */
+.realm{margin-bottom:0.7rem;}
+.realm-name{font-family:'Cinzel',serif;font-weight:700;font-size:0.95rem;
+  letter-spacing:0.08em;color:#8A7344;}
+.realm-name .rc-dot{color:#B03030;}
+.realm p{margin:0.1rem 0 0;font-size:clamp(0.9rem,1.7vw,1.06rem);line-height:1.55;}
+
+/* letter-writing desk (Red Circle book) */
+.seal-link{display:block;width:150px;margin:1.1rem auto;padding:0.7rem 0;text-align:center;
+  font-family:'Cinzel',serif;font-size:0.85rem;letter-spacing:0.18em;color:#F3EACD;
+  background:radial-gradient(circle at 35% 30%, #c94040, #B03030 55%, #7d1f1f);
+  border-radius:50%/42%;box-shadow:0 3px 10px rgba(0,0,0,0.35), inset 0 0 12px rgba(0,0,0,0.35);
+  text-decoration:none;transition:transform .3s;}
+.seal-link:hover{transform:scale(1.06) rotate(-2deg);}
+.ext-link{color:#B03030;text-decoration:none;border-bottom:1px dotted #B03030;}
+.ext-link:hover{color:#8A7344;border-color:#8A7344;}
+
+/* ===== COVERS ===== */
+.cover{
+  background:
+    radial-gradient(ellipse at 50% 35%, rgba(196,160,78,0.14), transparent 65%),
+    linear-gradient(135deg, #9C4C2C 0%, #7A3B22 45%, #582A18 100%);
+  color:#F3EACD;border:1px solid #3D1E11;}
+.cover .page-inner{align-items:center;justify-content:center;text-align:center;
+  border:2px solid rgba(196,160,78,0.55);outline:1px solid rgba(196,160,78,0.25);
+  outline-offset:-10px;margin:14px;height:calc(100% - 28px);}
+.cover-title{font-family:'Cinzel Decorative',serif;font-weight:700;
+  font-size:clamp(1.4rem,3.4vw,2.2rem);letter-spacing:0.12em;color:#E8CE96;
+  text-shadow:0 2px 6px rgba(0,0,0,0.5);margin:0.8rem 0 0.4rem;}
+.cover-sub{font-family:'Cormorant Garamond',serif;font-style:italic;
+  font-size:clamp(0.95rem,2vw,1.2rem);color:rgba(232,206,150,0.75);}
+
+@media(max-width:600px){
+  .page-inner{padding:1.1rem 1rem;}
+  p{text-align:left;}
+  .img-left,.img-right{float:none;width:100%;margin:0.6rem 0 0.9rem;}
+  .ep-head{flex-direction:column;align-items:center;}
+  .ep-ident{max-width:100%;}
+  .ep-epigraph{max-width:100%;text-align:center;padding-top:0;}
+}
+</style>
+</head>
+<body>
+
+<nav class="book-nav">
+  <a class="back-link" href="../index.html">&#8592; RETURN TO THE MAP</a>
+  <button class="sound-toggle" id="soundToggle">SOUND: ON</button>
+</nav>
+
+<div class="stage">
+  <div id="book">
+
+    <!-- ========== FRONT COVER (hard) ========== -->
+    <div class="page cover" data-density="hard">
+      <div class="page-inner">
+        <img class="logo-cover emb-gold" src="rc-atelier.png" alt="">
+        <div class="cover-title">THE ATELIER</div>
+        <div class="cover-sub">made by hand</div>
+      </div>
+    </div>
+
+    <!-- ========== ENDPAPER : identity + Contents (back of front cover) ========== -->
+    <div class="page">
+      <div class="page-inner endpaper">
+        <div class="ep-head">
+          <div class="ep-ident">
+            <img class="ep-emblem emb-red" src="rc-atelier.png" alt="">
+            <div class="ep-name">The Atelier</div>
+          </div>
+          <div class="ep-epigraph">Paint on walls, gardens in soil —<br>imagination, made touchable.</div>
+        </div>
+        <h2 class="toc-heading">Contents</h2>
+        <nav class="toc" id="tocList"></nav>
+        <p class="small-note ep-note">~ drag a corner, or click the page edge, to turn ~</p>
+      </div>
+    </div>
+
+    <!-- ========== CHAPTER I ========== -->
+    <div class="page" data-title="The Story">
+      <div class="page-inner">
+        <div class="chapter-label">chapter one</div>
+        <h2>The Story</h2>
+        <p class="first">Tell the story of this realm in your own voice — what it is, how it began, and why it has a place on the map. This placeholder text is only keeping the page warm; replace every word of it.</p>
+        <p>A second paragraph can carry the tale onward.</p>
+        <div class="page-foot"><a class="page-num"></a><a class="toc-return">Contents</a></div>
+      </div>
+    </div>
+
+    <!-- ========== THE PICTURES ========== -->
+    <div class="page">
+      <div class="page-inner">
+        <div class="plate">
+          <div class="small-note">[ a picture will live here ]</div>
+          <div class="small-note">replace this box with an &lt;img class="img-full"&gt; — see the legend at the top of this file</div>
+        </div>
+        <div class="plate">
+          <div class="small-note">[ and perhaps a second one here ]</div>
+        </div>
+        <p class="centered" style="font-style:italic;">Captions in your own hand go beneath each picture.</p>
+        <div class="page-foot"><a class="page-num"></a><a class="toc-return">Contents</a></div>
+      </div>
+    </div>
+
+    <!-- ========== CHAPTER II ========== -->
+    <div class="page" data-title="The Work">
+      <div class="page-inner">
+        <div class="chapter-label">chapter two</div>
+        <h2>The Work</h2>
+        <p class="first">What has been made here — the projects, the pieces, the process. Storyboards of how things were built fit beautifully on these pages, images woven between the words.</p>
+        <div class="page-foot"><a class="page-num"></a><a class="toc-return">Contents</a></div>
+      </div>
+    </div>
+
+    <!-- ========== CHAPTER III ========== -->
+    <div class="page" data-title="The Shelf">
+      <div class="page-inner">
+        <div class="chapter-label">chapter three</div>
+        <h2>The Shelf</h2>
+        <p class="centered">Where the treasures of this realm are kept —<br>things to read, to play, to explore.</p>
+        <p class="centered">
+          <!-- Link examples — copy, uncomment, and edit:
+          <a class="ext-link" href="https://files.rcprojects.net/mydocument.pdf">read the article</a><br>
+          <a class="ext-link" href="https://example.itch.io/mygame" target="_blank" rel="noopener">play the game</a>
+          -->
+        </p>
+        <div class="page-foot"><a class="page-num"></a><a class="toc-return">Contents</a></div>
+      </div>
+    </div>
+
+    <!-- ========== COLOPHON ========== -->
+    <div class="page">
+      <div class="page-inner">
+        <div style="margin:auto 0 0;text-align:center;">
+          <p class="centered" style="font-style:italic;">This volume belongs to the library of<br>the Red Circle.</p>
+          <p class="small-note">rcprojects.net</p>
+        </div>
+        <div class="page-foot"><a class="page-num"></a><a class="toc-return">Contents</a></div>
+      </div>
+    </div>
+
+    <!-- To add more pages, paste copies of a page div HERE, before the back cover. -->
+
+    <!-- ========== BACK COVER (hard) — the library's shared mark ========== -->
+    <div class="page cover" data-density="hard">
+      <div class="page-inner">
+        <img class="logo-back emb-cream" src="rc-logo.png" alt="">
+        <div class="cover-sub">rcprojects.net</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ============================================================
+// SETTINGS — the lines you may want to edit
+// ============================================================
+var MUSIC_URL = '';   // e.g. 'https://files.rcprojects.net/music/atelier.mp3'
+var MUSIC_VOLUME = 0.22;
+var BOOK_FILL = 0.94; // how much of the window height the book uses (0.85-0.98)
+var EMBLEM_FILE = 'rc-atelier.png';
+
+// ============================================================
+// SIZE THE BOOK TO THE WINDOW, THEN BUILD IT
+// ============================================================
+var PAGE_RATIO = 0.72; // page width : height, like a real hardback
+
+function fitBook() {
+  var availH = window.innerHeight - 56 - 14;
+  var pageH = availH * BOOK_FILL;
+  var pageW = pageH * PAGE_RATIO;
+  var el = document.getElementById('book');
+  if (window.innerWidth < 620) {
+    el.style.width = Math.min(pageW, window.innerWidth * 0.96) + 'px';
+  } else {
+    el.style.width = Math.min(pageW * 2, window.innerWidth * 0.97) + 'px';
+  }
+}
+fitBook();
+window.addEventListener('resize', fitBook);
+
+var pageEls = Array.prototype.slice.call(document.querySelectorAll('.page'));
+
+var pageFlip = new St.PageFlip(document.getElementById('book'), {
+  width: 560, height: 778,
+  size: 'stretch',
+  minWidth: 260, maxWidth: 900,
+  minHeight: 360, maxHeight: 1250,
+  showCover: true,
+  usePortrait: true,
+  maxShadowOpacity: 0.5,
+  mobileScrollSupport: false
+});
+pageFlip.loadFromHTML(pageEls);
+
+// ============================================================
+// THE BOOK NUMBERS ITSELF — folios and the Contents are computed
+// fresh every time the book opens. Front matter (cover, endpaper)
+// is unnumbered; page 1 falls on the first chapter, as in real books.
+// ============================================================
+var ENDPAPER_INDEX = 1;
+
+(function () {
+  function guard(el, action) {
+    var evs = ['pointerdown', 'mousedown', 'touchstart'];
+    for (var i = 0; i < evs.length; i++) {
+      el.addEventListener(evs[i], function (e) { e.stopPropagation(); });
+    }
+    el.addEventListener('click', function (e) {
+      e.preventDefault(); e.stopPropagation(); action();
+    });
+  }
+
+  var chapters = [];
+  for (var i = ENDPAPER_INDEX + 1; i < pageEls.length - 1; i++) {
+    var folio = i - ENDPAPER_INDEX;
+    var numEl = pageEls[i].querySelector('.page-num');
+    if (numEl) numEl.textContent = folio;
+    var t = pageEls[i].getAttribute('data-title');
+    if (t) chapters.push({ title: t, idx: i, folio: folio });
+  }
+
+  var toc = document.getElementById('tocList');
+  if (toc) {
+    for (var c = 0; c < chapters.length; c++) {
+      (function (ch, n) {
+        var row = document.createElement('a');
+        row.className = 'toc-row';
+        row.innerHTML = '<span class="toc-title">' + n + '.&nbsp; ' + ch.title +
+          '</span><span class="toc-dots"></span><span class="toc-num">' + ch.folio + '</span>';
+        guard(row, function () { pageFlip.flip(ch.idx); });
+        toc.appendChild(row);
+      })(chapters[c], c + 1);
+    }
+  }
+
+  // the way back: the corner word, and (secretly) the folio itself
+  var returns = document.querySelectorAll('.toc-return, .page-num');
+  for (var r = 0; r < returns.length; r++) {
+    guard(returns[r], function () { pageFlip.flip(ENDPAPER_INDEX); });
+  }
+})();
+
+// Nudge the book once everything has loaded so it takes its full
+// size without anyone touching the window.
+window.addEventListener('load', function () {
+  fitBook();
+  window.dispatchEvent(new Event('resize'));
+  setTimeout(function () {
+    fitBook();
+    window.dispatchEvent(new Event('resize'));
+  }, 500);
+});
+
+// If the emblem file is not found beside this file, show a dashed
+// circle on the cover instead of nothing.
+(function () {
+  var probe = new Image();
+  probe.onerror = function () {
+    var els = document.querySelectorAll('.logo-cover');
+    for (var i = 0; i < els.length; i++) {
+      els[i].className += ' missing';
+      els[i].src = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
+    }
+  };
+  probe.src = EMBLEM_FILE;
+})();
+
+// ============================================================
+// SOUND — page-turn is synthesised (no audio file needed);
+// music plays if MUSIC_URL is set. One toggle rules both.
+// ============================================================
+var soundOn = localStorage.getItem('rc-sound') !== 'off';
+var toggleBtn = document.getElementById('soundToggle');
+var audioCtx = null;
+var music = null;
+
+function updateToggle() {
+  toggleBtn.textContent = soundOn ? 'SOUND: ON' : 'SOUND: OFF';
+}
+updateToggle();
+
+function pageTurnSound() {
+  if (!soundOn) return;
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    var dur = 0.28;
+    var buf = audioCtx.createBuffer(1, audioCtx.sampleRate * dur, audioCtx.sampleRate);
+    var data = buf.getChannelData(0);
+    for (var i = 0; i < data.length; i++) {
+      var t = i / data.length;
+      data[i] = (Math.random() * 2 - 1) * Math.pow(1 - t, 2.2) * (0.25 + 0.75 * Math.sin(t * 3.14));
+    }
+    var src = audioCtx.createBufferSource(); src.buffer = buf;
+    var filt = audioCtx.createBiquadFilter();
+    filt.type = 'bandpass'; filt.frequency.value = 1400; filt.Q.value = 0.7;
+    var gain = audioCtx.createGain(); gain.gain.value = 0.35;
+    src.connect(filt); filt.connect(gain); gain.connect(audioCtx.destination);
+    src.start();
+  } catch (e) { /* sound is a garnish, never a crash */ }
+}
+
+function startMusic() {
+  if (!MUSIC_URL || music) return;
+  music = new Audio(MUSIC_URL);
+  music.loop = true; music.volume = MUSIC_VOLUME;
+  if (soundOn) music.play().catch(function(){});
+}
+
+pageFlip.on('changeState', function (e) {
+  if (e.data === 'flipping') pageTurnSound();
+});
+document.addEventListener('pointerdown', startMusic, { once: true });
+
+toggleBtn.addEventListener('click', function () {
+  soundOn = !soundOn;
+  localStorage.setItem('rc-sound', soundOn ? 'on' : 'off');
+  updateToggle();
+  if (music) { soundOn ? music.play().catch(function(){}) : music.pause(); }
+});
+
+// Keyboard page turns
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'ArrowRight') pageFlip.flipNext();
+  if (e.key === 'ArrowLeft') pageFlip.flipPrev();
+});
+</script>
+</body>
+</html>
