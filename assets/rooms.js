@@ -8,6 +8,7 @@
          <img class="room-pic" src="picture.jpg" alt="">
          <button class="spot" data-opens="cv" style="left:..%;top:..%;width:..%;height:..%">Name</button>
          <button class="spot" data-book="publications.html" style="...">Name</button>     (opens a book)
+         <button class="spot lantern" data-book="bear.html" style="...">Bear</button>      (a lantern: lit if it opens something)
        </div>
      </main>
      <section class="panel" id="cv" data-kind="card"> ... </section>
@@ -17,7 +18,7 @@
      2. The spots      (names, the first glow, the list for phones)
      3. The glide      (the camera travels to what you click)
      4. The panels     (open, close, Esc, back to the room; books open here too)
-     5. Dust           (motes drifting in the light)
+     5. Dust and fireflies (what drifts in the air)
      6. The secret     (one hidden Red Circle per room)
    ============================================================ */
 (function () {
@@ -77,6 +78,23 @@
       var g2 = a.createGain(); g2.gain.value = 0.16;
       src.connect(f); f.connect(g2); g2.connect(a.destination); src.start();
     },
+    glass: function (a) {                 // a lantern touched
+      [1568, 2093].forEach(function (hz, i) {
+        var o = a.createOscillator(), g = a.createGain(), at = a.currentTime + i * 0.05;
+        o.type = 'sine'; o.frequency.value = hz;
+        g.gain.setValueAtTime(0.0001, at); g.gain.exponentialRampToValueAtTime(0.09, at + 0.01);
+        g.gain.exponentialRampToValueAtTime(0.0001, at + 0.7);
+        o.connect(g); g.connect(a.destination); o.start(at); o.stop(at + 0.75);
+      });
+    },
+    steps: function (a) {                 // two footsteps on a path
+      [0, 0.22].forEach(function (delay) {
+        var src = noise(a, 0.09, function (t) { return Math.pow(1 - t, 2.5); });
+        var f = a.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 420;
+        var g = a.createGain(); g.gain.value = 0.38;
+        src.connect(f); f.connect(g); g.connect(a.destination); src.start(a.currentTime + delay);
+      });
+    },
     chime: function (a) {                 // something small and bright
       [880, 1318.5, 1760].forEach(function (hz, i) {
         var o = a.createOscillator(), g = a.createGain(), at = a.currentTime + i * 0.11;
@@ -108,6 +126,20 @@
     if (top < 13) spot.classList.add('label-below');
     if (left + w / 2 > 90) spot.classList.add('label-left');
     else if (left + w / 2 < 10) spot.classList.add('label-right');
+    // a lantern is lit when it has something to open; an unlit one waits, and does nothing
+    if (spot.classList.contains('lantern')) {
+      var lit = spot.hasAttribute('data-opens') || spot.hasAttribute('data-book');
+      spot.classList.add(lit ? 'is-lit' : 'unlit');
+      if (!lit) { spot.setAttribute('tabindex', '-1'); spot.setAttribute('aria-disabled', 'true'); return; }
+      // its light trembles on the water below: data-water="top bottom" on the room, in % of the picture
+      var water = (room.getAttribute('data-water') || '').split(/\s+/).map(Number);
+      if (water.length === 2 && !isNaN(water[1])) {
+        var glow = document.createElement('div'); glow.className = 'water-light'; glow.setAttribute('aria-hidden', 'true');
+        glow.style.left = (left + w / 2) + '%'; glow.style.top = water[0] + '%'; glow.style.height = (water[1] - water[0]) + '%';
+        glow.style.animationDelay = (-i * 1.3) + 's';
+        view.appendChild(glow);
+      }
+    }
     listItems.push({ name: name, spot: spot });
   });
 
@@ -223,7 +255,7 @@
   }
 
   spots.forEach(function (spot) {
-    if (spot.classList.contains('secret')) return;
+    if (spot.classList.contains('secret') || spot.classList.contains('unlit')) return;
     if (spot.tagName === 'A') { spot.addEventListener('click', function () { play(spot.getAttribute('data-sound') || 'wood'); }); return; }
     spot.addEventListener('click', function () { openFromSpot(spot); });
   });
@@ -248,8 +280,8 @@
   // ---------------------------------------------------------- 5. DUST
   // data-dust="left top right bottom" (in % of the picture) says where the light falls
   (function dust() {
-    if (reduceMotion) return;
-    var box = (room.getAttribute('data-dust') || '0 0 100 100').split(/\s+/).map(Number);
+    if (reduceMotion || !room.hasAttribute('data-dust')) return;
+    var box = room.getAttribute('data-dust').split(/\s+/).map(Number);
     var canvas = document.createElement('canvas'); canvas.className = 'room-dust'; canvas.setAttribute('aria-hidden', 'true');
     view.appendChild(canvas);
     var g = canvas.getContext('2d'); if (!g) return;
@@ -290,6 +322,52 @@
     size(); start();
     window.addEventListener('resize', size);
     document.addEventListener('visibilitychange', function () { if (document.hidden) stop(); else start(); });
+  })();
+
+  // fireflies: data-fireflies="left top right bottom" (in % of the picture) says where they wander
+  (function fireflies() {
+    var attr = room.getAttribute('data-fireflies');
+    if (!attr || reduceMotion) return;
+    var box = attr.split(/\s+/).map(Number);
+    var canvas = document.createElement('canvas'); canvas.className = 'room-dust'; canvas.setAttribute('aria-hidden', 'true');
+    view.appendChild(canvas);
+    var g = canvas.getContext('2d'); if (!g) return;
+    var flies = [], n = 16, W = 0, H = 0, running = false, last = 0;
+    function target(f) { f.tx = Math.random(); f.ty = Math.random(); f.rest = 0.5 + Math.random() * 2.5; }
+    for (var i = 0; i < n; i++) {
+      var f = { x: Math.random(), y: Math.random(), phase: Math.random() * 6.28, blink: 0.5 + Math.random() * 0.9, size: 0.8 + Math.random() * 0.7 };
+      target(f); flies.push(f);
+    }
+    function size() {
+      var dpr = Math.min(window.devicePixelRatio || 1, 2);
+      W = canvas.width = Math.round(view.clientWidth * dpr); H = canvas.height = Math.round(view.clientHeight * dpr);
+    }
+    function frame(now) {
+      if (!running) return;
+      var dt = Math.min(0.05, (now - last) / 1000 || 0); last = now;
+      g.clearRect(0, 0, W, H);
+      var x0 = box[0] / 100 * W, y0 = box[1] / 100 * H, bw = (box[2] - box[0]) / 100 * W, bh = (box[3] - box[1]) / 100 * H;
+      var unit = W / 1600;
+      for (var i = 0; i < n; i++) {
+        var f = flies[i], dx = f.tx - f.x, dy = f.ty - f.y, d = Math.sqrt(dx * dx + dy * dy);
+        if (d < 0.02) { f.rest -= dt; if (f.rest <= 0) target(f); }
+        else { f.x += dx / d * dt * 0.035; f.y += dy / d * dt * 0.035; }       // they dart, pause, and dart again
+        var wob = Math.sin(now / 1000 * 1.3 + f.phase) * 0.004;
+        var glow = Math.pow(0.5 + 0.5 * Math.sin(now / 1000 * f.blink + f.phase), 3);   // mostly dim, briefly bright
+        if (glow < 0.03) continue;
+        var px = x0 + (f.x + wob) * bw, py = y0 + f.y * bh, r = 9 * unit * f.size * (window.devicePixelRatio > 1 ? 1.5 : 1);
+        var grad = g.createRadialGradient(px, py, 0, px, py, r);
+        grad.addColorStop(0, 'rgba(255,246,190,' + (0.95 * glow).toFixed(3) + ')');
+        grad.addColorStop(0.25, 'rgba(255,226,130,' + (0.5 * glow).toFixed(3) + ')');
+        grad.addColorStop(1, 'rgba(255,210,90,0)');
+        g.fillStyle = grad; g.beginPath(); g.arc(px, py, r, 0, 6.2832); g.fill();
+      }
+      window.requestAnimationFrame(frame);
+    }
+    function start() { if (running || document.hidden) return; running = true; last = performance.now(); window.requestAnimationFrame(frame); }
+    size(); start();
+    window.addEventListener('resize', size);
+    document.addEventListener('visibilitychange', function () { if (document.hidden) running = false; else start(); });
   })();
 
   // ---------------------------------------------------------- 6. THE SECRET

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Companion — RC Projects</title>
+<meta name="description" content="The Companion: a wooden bridge at dusk, hung with lanterns. Each lit lantern keeps a book about a companion.">
+<link rel="stylesheet" href="../../assets/library.css">
+<!-- ============================================================
+     THE COMPANION — a bridge at dusk, hung with five lanterns.
+     The look comes from  assets/library.css   (shared by every room)
+     The behaviour from   assets/rooms.js      (shared by every room)
+     This file holds only what is special to the bridge:
+     the picture and where the lanterns are.
+     The words live in the two books next to this file:
+       ai.html     The AI Companion
+       bear.html   Bear
+
+     CARAN'S EDITING LEGEND
+
+     A LANTERN IS ONE LINE:
+       <button class="spot lantern" data-book="bear.html" data-sound="glass" style="...">Bear</button>
+     - A lantern WITH  data-book="..."  is lit: it glows, flickers,
+       shines on the water, and opens that book.
+     - A lantern WITHOUT  data-book  stays dark and does nothing.
+
+     TO LIGHT ANOTHER LANTERN ONE DAY:
+       1. make a copy of bear.html, give it a new name (say  garden.html)
+          and write the new book in it
+       2. on that lantern's line below, add   data-book="garden.html" data-sound="glass"
+          and change the words between the tags to the book's name
+     That is all. The glow and the reflection appear by themselves.
+
+     left / top / width / height place each thing on the picture,
+     in % of the picture's width and height.
+     ============================================================ -->
+</head>
+<body style="--page:#F0EAE0">
+
+<header class="top-bar">
+  <a href="../../index.html">&#8592; RETURN TO THE MAP</a>
+  <span class="realm-name">The Companion</span>
+  <span class="bar-right">
+    <button type="button" class="sound-toggle" id="soundToggle">SOUND: ON</button>
+  </span>
+</header>
+
+<!-- data-fireflies="left top right bottom": where the fireflies wander, in % of the picture
+     data-water="top bottom": the band of water where the lantern light trembles -->
+<main class="room" data-realm="companion" data-realm-name="the Companion" data-fireflies="4 30 96 84" data-water="70 98">
+  <div class="room-view" style="--w:1672;--h:941">
+    <img class="room-pic" src="companion-bridge.jpg" width="1672" height="941"
+         alt="A wooden footbridge over a quiet river at dusk, with five iron lanterns hanging from its rail. Two of them are lit.">
+
+    <!-- ===== THE FIVE LANTERNS, from left to right ===== -->
+    <button class="spot lantern" style="left:23.0%;top:38.0%;width:4.2%;height:10.2%">Not yet lit</button>
+    <button class="spot lantern" data-book="ai.html" data-sound="glass" style="left:35.0%;top:32.7%;width:4.2%;height:10.2%">The AI Companion</button>
+    <button class="spot lantern" style="left:48.3%;top:30.6%;width:4.2%;height:10.2%">Not yet lit</button>
+    <button class="spot lantern" style="left:62.4%;top:33.2%;width:4.2%;height:10.2%">Not yet lit</button>
+    <button class="spot lantern" data-book="bear.html" data-sound="glass" style="left:74.0%;top:38.3%;width:4.2%;height:10.4%">Bear</button>
+
+    <!-- ===== THE PATH BY THE TREE ===== -->
+    <a class="spot" href="../../index.html" data-sound="steps" style="left:0.0%;top:58.2%;width:12.9%;height:8.5%">Back to the map</a>
+
+    <!-- ===== THE HIDDEN RED CIRCLE (no name: it has to be found) ===== -->
+    <button class="spot secret" style="left:13.7%;top:37.9%;width:1.7%;height:3.0%"></button>
+  </div>
+  <p class="room-hint">~ where a lantern is lit, someone is waiting ~</p>
+</main>
+
+<script src="../../assets/rooms.js"></script>
+</body>
+</html>

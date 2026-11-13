@@ -97,6 +97,28 @@ body{
   .room .spot:not(.secret){animation:spot-wake 2.6s ease-in-out infinite;animation-delay:calc(var(--i) * .5s);}
 }
 
+/* lanterns: a lit one glows and flickers, and opens; an unlit one waits */
+.spot.lantern{border-radius:30%;}
+.spot.lantern:hover,.spot.lantern:focus-visible{background:transparent;box-shadow:none;}
+.room.is-waking .spot.lantern,.room .spot.lantern{animation:none;}
+.spot.lantern.unlit{cursor:default;}
+.spot.lantern.unlit > span{font-family:'MedievalSharp',cursive;letter-spacing:0.04em;color:var(--muted);border-color:rgba(168,144,112,0.4);}
+.spot.lantern.is-lit::before{content:'';position:absolute;left:14%;right:14%;top:26%;bottom:10%;border-radius:32%;
+  background:radial-gradient(ellipse at 50% 58%, rgba(255,244,196,0.98) 0%, rgba(255,206,110,0.9) 38%, rgba(255,170,70,0.55) 68%, rgba(255,150,50,0) 100%);
+  animation:lantern-flicker 3.4s ease-in-out infinite;pointer-events:none;}
+.spot.lantern.is-lit::after{content:'';position:absolute;inset:-110%;border-radius:50%;
+  background:radial-gradient(circle, rgba(255,226,150,0.5) 0%, rgba(255,205,120,0.2) 30%, rgba(255,190,100,0) 64%);
+  animation:lantern-flicker 3.4s ease-in-out infinite reverse;pointer-events:none;transition:transform .5s;}
+.spot.lantern.is-lit:hover::after,.spot.lantern.is-lit:focus-visible::after{transform:scale(1.35);}
+.spot.lantern.is-lit:hover::before,.spot.lantern.is-lit:focus-visible::before{animation-duration:1.1s;}
+@keyframes lantern-flicker{0%,100%{opacity:1;}22%{opacity:0.86;}31%{opacity:0.97;}47%{opacity:0.8;}58%{opacity:0.94;}76%{opacity:0.88;}}
+.water-light{position:absolute;width:4.6%;transform:translateX(-50%);pointer-events:none;
+  background:radial-gradient(ellipse at 50% 34%, rgba(255,232,165,0.75) 0%, rgba(255,210,130,0.38) 38%, rgba(255,190,100,0) 70%);
+  -webkit-mask-image:repeating-linear-gradient(to bottom, #000 0 5px, rgba(0,0,0,0.25) 5px 9px);
+  mask-image:repeating-linear-gradient(to bottom, #000 0 5px, rgba(0,0,0,0.25) 5px 9px);
+  animation:water-tremble 4.6s ease-in-out infinite;}
+@keyframes water-tremble{0%,100%{opacity:0.75;transform:translateX(-50%) scaleX(1);}35%{opacity:1;transform:translateX(-52%) scaleX(1.25);}70%{opacity:0.6;transform:translateX(-48%) scaleX(0.85);}}
+
 /* ---------- 4. WHAT OPENS ----------
    data-kind="card"    a small panel: a degree, a conference, a link
    data-kind="scroll"  a long parchment that scrolls: an essay, a list    */
@@ -198,6 +220,7 @@ body{
 
 @media (prefers-reduced-motion:reduce){
   .room-view,.panel,.panels,.spot,.toast{transition:none !important;animation:none !important;}
+  .spot.lantern.is-lit::before,.spot.lantern.is-lit::after,.water-light{animation:none !important;}
   .room .spot{animation:none !important;}
 }
 
@@ -292,6 +315,8 @@ html.is-embedded .stage{height:100vh;height:100dvh;}
 .page .img-right{float:right;width:46%;height:auto;margin:0.25rem 0 0.5rem 1rem;
   border:4px solid #fffdf5;box-shadow:0 2px 8px rgba(59,47,32,0.3);}
 .page video{display:block;width:100%;height:auto;margin:0.6rem 0 0.9rem;border:4px solid #fffdf5;
+  box-shadow:0 2px 8px rgba(59,47,32,0.3);}
+.page iframe{display:block;width:100%;aspect-ratio:16/9;margin:0.6rem 0 0.9rem;border:4px solid #fffdf5;
   box-shadow:0 2px 8px rgba(59,47,32,0.3);}
 .plate-caption{font-family:'MedievalSharp',cursive;font-size:0.8rem;color:var(--brown);
   text-align:center;margin:-0.4rem 0 0.9rem;clear:both;}
