@@ -18,8 +18,10 @@
      2. The spots      (names, the first glow, the list for phones)
      3. The glide      (the camera travels to what you click)
      4. The panels     (open, close, Esc, back to the room; books open here too)
-     5. Dust and fireflies (what drifts in the air)
+     5. Dust, fireflies, petals and sparkles (what drifts in the air)
      6. The secret     (one hidden Red Circle per room)
+     7. Pictures that open large (any <img class="zoomable"> in a panel)
+     8. The postcard   (a room painted as a pinned card can be turned over)
    ============================================================ */
 (function () {
   'use strict';
@@ -93,6 +95,17 @@
         var f = a.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 420;
         var g = a.createGain(); g.gain.value = 0.38;
         src.connect(f); f.connect(g); g.connect(a.destination); src.start(a.currentTime + delay);
+      });
+    },
+    bell: function (a) {                  // a small shop bell, for leaving
+      [0, 0.16].forEach(function (delay, k) {
+        [1318.5, 1975.5, 2637].forEach(function (hz, i) {
+          var o = a.createOscillator(), g = a.createGain(), at = a.currentTime + delay;
+          o.type = 'sine'; o.frequency.value = hz * (k ? 0.997 : 1);
+          g.gain.setValueAtTime(0.0001, at); g.gain.exponentialRampToValueAtTime([0.08, 0.04, 0.02][i] * (k ? 0.6 : 1), at + 0.006);
+          g.gain.exponentialRampToValueAtTime(0.0001, at + 0.9);
+          o.connect(g); g.connect(a.destination); o.start(at); o.stop(at + 0.95);
+        });
       });
     },
     chime: function (a) {                 // something small and bright
@@ -397,6 +410,90 @@
     document.addEventListener('visibilitychange', function () { if (document.hidden) running = false; else start(); });
   })();
 
+  // a little canvas over the picture, shared by the effects below
+  function effectCanvas() {
+    var canvas = document.createElement('canvas'); canvas.className = 'room-dust'; canvas.setAttribute('aria-hidden', 'true');
+    view.appendChild(canvas);
+    var g = canvas.getContext('2d');
+    var box = { W: 0, H: 0 };
+    function size() {
+      var dpr = Math.min(window.devicePixelRatio || 1, 2);
+      box.W = canvas.width = Math.round(view.clientWidth * dpr); box.H = canvas.height = Math.round(view.clientHeight * dpr);
+    }
+    size(); window.addEventListener('resize', size);
+    return { g: g, box: box };
+  }
+  function animate(draw) {
+    var running = false, last = 0;
+    function frame(now) {
+      if (!running) return;
+      var dt = Math.min(0.05, (now - last) / 1000 || 0); last = now;
+      draw(now / 1000, dt);
+      window.requestAnimationFrame(frame);
+    }
+    function start() { if (running || document.hidden) return; running = true; last = performance.now(); window.requestAnimationFrame(frame); }
+    start();
+    document.addEventListener('visibilitychange', function () { if (document.hidden) running = false; else start(); });
+  }
+  function readBox(name) {
+    var attr = room.getAttribute(name);
+    if (!attr || reduceMotion) return null;
+    return attr.split(/\s+/).map(function (v) { return Number(v) / 100; });
+  }
+
+  // petals: data-petals="left top right bottom" is where they fall from (in % of the picture); they drift down from there
+  (function petals() {
+    var b = readBox('data-petals'); if (!b) return;
+    var c = effectCanvas(); if (!c.g) return;
+    var list = [], n = 14;
+    function spawn(p, anywhere) {
+      p.x = b[0] + Math.random() * (b[2] - b[0]); p.y = anywhere ? b[1] + Math.random() * 0.5 : b[1] + Math.random() * (b[3] - b[1]);
+      p.floor = 0.62 + Math.random() * 0.3; p.vy = 0.018 + Math.random() * 0.02; p.vx = 0.004 + Math.random() * 0.01;
+      p.spin = 1 + Math.random() * 2.5; p.phase = Math.random() * 6.28; p.size = 0.7 + Math.random() * 0.6; p.life = 0;
+      p.hue = Math.random() < 0.75 ? [196, 158, 222] : [236, 214, 240];
+    }
+    for (var i = 0; i < n; i++) { var p = {}; spawn(p, true); list.push(p); }
+    animate(function (t, dt) {
+      var g = c.g, W = c.box.W, H = c.box.H, unit = W / 1600;
+      g.clearRect(0, 0, W, H);
+      for (var i = 0; i < n; i++) {
+        var p = list[i];
+        p.life += dt; p.y += p.vy * dt; p.x += (p.vx + Math.sin(t * 1.1 + p.phase) * 0.012) * dt;
+        if (p.y > p.floor) spawn(p, false);
+        var fade = Math.min(1, p.life * 1.5, (p.floor - p.y) * 12);
+        var flutter = Math.cos(t * p.spin + p.phase);                       // turning in the air: wide, then edge-on
+        g.save(); g.translate(p.x * W, p.y * H); g.rotate(Math.sin(t * 0.7 + p.phase) * 1.2);
+        g.scale(Math.max(0.15, Math.abs(flutter)), 1);
+        g.fillStyle = 'rgba(' + p.hue.join(',') + ',' + (0.85 * fade).toFixed(3) + ')';
+        g.beginPath(); g.ellipse(0, 0, 5 * unit * p.size * 1.6, 3 * unit * p.size * 1.6, 0, 0, 6.2832); g.fill();
+        g.restore();
+      }
+    });
+  })();
+
+  // sparkles: data-sparkle="left top right bottom", brief glints of light, as on falling water
+  (function sparkles() {
+    var b = readBox('data-sparkle'); if (!b) return;
+    var c = effectCanvas(); if (!c.g) return;
+    var list = [], n = 9;
+    function spawn(s) { s.x = b[0] + Math.random() * (b[2] - b[0]); s.y = b[1] + Math.random() * (b[3] - b[1]); s.age = -Math.random() * 1.2; s.dur = 0.35 + Math.random() * 0.5; s.size = 0.6 + Math.random() * 0.8; }
+    for (var i = 0; i < n; i++) { var s = {}; spawn(s); list.push(s); }
+    animate(function (t, dt) {
+      var g = c.g, W = c.box.W, H = c.box.H, unit = W / 1600;
+      g.clearRect(0, 0, W, H);
+      for (var i = 0; i < n; i++) {
+        var s = list[i]; s.age += dt;
+        if (s.age > s.dur) { spawn(s); continue; }
+        if (s.age < 0) continue;
+        var k = Math.sin(s.age / s.dur * Math.PI), r = 7 * unit * s.size * k, x = s.x * W, y = s.y * H;
+        g.fillStyle = 'rgba(255,255,248,' + (0.9 * k).toFixed(3) + ')';
+        g.beginPath();                                                        // a four-pointed glint
+        g.moveTo(x, y - r); g.quadraticCurveTo(x, y, x + r, y); g.quadraticCurveTo(x, y, x, y + r);
+        g.quadraticCurveTo(x, y, x - r, y); g.quadraticCurveTo(x, y, x, y - r); g.fill();
+      }
+    });
+  })();
+
   // ---------------------------------------------------------- 6. THE SECRET
   // one hidden Red Circle per room; the browser remembers which ones this visitor has found
   var TOTAL_CIRCLES = 7;
@@ -423,6 +520,53 @@
         ? 'You have found every hidden Red Circle. All ' + TOTAL_CIRCLES + ' of ' + TOTAL_CIRCLES + '.'
         : (isNew ? 'You found the Red Circle hidden in ' + realmName + '. ' : 'The Red Circle of ' + realmName + '. ') +
           count + ' of ' + TOTAL_CIRCLES + ' found.');
+    });
+  }
+
+  // ---------------------------------------------------------- 7. PICTURES THAT OPEN LARGE
+  // any <img class="zoomable"> inside a panel opens over everything; a click anywhere closes it
+  var zoom = document.createElement('div'); zoom.className = 'zoom'; zoom.setAttribute('role', 'dialog');
+  var zoomImg = document.createElement('img'); zoomImg.alt = ''; zoom.appendChild(zoomImg);
+  var zoomCap = document.createElement('p'); zoom.appendChild(zoomCap);
+  document.body.appendChild(zoom);
+  function unzoom() { zoom.classList.remove('is-open'); }
+  zoom.addEventListener('click', unzoom);
+  document.addEventListener('click', function (e) {
+    var img = e.target.closest ? e.target.closest('img.zoomable') : null; if (!img) return;
+    zoomImg.src = img.getAttribute('data-large') || img.currentSrc || img.src; zoomImg.alt = img.alt || '';
+    var fig = img.closest('figure'), cap = fig && fig.querySelector('figcaption');
+    zoomCap.textContent = cap ? cap.textContent : '';
+    zoom.classList.add('is-open'); play('paper');
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && zoom.classList.contains('is-open')) { e.stopImmediatePropagation(); unzoom(); }
+  }, true);
+
+  // ---------------------------------------------------------- 8. THE POSTCARD
+  // a room painted as a pinned postcard: <div class="postcard"> holds its front and its back,
+  // and <button class="postcard-pin"> turns it over and back again
+  var card = view.querySelector('.postcard'), pin = view.querySelector('.postcard-pin');
+  if (card && pin) {
+    var turning = false;
+    function fitPerspective() { card.style.perspective = Math.round(view.clientWidth * 1.7) + 'px'; }
+    fitPerspective(); window.addEventListener('resize', fitPerspective);
+    function turn() {
+      if (turning) return; turning = true;
+      var toBack = !room.classList.contains('is-turned');
+      if (toBack) close();
+      room.classList.add('pin-up'); play('paper');
+      window.setTimeout(function () {
+        room.classList.toggle('is-turned', toBack);
+        pin.setAttribute('aria-label', toBack ? 'Turn the postcard back' : 'Turn the postcard over');
+      }, reduceMotion ? 0 : 320);
+      window.setTimeout(function () { room.classList.remove('pin-up'); turning = false; }, reduceMotion ? 50 : 1750);
+    }
+    pin.setAttribute('aria-label', 'Turn the postcard over');
+    pin.addEventListener('click', turn);
+    var back = card.querySelector('.postcard-back');
+    if (back) back.addEventListener('click', function () { if (room.classList.contains('is-turned')) turn(); });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && room.classList.contains('is-turned') && !openPanel && !bookFrame) turn();
     });
   }
 })();

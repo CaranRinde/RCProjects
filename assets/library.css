@@ -218,7 +218,109 @@ body{
   opacity:0;pointer-events:none;transition:opacity .5s, transform .5s;}
 .toast.is-shown{opacity:1;transform:translate(-50%,0);}
 
+/* ---------- THE ATELIER'S THINGS (and anywhere else they are useful) ---------- */
+
+/* a gallery of framed pictures inside a panel; each frame opens its own card */
+.panel .gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(9.5rem,1fr));gap:1.3rem 1.1rem;margin:1rem 0 0.6rem;}
+.panel .gallery a{display:block;text-decoration:none;color:var(--ink);text-align:center;}
+.panel .gallery img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;background:#e9dcc0;
+  border:7px solid #fbf6ea;outline:2px solid #b8955a;outline-offset:0;
+  box-shadow:0 0 0 5px #6d4f2a, 0 6px 14px rgba(40,26,10,0.45);transition:transform .3s, box-shadow .3s;}
+.panel .gallery a:hover img,.panel .gallery a:focus-visible img{transform:translateY(-3px) rotate(-0.6deg);
+  box-shadow:0 0 0 5px #6d4f2a, 0 12px 22px rgba(40,26,10,0.5);}
+.panel .gallery span{display:block;margin-top:0.85rem;font-family:'Cinzel',serif;font-size:0.8rem;letter-spacing:0.06em;color:var(--brown);}
+
+/* before and after, side by side; one above the other on a phone */
+.panel .before-after{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1rem 0 0.4rem;}
+.panel .before-after figure{margin:0;}
+.panel .before-after img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;background:#e9dcc0;cursor:zoom-in;
+  border:6px solid #fbf6ea;box-shadow:0 3px 10px rgba(40,26,10,0.35);}
+.panel figcaption{margin-top:0.4rem;text-align:center;font-family:'MedievalSharp',cursive;font-size:0.85rem;color:var(--brown);}
+@media (max-width:520px){ .panel .before-after{grid-template-columns:1fr;} }
+.panel .card-photo{display:block;width:100%;max-height:22rem;object-fit:cover;margin:0.8rem 0;cursor:zoom-in;
+  border:6px solid #fbf6ea;box-shadow:0 3px 10px rgba(40,26,10,0.35);}
+
+/* a picture opened large */
+.zoom{position:fixed;inset:0;z-index:95;display:grid;place-items:center;align-content:center;gap:0.6rem;padding:1.2rem;
+  background:rgba(16,12,8,0.9);opacity:0;visibility:hidden;transition:opacity .35s, visibility 0s .35s;cursor:zoom-out;}
+.zoom.is-open{opacity:1;visibility:visible;transition:opacity .35s;}
+.zoom img{max-width:94vw;max-height:84vh;border:8px solid #fbf6ea;box-shadow:0 20px 60px rgba(0,0,0,0.6);}
+.zoom p{margin:0;font-family:'MedievalSharp',cursive;color:var(--gold-soft);letter-spacing:0.06em;}
+
+/* the recipe box: little cards, then a ruled index card for each recipe */
+.panel .recipe-box{display:grid;grid-template-columns:repeat(auto-fill,minmax(10.5rem,1fr));gap:1rem;margin:0.6rem 0 1.4rem;}
+.panel .recipe-box a{display:block;text-decoration:none;color:var(--ink);background:#fffdf6;
+  border:1px solid rgba(139,111,78,0.35);border-top:4px solid var(--red);padding:0.5rem 0.5rem 0.7rem;
+  box-shadow:0 3px 8px rgba(40,26,10,0.18);transition:transform .25s, box-shadow .25s;}
+.panel .recipe-box a:hover,.panel .recipe-box a:focus-visible{transform:translateY(-4px) rotate(0.5deg);box-shadow:0 9px 16px rgba(40,26,10,0.28);}
+.panel .recipe-box img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;background:#e9dcc0;}
+.panel .recipe-box span{display:block;margin-top:0.5rem;text-align:center;font-family:'Cinzel',serif;font-size:0.8rem;letter-spacing:0.05em;}
+.panel .box-tabs{text-align:center;font-family:'Cinzel',serif;letter-spacing:0.12em;font-size:0.82rem;margin:0.2rem 0 0.4rem;}
+.panel .box-tabs a{color:var(--red);text-decoration:none;margin:0 0.6rem;}
+.panel.recipe{--page:#fffdf6;
+  background:
+    linear-gradient(to bottom, transparent 0 4.6rem, rgba(176,48,48,0.55) 4.6rem 4.7rem, transparent 4.7rem),
+    repeating-linear-gradient(to bottom, transparent 0 1.85rem, rgba(110,140,190,0.22) 1.85rem 1.92rem),
+    #fffdf6;
+  outline:none;border:1px solid rgba(139,111,78,0.35);}
+.panel.recipe ol,.panel.recipe ul{padding-left:1.4rem;}
+.panel.recipe li{margin-bottom:0.35rem;line-height:1.5;}
+
+/* a sealed card: nothing inside yet */
+.panel.sealed{text-align:center;}
+.panel .wax{width:5.2rem;height:5.2rem;margin:0.4rem auto 1.1rem;border-radius:50%;
+  background:radial-gradient(circle at 36% 30%, #d4524a 0%, #a3262a 45%, #6e1416 100%);
+  box-shadow:inset 0 0 0 0.5rem rgba(0,0,0,0.12), inset 0 -4px 10px rgba(0,0,0,0.35), 0 4px 10px rgba(60,10,10,0.45);
+  display:grid;place-items:center;}
+.panel .wax::after{content:'';width:2.3rem;height:2.3rem;border-radius:50%;border:3px solid rgba(255,210,190,0.35);
+  box-shadow:inset 0 2px 3px rgba(0,0,0,0.3);}
+
+/* the postcard: a room painted as a card pinned to wood, with a back you can turn to */
+.postcard{position:absolute;inset:0;pointer-events:none;}
+.postcard-flipper{position:absolute;inset:0;transform-style:preserve-3d;transform-origin:48.45% 50%;
+  transition:transform 1.3s cubic-bezier(.45,.05,.25,1);}
+.postcard-front,.postcard-back{position:absolute;inset:0;width:100%;height:100%;
+  -webkit-backface-visibility:hidden;backface-visibility:hidden;}
+.postcard-front{display:block;user-select:none;-webkit-user-drag:none;}
+.postcard-back{transform:rotateY(180deg);transform-origin:48.45% 50%;}
+.postcard-back > img,.postcard-back > svg{position:absolute;inset:0;width:100%;height:100%;display:block;}
+.room.is-turned .postcard-flipper{transform:rotateY(-180deg);}
+.room.is-turned .postcard-back{pointer-events:auto;cursor:pointer;}
+.room.is-turned .spot,.room.is-turned .room-dust,.room.is-turned .dapple{opacity:0 !important;pointer-events:none !important;transition:opacity .4s;}
+.room .room-dust,.room .dapple{transition:opacity .8s .9s;}
+.postcard-pin{position:absolute;z-index:6;padding:0;border:0;border-radius:50%;cursor:pointer;
+  background:transparent center/100% no-repeat;   /* the pin's picture is set on the button itself */
+  filter:drop-shadow(1px 2px 1.5px rgba(40,20,5,0.55));
+  transition:transform .32s cubic-bezier(.3,1.4,.5,1), filter .32s;}
+.postcard-pin::after{content:'';position:absolute;inset:8%;border-radius:50%;pointer-events:none;
+  background:linear-gradient(115deg, transparent 35%, rgba(255,250,225,0.85) 50%, transparent 65%) -150% 0/250% 100% no-repeat;
+  mix-blend-mode:screen;animation:pin-glint 9s ease-in-out 3s infinite;}
+@keyframes pin-glint{0%,88%{background-position:-150% 0;}96%,100%{background-position:150% 0;}}
+.postcard-pin:hover,.postcard-pin:focus-visible{outline:none;transform:translateY(-6%) scale(1.06);
+  filter:drop-shadow(2px 5px 3px rgba(40,20,5,0.5));}
+.room.pin-up .postcard-pin{transform:translateY(-22%) scale(1.22);filter:drop-shadow(4px 12px 6px rgba(40,20,5,0.45));}
+
+/* dappled light: soft patches of sun that slowly move, as if leaves stirred overhead */
+.dapple{position:absolute;pointer-events:none;mix-blend-mode:soft-light;
+  background:
+    radial-gradient(ellipse 9% 7% at 18% 30%, rgba(255,240,200,0.95), transparent 70%),
+    radial-gradient(ellipse 7% 6% at 42% 62%, rgba(255,236,190,0.9), transparent 70%),
+    radial-gradient(ellipse 10% 7% at 66% 38%, rgba(255,240,200,0.95), transparent 70%),
+    radial-gradient(ellipse 6% 5% at 82% 70%, rgba(255,236,190,0.85), transparent 70%),
+    radial-gradient(ellipse 8% 6% at 30% 82%, rgba(255,240,200,0.9), transparent 70%),
+    radial-gradient(ellipse 7% 5% at 55% 18%, rgba(60,40,20,0.5), transparent 70%),
+    radial-gradient(ellipse 9% 6% at 74% 86%, rgba(60,40,20,0.45), transparent 70%);
+  -webkit-mask-image:radial-gradient(ellipse at 50% 50%, #000 45%, transparent 75%);
+  mask-image:radial-gradient(ellipse at 50% 50%, #000 45%, transparent 75%);
+  animation:dapple-drift 14s ease-in-out infinite alternate;}
+@keyframes dapple-drift{
+  0%{background-position:0 0,0 0,0 0,0 0,0 0,0 0,0 0;opacity:0.85;}
+  50%{background-position:1.5% 1%,-1% 1.5%,1% -1%,-1.5% 0.5%,1% -1.5%,-1% 1%,1.5% -0.5%;opacity:1;}
+  100%{background-position:-1% 1.5%,1.5% -1%,-1.5% 1%,1% 1.5%,-1% 1%,1.5% -1%,-1% 1%;opacity:0.8;}}
+
 @media (prefers-reduced-motion:reduce){
+  .postcard-flipper,.postcard-pin,.dapple{transition:none !important;animation:none !important;}
+  .postcard-pin::after{animation:none !important;}
   .room-view,.panel,.panels,.spot,.toast{transition:none !important;animation:none !important;}
   .spot.lantern.is-lit::before,.spot.lantern.is-lit::after,.water-light{animation:none !important;}
   .room .spot{animation:none !important;}
