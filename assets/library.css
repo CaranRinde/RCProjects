@@ -1,0 +1,347 @@
+/* ============================================================
+   THE LIBRARY — the shared look of every room on rcprojects.net
+   One file for all realms: change something here and every
+   room that links to this file changes with it.
+
+   WHAT LIVES WHERE
+   1. Colours and fonts        (the palette of the whole site)
+   2. The top bar              (return link, realm name, sound)
+   3. The room                 (the picture and its clickable spots)
+   4. What opens               (cards and scrolls)
+   5. The list under the room  (for phones)
+   6. Small things             (the hint, the toast, the secret)
+   7. The books                (covers, pages, the Contents)
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=MedievalSharp&display=swap');
+
+/* ---------- 1. COLOURS AND FONTS ---------- */
+:root{
+  --ink:#3B2F20;          /* body text */
+  --red:#B03030;          /* headings, the Red Circle */
+  --gold:#C4A04E;         /* lines and links on dark */
+  --gold-soft:#E8CE96;    /* cream-gold text on dark */
+  --brown:#8A7344;        /* quiet labels */
+  --muted:#A89070;        /* printer's notes */
+  --wood:#2A2218;         /* the dark around everything */
+  --page:#F3EACD;         /* parchment; each realm may set its own */
+  --glow:255,236,170;     /* the light that falls on a spot (r,g,b) */
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{background:#1c1610;}
+html,body{min-height:100%;}
+body{
+  background:radial-gradient(ellipse at 50% 40%, #3a2f21 0%, #2A2218 55%, #1c1610 100%) fixed;
+  font-family:'Cormorant Garamond',serif;color:var(--ink);
+}
+
+/* ---------- 2. THE TOP BAR ---------- */
+.top-bar{position:sticky;top:0;height:44px;z-index:50;
+  display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:0 1.2rem;
+  background:rgba(42,34,24,0.92);border-bottom:1px solid rgba(196,160,78,0.18);}
+.top-bar a,.top-bar button{font-family:'Cinzel',serif;font-size:0.74rem;letter-spacing:0.16em;
+  color:var(--gold);text-decoration:none;background:none;border:0;cursor:pointer;transition:color .3s;
+  white-space:nowrap;}
+.top-bar a:hover,.top-bar button:hover{color:var(--page);}
+.top-bar .realm-name{font-family:'Cinzel Decorative',serif;font-weight:700;font-size:0.9rem;
+  letter-spacing:0.14em;color:var(--gold-soft);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.top-bar .bar-right{display:flex;align-items:center;gap:1.1rem;}
+.top-bar .sound-toggle{border:1px solid rgba(196,160,78,0.45);padding:0.32rem 0.8rem;}
+.top-bar .sound-toggle:hover{border-color:var(--gold);background:rgba(196,160,78,0.12);}
+:focus-visible{outline:2px solid var(--gold-soft);outline-offset:2px;}
+
+/* ---------- 3. THE ROOM ----------
+   .room       the window we look through (it hides what the glide pushes out)
+   .room-view  the picture itself, kept at the picture's own shape
+   .spot       one clickable object, placed by left/top/width/height in %   */
+.room{position:relative;overflow:hidden;display:grid;place-items:center;
+  height:calc(100vh - 44px);height:calc(100dvh - 44px);}
+.room-view{position:relative;flex:none;
+  width:min(100%, calc((100vh - 44px) * var(--w) / var(--h)));
+  width:min(100%, calc((100dvh - 44px) * var(--w) / var(--h)));
+  aspect-ratio:var(--w) / var(--h);
+  transform-origin:0 0;
+  transition:transform .8s cubic-bezier(.5,.05,.2,1), filter .8s ease;
+  will-change:transform;}
+.room-pic{display:block;width:100%;height:100%;user-select:none;-webkit-user-drag:none;}
+.room-dust{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;}
+.room.is-gliding .room-view{filter:brightness(1.08) blur(1.5px);}
+.room.is-gliding .spot > span{opacity:0 !important;}
+
+.spot{position:absolute;display:block;background:transparent;border:0;border-radius:8px;
+  cursor:pointer;font:inherit;color:inherit;text-decoration:none;padding:0;
+  transition:background .35s, box-shadow .35s;-webkit-tap-highlight-color:transparent;}
+.spot[data-shape="round"]{border-radius:50%;}
+.spot:hover,.spot:focus-visible{outline:none;
+  background:rgba(var(--glow),0.14);
+  box-shadow:0 0 0 2px rgba(232,206,150,0.9), 0 0 26px 8px rgba(var(--glow),0.5);}
+/* the name that appears with the light */
+.spot > span{position:absolute;left:50%;bottom:calc(100% + 10px);transform:translate(-50%,6px);
+  font-family:'Cinzel',serif;font-size:0.78rem;letter-spacing:0.14em;white-space:nowrap;
+  color:var(--gold-soft);background:rgba(42,34,24,0.94);border:1px solid rgba(196,160,78,0.55);
+  padding:0.38rem 0.75rem;border-radius:3px;opacity:0;pointer-events:none;
+  transition:opacity .3s, transform .3s;z-index:5;}
+.spot.label-below > span{bottom:auto;top:calc(100% + 10px);transform:translate(-50%,-6px);}
+.spot.label-left > span{left:auto;right:0;transform:translate(0,6px);}
+.spot.label-right > span{left:0;transform:translate(0,6px);}
+.spot:hover > span,.spot:focus-visible > span{opacity:1;transform:translate(-50%,0);}
+.spot.label-left:hover > span,.spot.label-left:focus-visible > span,
+.spot.label-right:hover > span,.spot.label-right:focus-visible > span{transform:translate(0,0);}
+
+/* when the room first opens, each spot catches the light once, in turn */
+@keyframes spot-wake{0%,100%{box-shadow:0 0 0 0 rgba(var(--glow),0);background:transparent;}
+  45%{box-shadow:0 0 0 2px rgba(232,206,150,0.65), 0 0 22px 6px rgba(var(--glow),0.42);background:rgba(var(--glow),0.1);}}
+.room.is-waking .spot:not(.secret){animation:spot-wake 1.5s ease-in-out both;animation-delay:calc(var(--i) * .16s + .5s);}
+/* phones have no hover, so there the spots keep breathing gently */
+@media (hover:none){
+  .room .spot:not(.secret){animation:spot-wake 2.6s ease-in-out infinite;animation-delay:calc(var(--i) * .5s);}
+}
+
+/* ---------- 4. WHAT OPENS ----------
+   data-kind="card"    a small panel: a degree, a conference, a link
+   data-kind="scroll"  a long parchment that scrolls: an essay, a list    */
+.panels{position:fixed;inset:44px 0 0 0;z-index:40;display:grid;place-items:center;padding:1.6rem 1rem 1.4rem;
+  background:rgba(24,19,13,0.62);opacity:0;visibility:hidden;transition:opacity .45s, visibility 0s .45s;
+  overflow-y:auto;}
+.panels.is-open{opacity:1;visibility:visible;transition:opacity .45s;}
+.panel{display:none;position:relative;width:100%;max-width:38rem;
+  background:
+    radial-gradient(ellipse at 30% 12%, rgba(255,252,240,0.6), transparent 60%),
+    var(--page);
+  border:1px solid rgba(139,111,78,0.45);outline:1px solid rgba(196,160,78,0.5);outline-offset:-9px;
+  box-shadow:0 22px 60px rgba(0,0,0,0.55);
+  padding:2.3rem clamp(1.4rem,5vw,2.6rem) 1.6rem;}
+.panel.is-open{display:block;animation:panel-in .5s ease both;}
+@keyframes panel-in{from{opacity:0;transform:translateY(14px) scale(.97);}to{opacity:1;transform:none;}}
+.panel[data-kind="scroll"]{max-width:60rem;}
+
+.panel .kicker{font-family:'MedievalSharp',cursive;font-size:0.9rem;color:var(--brown);
+  text-align:center;letter-spacing:0.12em;margin-bottom:0.2rem;}
+.panel h2{font-family:'Cinzel Decorative',serif;font-weight:700;font-size:clamp(1.15rem,3vw,1.55rem);
+  color:var(--red);text-align:center;letter-spacing:0.05em;line-height:1.3;margin-bottom:1rem;}
+.panel h3{font-family:'Cinzel',serif;font-weight:600;font-size:1.02rem;color:var(--brown);
+  letter-spacing:0.06em;margin:1.3rem 0 0.4rem;}
+.panel p,.panel li{font-size:1.14rem;line-height:1.7;}
+.panel p{margin-bottom:0.85rem;}
+.panel p.centered{text-align:center;}
+.panel p.first::first-letter{font-family:'Cinzel Decorative',serif;font-size:2.6em;float:left;
+  line-height:0.85;padding:0.05em 0.12em 0 0;color:var(--red);}
+.panel ul,.panel ol{margin:0 0 0.9rem 1.5rem;}
+.panel em{color:#5a4630;}
+.panel .facts{font-family:'Cinzel',serif;font-size:0.82rem;letter-spacing:0.1em;color:var(--brown);
+  text-align:center;margin:-0.5rem 0 1.1rem;}
+.panel img{display:block;max-width:100%;height:auto;margin:0.6rem auto 0.9rem;
+  border:4px solid #fffdf5;box-shadow:0 2px 8px rgba(59,47,32,0.3);}
+.panel a{color:var(--red);text-decoration:none;border-bottom:1px dotted var(--red);}
+.panel a:hover{color:var(--brown);border-color:var(--brown);}
+/* a link dressed as a button: <a class="plate" href="...">Open the CV</a> */
+.panel a.plate,.page a.plate{text-decoration:none;display:block;width:fit-content;margin:1.1rem auto;padding:0.6rem 1.5rem;
+  font-family:'Cinzel',serif;font-size:0.84rem;letter-spacing:0.16em;color:var(--page);
+  background:linear-gradient(135deg,#5e1f1f,#4a1717 60%,#351010);border:1px solid var(--gold);
+  transition:transform .25s, box-shadow .25s;}
+.panel a.plate:hover,.page a.plate:hover{color:#fff;transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,0.3);}
+/* a wall of small cards inside a scroll: conferences, slides, photos */
+.panel .wall{display:grid;grid-template-columns:repeat(auto-fill,minmax(16rem,1fr));gap:0.9rem;margin:0.8rem 0 1rem;}
+.panel .wall > *{background:rgba(255,253,245,0.55);border:1px solid rgba(139,111,78,0.3);padding:0.9rem 1rem;}
+.panel .wall h3{margin-top:0;font-size:0.92rem;}
+.panel .wall p{font-size:1.02rem;line-height:1.5;margin-bottom:0.3rem;}
+/* a line between entries in a list of publications */
+.panel .entry{padding:0.8rem 0;border-top:1px dotted rgba(139,111,78,0.5);}
+.panel .entry:first-of-type{border-top:0;}
+.panel .entry p{margin-bottom:0.3rem;}
+
+.panel-close{position:absolute;top:0.9rem;right:1rem;width:2rem;height:2rem;border:0;background:none;
+  font-size:1.5rem;line-height:1;color:var(--brown);cursor:pointer;transition:color .25s, transform .25s;}
+.panel-close:hover{color:var(--red);transform:rotate(90deg);}
+.panel-back{display:block;margin:1.4rem auto 0;border:0;background:none;cursor:pointer;
+  font-family:'MedievalSharp',cursive;font-size:0.86rem;color:var(--muted);transition:color .25s;}
+.panel-back:hover{color:var(--red);}
+
+/* ---------- 5. THE LIST UNDER THE ROOM (phones and narrow windows) ---------- */
+.room-list{display:none;padding:1.2rem 1.2rem 2.2rem;max-width:34rem;margin:0 auto;}
+.room-list h2{font-family:'MedievalSharp',cursive;font-weight:400;font-size:0.95rem;color:var(--muted);
+  text-align:center;letter-spacing:0.1em;margin-bottom:0.7rem;}
+.room-list ul{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;}
+.room-list button,.room-list a{display:block;width:100%;text-align:center;cursor:pointer;
+  font-family:'Cinzel',serif;font-size:0.76rem;letter-spacing:0.1em;color:var(--gold-soft);text-decoration:none;
+  background:rgba(232,206,150,0.06);border:1px solid rgba(196,160,78,0.4);padding:0.75rem 0.4rem;}
+.room-list button:active,.room-list a:active{background:rgba(232,206,150,0.16);}
+@media (max-width:760px), (orientation:portrait){
+  .room{height:auto;}
+  .room-view{width:100%;}
+  .room-list{display:block;}
+  .room-hint{display:none;}
+  .spot > span{display:none;}
+  .top-bar{padding:0 0.7rem;gap:0.5rem;}
+  .top-bar a,.top-bar button{font-size:0.64rem;letter-spacing:0.08em;}
+  .top-bar .realm-name{display:none;}
+}
+
+/* ---------- 6. SMALL THINGS ---------- */
+.room-hint{position:absolute;left:0;right:0;bottom:0.7rem;text-align:center;pointer-events:none;
+  font-family:'MedievalSharp',cursive;font-size:0.85rem;color:rgba(255,246,222,0.92);
+  text-shadow:0 1px 6px rgba(0,0,0,0.85), 0 0 2px rgba(0,0,0,0.6);
+  transition:opacity .8s;}
+.room.has-explored .room-hint{opacity:0;}
+
+/* the hidden Red Circle: faint until found, then it stays lit */
+.spot.secret{border-radius:50%;background:url('img/rc-logo-small.png') center/contain no-repeat;
+  opacity:0.2;transition:opacity .5s, filter .5s, transform .5s;}
+.spot.secret:hover,.spot.secret:focus-visible{opacity:0.7;background-color:transparent;box-shadow:none;transform:scale(1.15);}
+.spot.secret.is-found{opacity:0.95;filter:drop-shadow(0 0 6px rgba(255,240,200,0.9));}
+
+.toast{position:fixed;left:50%;bottom:2rem;transform:translate(-50%,1.2rem);z-index:90;max-width:calc(100vw - 2rem);
+  font-family:'Cinzel',serif;font-size:0.82rem;letter-spacing:0.1em;line-height:1.6;text-align:center;
+  color:var(--gold-soft);background:rgba(42,34,24,0.96);border:1px solid var(--gold);padding:0.8rem 1.3rem;
+  opacity:0;pointer-events:none;transition:opacity .5s, transform .5s;}
+.toast.is-shown{opacity:1;transform:translate(-50%,0);}
+
+@media (prefers-reduced-motion:reduce){
+  .room-view,.panel,.panels,.spot,.toast{transition:none !important;animation:none !important;}
+  .room .spot{animation:none !important;}
+}
+
+/* a book opened inside a room: it floats over the dimmed room */
+.panels.has-book{padding:0;display:block;overflow:hidden;}
+.book-frame{display:block;width:100%;height:100%;border:0;background:transparent;animation:panel-in .5s ease both;}
+.book-close{position:absolute;top:0.7rem;right:1rem;z-index:2;border:1px solid rgba(196,160,78,0.5);
+  background:rgba(42,34,24,0.9);color:var(--gold-soft);cursor:pointer;padding:0.4rem 0.9rem;
+  font-family:'Cinzel',serif;font-size:0.72rem;letter-spacing:0.14em;transition:color .25s, border-color .25s;}
+.book-close:hover{color:#fff;border-color:var(--gold);}
+
+/* ---------- 7. THE BOOKS ----------
+   A book is its own small file. It sets two colours on its <body>:
+     --leather  the cover        --page  the paper
+   Everything else about how a book looks is here.                    */
+body.book-page{height:100vh;height:100dvh;overflow:hidden;--leather:#4A1717;}
+html.is-embedded,html.is-embedded body{background:transparent;}
+html.is-embedded .top-bar{display:none;}
+.stage{height:calc(100vh - 44px);height:calc(100dvh - 44px);display:flex;align-items:center;justify-content:center;padding:8px 6px 12px;}
+html.is-embedded .stage{height:100vh;height:100dvh;}
+#book{filter:drop-shadow(0 18px 40px rgba(0,0,0,0.55));}
+
+.page{
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(255,252,240,0.55), transparent 60%),
+    linear-gradient(105deg, rgba(59,47,32,0.06) 0%, transparent 8%, transparent 92%, rgba(59,47,32,0.10) 100%),
+    var(--page);
+  color:var(--ink);border:1px solid rgba(139,111,78,0.25);overflow:hidden;}
+.page-inner{height:100%;padding:clamp(1.4rem,4.5%,2.8rem) clamp(1.2rem,5%,2.6rem);
+  display:flex;flex-direction:column;overflow:hidden;}
+
+/* the foot of a page: the number in the middle, "Contents" in the corner */
+.page-foot{margin-top:auto;padding-top:0.6rem;position:relative;text-align:center;}
+.page-num{font-family:'Cinzel',serif;font-size:0.82rem;letter-spacing:0.3em;color:var(--brown);
+  text-decoration:none;cursor:pointer;}
+.toc-return{position:absolute;right:0;bottom:0;font-family:'MedievalSharp',cursive;
+  font-size:0.78rem;color:var(--muted);text-decoration:none;cursor:pointer;transition:color .3s;}
+.toc-return:hover{color:var(--red);}
+
+/* words on a page */
+.page .chapter-label{font-family:'MedievalSharp',cursive;font-size:0.9rem;color:var(--brown);
+  text-align:center;letter-spacing:0.12em;margin-bottom:0.15rem;}
+.page h2{font-family:'Cinzel Decorative',serif;font-weight:700;font-size:clamp(1.1rem,2.6vw,1.55rem);
+  color:var(--red);text-align:center;letter-spacing:0.06em;margin-bottom:0.9rem;}
+.page h3{font-family:'Cinzel',serif;font-weight:600;font-size:clamp(0.95rem,2vw,1.15rem);
+  color:var(--red);letter-spacing:0.06em;text-align:left;margin:1.1rem 0 0.45rem;}
+.page p{font-size:clamp(0.98rem,1.9vw,1.18rem);line-height:1.75;margin-bottom:0.85rem;text-align:justify;}
+.page p.centered{text-align:center;}
+.page p.first::first-letter{font-family:'Cinzel Decorative',serif;font-size:2.6em;float:left;
+  line-height:0.85;padding:0.05em 0.12em 0 0;color:var(--red);}
+.page em{font-style:italic;color:#5a4630;}
+.page ul,.page ol{margin:0 0 0.85rem 1.6rem;font-size:clamp(0.98rem,1.9vw,1.18rem);line-height:1.6;}
+.page .facts{font-family:'Cinzel',serif;font-size:0.8rem;letter-spacing:0.08em;color:var(--brown);
+  text-align:center;line-height:1.6;margin:-0.4rem 0 0.9rem;}
+.small-note,.page p.small-note{font-family:'MedievalSharp',cursive;font-size:0.82rem;color:var(--muted);text-align:center;}
+.space-above{margin-top:1.4rem;}
+.space-below{margin-bottom:1.4rem;}
+
+/* the endpaper: who the book is, and its Contents */
+.ep-head{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;margin-bottom:1.2rem;}
+.ep-ident{text-align:center;flex:0 0 auto;max-width:38%;}
+.ep-emblem{display:block;width:72px;max-width:100%;height:auto;margin:0 auto 0.35rem;}
+.ep-name{font-family:'Cinzel',serif;font-weight:700;font-size:0.92rem;letter-spacing:0.1em;color:var(--red);}
+.ep-epigraph{font-style:italic;text-align:right;color:#5a4630;
+  font-size:clamp(0.9rem,1.7vw,1.05rem);line-height:1.65;max-width:58%;padding-top:0.4rem;}
+.page h2.toc-heading{margin-top:0.4rem;}
+.toc{display:flex;flex-direction:column;gap:0.55rem;}
+.toc-row{display:flex;align-items:baseline;text-decoration:none;color:var(--ink);
+  font-size:clamp(0.95rem,1.8vw,1.12rem);cursor:pointer;}
+.toc-row:hover .toc-title{color:var(--red);}
+.toc-title{font-family:'Cormorant Garamond',serif;transition:color .25s;}
+.toc-dots{flex:1;border-bottom:2px dotted var(--muted);margin:0 0.5rem;transform:translateY(-4px);}
+.toc-num{font-family:'Cinzel',serif;font-size:0.85em;color:var(--brown);}
+.ep-note{margin-top:auto;padding-top:0.6rem;}
+
+/* emblem tints
+   .emb-gold  as painted                 (covers of the realm books)
+   .emb-cream tinted to cover-cream      (the Red Circle on covers and backs)
+   .emb-red   tinted to library red      (emblems on the endpaper)
+   in emb-red the LAST brightness number is the dial: lower = deeper red */
+.emb-cream{filter:grayscale(1) brightness(1.2) sepia(1) saturate(1.3) opacity(0.9);}
+.emb-red{filter:brightness(0) invert(0.2) sepia(1) saturate(30) brightness(0.69);}
+.logo-cover{display:block;margin:0 auto 0.9rem;width:52%;max-width:250px;height:auto;}
+.logo-back{display:block;margin:0 auto 0.6rem;width:30%;max-width:120px;height:auto;}
+.logo-cover.missing{border:2px dashed rgba(232,206,150,0.55);border-radius:50%;aspect-ratio:1/1;}
+
+/* pictures on a page */
+.page .img-full{display:block;width:100%;height:auto;margin:0.6rem 0 0.9rem;
+  border:4px solid #fffdf5;box-shadow:0 2px 8px rgba(59,47,32,0.3);}
+.page .img-left{float:left;width:46%;height:auto;margin:0.25rem 1rem 0.5rem 0;
+  border:4px solid #fffdf5;box-shadow:0 2px 8px rgba(59,47,32,0.3);}
+.page .img-right{float:right;width:46%;height:auto;margin:0.25rem 0 0.5rem 1rem;
+  border:4px solid #fffdf5;box-shadow:0 2px 8px rgba(59,47,32,0.3);}
+.page video{display:block;width:100%;height:auto;margin:0.6rem 0 0.9rem;border:4px solid #fffdf5;
+  box-shadow:0 2px 8px rgba(59,47,32,0.3);}
+.plate-caption{font-family:'MedievalSharp',cursive;font-size:0.8rem;color:var(--brown);
+  text-align:center;margin:-0.4rem 0 0.9rem;clear:both;}
+.page div.plate{border:1px dashed rgba(176,48,48,0.45);background:rgba(196,160,78,0.08);
+  padding:1.2rem 0.8rem;margin:0.6rem 0 0.9rem;text-align:center;}
+.page div.plate .small-note{color:var(--brown);}
+
+/* the list of realms (Red Circle book) */
+.realm{margin-bottom:0.7rem;}
+.realm-name{font-family:'Cinzel',serif;font-weight:700;font-size:0.95rem;letter-spacing:0.08em;color:var(--brown);}
+.realm-name .rc-dot{color:var(--red);}
+.page .realm p{margin:0.1rem 0 0;font-size:clamp(0.9rem,1.7vw,1.06rem);line-height:1.55;}
+
+/* the letter-writing desk: the seal and the address it reveals */
+.seal-link{display:block;width:150px;margin:1.1rem auto;padding:0.7rem 0;text-align:center;
+  font-family:'Cinzel',serif;font-size:0.85rem;letter-spacing:0.18em;color:#F3EACD;
+  background:radial-gradient(circle at 35% 30%, #c94040, #B03030 55%, #7d1f1f);
+  border-radius:50%/42%;box-shadow:0 3px 10px rgba(0,0,0,0.35), inset 0 0 12px rgba(0,0,0,0.35);
+  text-decoration:none;transition:transform .3s;}
+.seal-link:hover{transform:scale(1.06) rotate(-2deg);}
+.seal-address{font-family:'Cinzel',serif;font-size:1.05rem;letter-spacing:0.06em;
+  color:var(--red);text-align:center;margin-top:0.5rem;min-height:2.6rem;user-select:text;}
+.seal-address .seal-note{font-family:'MedievalSharp',cursive;font-size:0.78rem;color:var(--muted);letter-spacing:normal;}
+.ext-link{color:var(--red);text-decoration:none;border-bottom:1px dotted var(--red);}
+.ext-link:hover{color:var(--brown);border-color:var(--brown);}
+
+/* covers: the leather takes its colour from --leather on the book's <body> */
+.cover{background:var(--leather);color:#F3EACD;border:1px solid rgba(0,0,0,0.5);}
+@supports (background:color-mix(in srgb, red, blue)){
+  .cover{
+    background:
+      radial-gradient(ellipse at 50% 35%, rgba(196,160,78,0.14), transparent 65%),
+      linear-gradient(135deg, color-mix(in srgb, var(--leather), white 9%) 0%, var(--leather) 45%,
+                              color-mix(in srgb, var(--leather), black 28%) 100%);
+    border-color:color-mix(in srgb, var(--leather), black 50%);}
+}
+.cover .page-inner{align-items:center;justify-content:center;text-align:center;
+  border:2px solid rgba(196,160,78,0.55);outline:1px solid rgba(196,160,78,0.25);
+  outline-offset:-10px;margin:14px;height:calc(100% - 28px);}
+.cover-title{font-family:'Cinzel Decorative',serif;font-weight:700;
+  font-size:clamp(1.4rem,3.4vw,2.2rem);letter-spacing:0.12em;color:var(--gold-soft);
+  text-shadow:0 2px 6px rgba(0,0,0,0.5);margin:0.8rem 0 0.4rem;}
+.cover-sub{font-family:'Cormorant Garamond',serif;font-style:italic;
+  font-size:clamp(0.95rem,2vw,1.2rem);color:rgba(232,206,150,0.75);}
+
+@media (max-width:600px){
+  .page-inner{padding:1.1rem 1rem;}
+  .page p{text-align:left;}
+  .page .img-left,.page .img-right{float:none;width:100%;margin:0.6rem 0 0.9rem;}
+  .ep-head{flex-direction:column;align-items:center;}
+  .ep-ident{max-width:100%;}
+  .ep-epigraph{max-width:100%;text-align:center;padding-top:0;}
+}

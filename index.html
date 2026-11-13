@@ -7,6 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@400;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=MedievalSharp&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/libs/meshopt_decoder.js"></script>
 <style>
 /* ===== RESET =====  */
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -163,12 +164,12 @@ var locationInfo = {
   TheRedCircle: {
     title: 'The Red Circle',
     desc: 'Since the age of ten, there has been a Red Circle — a mark carried through decades, across every medium and every creation. Not a brand. A compass. A promise that somewhere beneath the noise, there is meaning.',
-    page: 'pages/red-circle.html'
+    page: 'realms/red-circle/index.html'
   },
   TheLectern: {
     title: 'The Lectern',
     desc: 'A lifetime of teaching — engineering mathematics, computing, the language of patterns. Presentations, published articles, conference talks. Knowledge shared is knowledge multiplied.',
-    page: 'pages/lectern.html'
+    page: 'realms/lectern/index.html'
   },
   ThePlaygrounds: {
     title: 'The Playgrounds',
@@ -212,7 +213,8 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.setClearColor(0xC8DDE8);                  // background colour
 renderer.toneMapping = THREE.LinearToneMapping;    // keeps colours, exposure works
-renderer.toneMappingExposure = 1.15;               // overall brightness
+renderer.toneMappingExposure = 1.20;               // overall brightness (Colour Lab, Nov 2026)
+canvas.style.filter = 'saturate(1.2) contrast(1.08)'; // richness and contrast (Colour Lab, Nov 2026)
 // Shadows — VSM type supports soft blurred edges
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.VSMShadowMap;
@@ -240,15 +242,15 @@ function updateCamera() {
 updateCamera();
 
 // ============================================================
-// LIGHTING — baked from the Light Lab session
+// LIGHTING — from the Colour Lab session (Nov 2026)
 // ============================================================
-// Hemisphere: soft ambient. sky #ffffff above, #f5faf6 below, intensity 0.4
-var hemi = new THREE.HemisphereLight(0xffffff, 0xf5faf6, 0.4);
+// Hemisphere: soft sky light. #cccccc above, #f5faf6 below, intensity 0.55
+var hemi = new THREE.HemisphereLight(0xcccccc, 0xf5faf6, 0.55); // sky light 0.55, from above 0.80
 scene.add(hemi);
 
-// Total sun intensity 0.6, split 50/50 (shadow lightness 50%):
+// Sun colour #fff1d7 (a little warmth). Shadow sun 0.39, fill sun 0.17:
 // SHADOW SUN — low (elev 15°, azim 230°): paints the long shadows
-var sun = new THREE.DirectionalLight(0xffe9bd, 0.3);
+var sun = new THREE.DirectionalLight(0xfff1d7, 0.39);
 sun.position.set(-5180, 1812, -4346);
 sun.castShadow = true;
 sun.shadow.mapSize.set(4096, 4096);
@@ -263,7 +265,7 @@ sun.shadow.radius = 10;       // shadow softness
 scene.add(sun);
 
 // FILL SUN — high (elev 78°, azim 360°): carries colour, casts no shadows
-var sun2 = new THREE.DirectionalLight(0xffe9bd, 0.3);
+var sun2 = new THREE.DirectionalLight(0xfff1d7, 0.17);
 sun2.position.set(0, 6847, 1456);
 scene.add(sun2);
 
@@ -272,8 +274,11 @@ scene.add(sun2);
 // ============================================================
 var loadBar = document.getElementById('loadBar');
 var loader = new THREE.GLTFLoader();
+loader.setMeshoptDecoder(MeshoptDecoder);   // reads the squeezed island
 
-loader.load('rcprojects_island.glb',
+// rcprojects_island_light.glb is the squeezed island (4.9 MB, Nov 2026).
+// To go back to the original, change the name below to 'rcprojects_island.glb'.
+loader.load('rcprojects_island_light.glb',
   // Success
   function(gltf) {
     var model = gltf.scene;

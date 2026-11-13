@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Publications — The Lectern — RC Projects</title>
+<link rel="stylesheet" href="../../assets/library.css">
+<!-- ============================================================
+     PUBLICATIONS — a book that lives in the Lectern.
+     It opens over the room when its object is clicked, and it also
+     works by itself if someone opens this file directly.
+     The look comes from  assets/library.css,  the behaviour from  assets/library.js.
+
+     ONE PUBLICATION = ONE PAGE.
+     To add one: copy a whole block, from  <div class="page" data-title="...">
+     down to its matching  </div>,  and paste it above the colophon.
+     - data-title="..." is the short name shown in the Contents
+     - href="..." on the READ THE ARTICLE button is the link to the article
+
+     Inside a page you can use everything the other books use:
+     <p>, <p class="first">, <p class="centered">, <h3>, <strong>, <em>,
+     <img class="img-full" src="photo.jpg" alt="">, <div class="plate-caption">,
+     <a class="plate" href="...">WORDS</a>  (a link dressed as a button).
+
+     Pages do not flow: text that does not fit on a page is cut off,
+     so check each page after you fill it. A long piece can continue on
+     a second page: add a page WITHOUT data-title right after it.
+     The page count never needs to be even; the book fixes that itself.
+     ============================================================ -->
+</head>
+<body class="book-page" style="--leather:#223148;--page:#EFEBDB" data-realm-name="the Lectern" data-music="">
+
+<header class="top-bar">
+  <a href="index.html">&#8592; BACK TO THE LECTERN</a>
+  <span class="realm-name">Publications</span>
+  <span class="bar-right"><button type="button" class="sound-toggle" id="soundToggle">SOUND: ON</button></span>
+</header>
+
+<div class="stage">
+  <div id="book">
+
+    <!-- ========== FRONT COVER ========== -->
+    <div class="page cover" data-density="hard">
+      <div class="page-inner">
+        <img class="logo-cover emb-gold" src="../../assets/img/rc-lectern.png" alt="">
+        <div class="cover-title">PUBLICATIONS</div>
+        <div class="cover-sub">the written record</div>
+      </div>
+    </div>
+
+    <!-- ========== ENDPAPER : the Contents write themselves here ========== -->
+    <div class="page">
+      <div class="page-inner endpaper">
+        <div class="ep-head">
+          <div class="ep-ident">
+            <img class="ep-emblem emb-red" src="../../assets/img/rc-lectern.png" alt="">
+            <div class="ep-name">Publications</div>
+          </div>
+          <div class="ep-epigraph">What was found,<br>written down so others can use it.</div>
+        </div>
+        <h2 class="toc-heading">Contents</h2>
+        <nav class="toc" id="tocList"></nav>
+        <p class="small-note ep-note">~ drag a corner, or click the page edge, to turn ~</p>
+      </div>
+    </div>
+
+    <!-- ========== A PUBLICATION (first) ========== -->
+    <div class="page" data-title="Short title for the Contents">
+      <div class="page-inner">
+        <div class="chapter-label">journal article &middot; year</div>
+        <h2>Full Title of the Article</h2>
+        <p class="facts">Authors<br>Journal or conference, volume, pages</p>
+        <h3>Abstract</h3>
+        <p>The abstract goes here, in a paragraph. A page holds roughly 250 words beside the title, so a long abstract is best trimmed to its heart, or continued on a second page.</p>
+        <a class="plate" href="https://example.org" target="_blank" rel="noopener">READ THE ARTICLE</a>
+        <div class="page-foot"><a class="page-num"></a><a class="toc-return">Contents</a></div>
+      </div>
+    </div>
+
+    <!-- ========== A PUBLICATION (second) ========== -->
+    <div class="page" data-title="Short title for the Contents">
+      <div class="page-inner">
+        <div class="chapter-label">journal article &middot; year</div>
+        <h2>Full Title of the Article</h2>
+        <p class="facts">Authors<br>Journal or conference, volume, pages</p>
+        <h3>Abstract</h3>
+        <p>The abstract goes here, in a paragraph. A page holds roughly 250 words beside the title, so a long abstract is best trimmed to its heart, or continued on a second page.</p>
+        <a class="plate" href="https://example.org" target="_blank" rel="noopener">READ THE ARTICLE</a>
+        <div class="page-foot"><a class="page-num"></a><a class="toc-return">Contents</a></div>
+      </div>
+    </div>
+
+    <!-- ========== COLOPHON ========== -->
+    <div class="page">
+      <div class="page-inner">
+        <div style="margin:auto 0 0;text-align:center;">
+          <p class="centered" style="font-style:italic;">Every article here began as a question<br>asked in a classroom.</p>
+          <p class="small-note">rcprojects.net</p>
+        </div>
+        <div class="page-foot"><a class="page-num"></a><a class="toc-return">Contents</a></div>
+      </div>
+    </div>
+
+    <!-- To add more pages, paste them ABOVE the colophon. -->
+
+    <!-- ========== BACK COVER ========== -->
+    <div class="page cover" data-density="hard">
+      <div class="page-inner">
+        <img class="logo-back emb-cream" src="../../assets/img/rc-logo.png" alt="">
+        <div class="cover-sub">rcprojects.net</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="../../assets/vendor/page-flip.browser.js"></script>
+<script src="../../assets/library.js"></script>
+</body>
+</html>

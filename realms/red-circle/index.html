@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Red Circle — RC Projects</title>
+<link rel="stylesheet" href="../../assets/library.css">
+<!-- ============================================================
+     THE RED CIRCLE — one book in the library of rcprojects.net
+     The look comes from  assets/library.css   (shared by every book and room)
+     The behaviour from   assets/library.js    (shared by every book)
+     This file holds only the pages and your words.
+
+     CARAN'S EDITING LEGEND
+
+     TEXT
+     <p>...</p>                      one paragraph (justified by default)
+     <p class="centered">            centred paragraph
+     <p class="first">               paragraph with the big red first letter
+     <h3>A subheading</h3>           a subheading inside a chapter
+     <strong>bold</strong>  <em>italics</em>  <br> line break
+     <ul><li>...</li></ul>           bullet points
+
+     SPACING  (add to any element as class="...")
+     class="space-above"  class="space-below"
+     or by hand:  style="margin-bottom:1.5rem"  (any number)
+
+     IMAGES  (put the picture in this folder, then:)
+     <img class="img-full"  src="myphoto.jpg" alt="">    full width
+     <img class="img-left"  src="myphoto.jpg" alt="">    left, text wraps round it
+     <img class="img-right" src="myphoto.jpg" alt="">    right, text wraps round it
+     <div class="plate-caption">caption text</div>        caption under any image
+
+     LINKS
+     <a class="ext-link" href="https://..." target="_blank" rel="noopener">words</a>
+     <a class="plate" href="...">WORDS</a>                 a link dressed as a button
+
+     PAGES, CHAPTERS AND THE CONTENTS
+     One page = one <div class="page"> ... </div> block.
+     To add a page: copy a whole block and paste it before the back cover.
+     To make a page a CHAPTER (so it appears in the Contents):
+       <div class="page" data-title="AI and I">
+     Page numbers and the Contents write themselves every time the book opens.
+     You no longer need to keep the page count even: if it is odd, the book
+     adds a blank leaf before the back cover by itself.
+
+     Pages do not flow: text that does not fit on a page is cut off, so
+     check each page after you fill it.
+
+     COLOURS  (on the <body> line below)
+     --leather is the cover, --page is the paper.
+     ============================================================ -->
+</head>
+<body class="book-page" style="--leather:#4A1717;--page:#F3EACD" data-realm-name="the Red Circle" data-music="">
+
+<header class="top-bar">
+  <a href="../../index.html">&#8592; RETURN TO THE MAP</a>
+  <span class="realm-name">The Red Circle</span>
+  <span class="bar-right"><button type="button" class="sound-toggle" id="soundToggle">SOUND: ON</button></span>
+</header>
+
+<div class="stage">
+  <div id="book">
+
+    <!-- ========== FRONT COVER (hard) ========== -->
+    <div class="page cover" data-density="hard">
+      <div class="page-inner">
+        <img class="logo-cover emb-cream" src="../../assets/img/rc-logo.png" alt="">
+        <div class="cover-title">THE RED CIRCLE</div>
+        <div class="cover-sub">the story of a mark</div>
+      </div>
+    </div>
+
+    <!-- ========== ENDPAPER : identity + Contents (back of front cover) ========== -->
+    <div class="page">
+      <div class="page-inner endpaper">
+        <div class="ep-head">
+          <div class="ep-ident">
+            <img class="ep-emblem" src="../../assets/img/rc-logo.png" alt="">
+            <div class="ep-name">The Red Circle</div>
+          </div>
+          <div class="ep-epigraph">Not a brand. A compass.<br>A promise that somewhere beneath the noise,<br>there is meaning.</div>
+        </div>
+        <h2 class="toc-heading">Contents</h2>
+        <nav class="toc" id="tocList"></nav>
+        <p class="small-note ep-note">~ drag a corner, or click the page edge, to turn ~</p>
+      </div>
+    </div>
+
+    <!-- ========== CHAPTER I : THE ORIGIN OF THE NAME ========== -->
+    <div class="page" data-title="Who is the Red Circle?">
+      <div class="page-inner">
+        <div class="chapter-label">chapter one</div>
+        <h2>Who is the Red Circle?</h2>
+        <h3>The Origin of the Name</h3>
+        <p class="first">Write the true story here, in your own voice — the moment, at the age of ten, when the Red Circle first appeared, and why it never left. This placeholder text is only holding the page warm for you. Replace every word of it; the book is patient.</p>
+        <p>A second paragraph can carry the story onward — what the mark meant then, and what it has come to mean across the decades since.</p>
+        <div class="page-foot"><a class="page-num"></a><a class="toc-return">Contents</a></div>
+      </div>
+    </div>
+
+    <!-- ========== THE PICTURES ========== -->
+    <div class="page">
+      <div class="page-inner">
+        <div class="plate">
+          <div class="small-note">[ a picture will live here ]</div>
+          <div class="small-note">replace this box with an &lt;img class="img-full"&gt; — see the legend at the top of this file</div>
+        </div>
+        <div class="plate">
+          <div class="small-note">[ and perhaps a second one here ]</div>
+        </div>
+        <p class="centered" style="font-style:italic;">Captions in your own hand go beneath each picture.</p>
+        <div class="page-foot"><a class="page-num"></a><a class="toc-return">Contents</a></div>
+      </div>
+    </div>
+
+    <!-- ========== CHAPTER II : WHO I AM ========== -->
+    <div class="page" data-title="Who I Am">
+      <div class="page-inner">
+        <div class="chapter-label">chapter two</div>
+        <h2>Who I Am</h2>
+        <p class="first">Your brief history goes here — psychologist, teacher of mathematics, doctor of informatics, painter, writer of worlds. Tell it as a story, not a list; the Lectern will hold the formal record, this page holds the person.</p>
+        <p><em>The full, formal curriculum vitae lives in The Lectern — this page is only the heart of it.</em></p>
+        <div class="page-foot"><a class="page-num"></a><a class="toc-return">Contents</a></div>
+      </div>
+    </div>
+
+    <!-- ========== CHAPTER III : WHAT THE MAP HOLDS (part one) ========== -->
+    <div class="page" data-title="What the Map Holds">
+      <div class="page-inner">
+        <div class="chapter-label">chapter three</div>
+        <h2>What the Map Holds</h2>
+        <div class="realm"><div class="realm-name"><span class="rc-dot">&#9679;</span> THE LECTERN</div>
+          <p>A lifetime of teaching — mathematics, computing, the language of patterns. Publications, talks, and the formal record.</p></div>
+        <div class="realm"><div class="realm-name"><span class="rc-dot">&#9679;</span> THE PLAYGROUNDS</div>
+          <p>Educational RPGs that turn mathematics into adventure — where learning is play, and play is learning.</p></div>
+        <div class="realm"><div class="realm-name"><span class="rc-dot">&#9679;</span> THE ATELIER</div>
+          <p>Murals, gardens, and things made by hand — where imagination meets the physical world.</p></div>
+        <div class="realm"><div class="realm-name"><span class="rc-dot">&#9679;</span> THE PONDERING</div>
+          <p>A quiet place by the water, for thoughts on how the world ought to be.</p></div>
+        <div class="page-foot"><a class="page-num"></a><a class="toc-return">Contents</a></div>
+      </div>
+    </div>
+
+    <!-- ========== THE REALMS (part two) ========== -->
+    <div class="page">
+      <div class="page-inner">
+        <div class="realm space-above"><div class="realm-name"><span class="rc-dot">&#9679;</span> EDGEWOOD</div>
+          <p>Five regions, thirty characters — a fictional world built over a lifetime, soon to become a book, now rising in Unreal Engine.</p></div>
+        <div class="realm"><div class="realm-name"><span class="rc-dot">&#9679;</span> THE COMPANION</div>
+          <p>The bridge between the two worlds — and the story of an intelligence that listens, truly listens.</p></div>
+        <div class="realm"><div class="realm-name"><span class="rc-dot">&#9679;</span> THE FOREST</div>
+          <p>Still growing. Something will take root there soon.</p></div>
+        <p class="small-note space-above">Cross the river on the map to walk between the real and the imagined.</p>
+        <div class="page-foot"><a class="page-num"></a><a class="toc-return">Contents</a></div>
+      </div>
+    </div>
+
+    <!-- ========== CHAPTER IV : WRITE TO ME ========== -->
+    <div class="page" data-title="Write to Me">
+      <div class="page-inner">
+        <div class="chapter-label">chapter four</div>
+        <h2>Write to Me</h2>
+        <p class="centered">Letters are welcome at this desk.<br>Press the seal, and the address is yours.</p>
+        <a class="seal-link" id="sealMail" href="#">WRITE</a>
+        <div class="seal-address" id="sealAddress"></div>
+        <p class="centered" style="font-size:0.98rem;">
+          Or find me at
+          <a class="ext-link" href="https://www.linkedin.com" target="_blank" rel="noopener">LinkedIn</a>
+          <!-- ^ replace with your real LinkedIn profile URL -->
+        </p>
+        <div class="page-foot"><a class="page-num"></a><a class="toc-return">Contents</a></div>
+      </div>
+    </div>
+
+    <!-- ========== CHAPTER V : THE POSTBAG ========== -->
+    <div class="page" data-title="The Postbag">
+      <div class="page-inner">
+        <div class="chapter-label">from the letters</div>
+        <h2>The Postbag</h2>
+        <p class="centered" style="font-style:italic;">Letters sent to the island may be answered here, —<br>
+        unless you ask otherwise.</p>
+        <p>Your first reply will go here.</p>
+        <div class="page-foot"><a class="page-num"></a><a class="toc-return">Contents</a></div>
+      </div>
+    </div>
+
+    <!-- ========== COLOPHON ========== -->
+    <div class="page">
+      <div class="page-inner">
+        <div style="margin:auto 0 0;text-align:center;">
+          <p class="centered" style="font-style:italic;">This book was begun in July 2026,<br>
+          ten years after its address was first promised.</p>
+          <p class="small-note">rcprojects.net</p>
+        </div>
+        <div class="page-foot"><a class="page-num"></a><a class="toc-return">Contents</a></div>
+      </div>
+    </div>
+
+    <!-- To add more pages, paste copies of a page div HERE, before the back cover. -->
+
+    <!-- ========== BACK COVER (hard) — the library's shared mark ========== -->
+    <div class="page cover" data-density="hard">
+      <div class="page-inner">
+        <img class="logo-back emb-cream" src="../../assets/img/rc-logo.png" alt="">
+        <div class="cover-sub">rcprojects.net</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="../../assets/vendor/page-flip.browser.js"></script>
+<script src="../../assets/library.js"></script>
+</body>
+</html>

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Lectern — RC Projects</title>
+<meta name="description" content="The Lectern: a scholar's study holding the degrees, research, publications, conferences and CV of Caran.">
+<link rel="stylesheet" href="../../assets/library.css">
+<!-- ============================================================
+     THE LECTERN — a room, not a page.
+     The look comes from  assets/library.css   (shared by every room)
+     The behaviour from   assets/rooms.js      (shared by every room)
+     This file holds only what is special to the Lectern:
+     the picture, where the objects are, and your words.
+
+     CARAN'S EDITING LEGEND
+
+     PART ONE — THE OBJECTS (inside <div class="room-view">)
+     One clickable object = one line:
+       <button class="spot" data-opens="cv" style="left:..%;top:..%;width:..%;height:..%">The CV</button>
+     - the words between the tags are the name shown on hover
+     - data-opens="cv" opens the panel further down that has id="cv"
+     - data-book="publications.html" opens that book over the room instead
+     - left / top / width / height place it on the picture, in % of the
+       picture's width and height (left 50% = halfway across)
+     - data-sound="paper" or "wood" chooses the sound
+     - data-shape="round" makes the glow round
+
+     PART TWO — YOUR WORDS (the <section class="panel"> blocks)
+     One panel = one thing that opens.
+       data-kind="card"    small: a degree, a short note
+       data-kind="scroll"  long and scrolling: an essay, a list
+     Inside a panel you can use:
+       <p>...</p>              a paragraph        <p class="first"> big red first letter
+       <strong>bold</strong>   <em>italics</em>   <h3>A subheading</h3>
+       <ul><li>...</li></ul>   bullet points
+       <img src="photo.jpg" alt="">               a picture (put the file in this folder)
+       <a href="https://...">words</a>            a link
+       <a class="plate" href="cv.pdf">Open</a>    a link dressed as a button
+       <div class="wall"> ... </div>              a grid of small cards
+       <div class="entry"> ... </div>             one item in a list, with a dotted line above
+     ============================================================ -->
+</head>
+<body style="--page:#EFEBDB">
+
+<header class="top-bar">
+  <a href="../../index.html">&#8592; RETURN TO THE MAP</a>
+  <span class="realm-name">The Lectern</span>
+  <span class="bar-right">
+    <a href="#cv">CV</a>
+    <button type="button" class="sound-toggle" id="soundToggle">SOUND: ON</button>
+  </span>
+</header>
+
+<!-- data-dust="left top right bottom": where the window light falls, in % of the picture -->
+<main class="room" data-realm="lectern" data-realm-name="the Lectern" data-dust="1 6 58 82">
+  <div class="room-view" style="--w:1672;--h:941">
+    <img class="room-pic" src="lectern-room.jpg" width="1672" height="941"
+         alt="A sunlit scholar's study: eight framed certificates on a green wall, a bookshelf, a cork board, and a desk with a globe, a sheet of paper and an open notebook.">
+
+    <!-- ===== THE EIGHT FRAMES (top row, then bottom row) ===== -->
+    <button class="spot" data-opens="degree-1" style="left:37.0%;top:16.4%;width:6.6%;height:15.8%">First degree</button>
+    <button class="spot" data-opens="degree-2" style="left:44.3%;top:16.4%;width:6.6%;height:15.8%">Second degree</button>
+    <button class="spot" data-opens="degree-3" style="left:51.6%;top:16.4%;width:6.6%;height:15.8%">Third degree</button>
+    <button class="spot" data-opens="degree-4" style="left:59.0%;top:16.4%;width:6.6%;height:15.8%">Fourth degree</button>
+    <button class="spot" data-opens="degree-5" style="left:37.0%;top:34.0%;width:6.6%;height:15.9%">Fifth degree</button>
+    <button class="spot" data-opens="degree-6" style="left:44.3%;top:34.0%;width:6.6%;height:15.9%">Sixth degree</button>
+    <button class="spot" data-opens="degree-7" style="left:51.6%;top:34.0%;width:6.6%;height:15.9%">Seventh degree</button>
+    <button class="spot" data-opens="degree-8" style="left:59.0%;top:34.0%;width:6.6%;height:15.9%">Eighth degree</button>
+
+    <!-- ===== THE REST OF THE ROOM ===== -->
+    <button class="spot" data-book="conferences.html" style="left:66.8%;top:19.6%;width:20.1%;height:30.8%">Conferences</button>
+    <button class="spot" data-book="publications.html" data-sound="wood" style="left:17.6%;top:14.6%;width:16.0%;height:63.6%">Publications</button>
+    <button class="spot" data-opens="teaching" data-sound="wood" style="left:26.6%;top:55.0%;width:5.6%;height:5.6%">Teaching materials</button>
+    <button class="spot" data-opens="research" data-shape="round" style="left:32.3%;top:52.4%;width:10.3%;height:26.4%">Research</button>
+    <button class="spot" data-opens="cv" style="left:47.6%;top:73.0%;width:12.6%;height:9.4%">Curriculum vitae</button>
+    <button class="spot" data-opens="now-and-next" style="left:64.6%;top:71.6%;width:17.2%;height:12.8%">Now and next</button>
+    <a class="spot" href="../../index.html" data-sound="wood" style="left:92.0%;top:13.0%;width:8.0%;height:70.5%">Back to the map</a>
+
+    <!-- ===== THE HIDDEN RED CIRCLE (no name: it has to be found) ===== -->
+    <button class="spot secret" style="left:5.1%;top:42.6%;width:1.6%;height:2.9%"></button>
+  </div>
+  <p class="room-hint">~ whatever catches the light will open ~</p>
+</main>
+
+
+<!-- ============================================================
+     YOUR WORDS. Everything below is placeholder text keeping the
+     panels warm. Replace it with your own.
+     ============================================================ -->
+
+<!-- ========== THE CV ========== -->
+<section class="panel" id="cv" data-kind="card">
+  <div class="kicker">on the desk</div>
+  <h2>Curriculum Vitae</h2>
+  <p class="centered">Two pages for those in a hurry, and the long version for those who are not.</p>
+  <!-- When your PDF is ready, put cv.pdf in this folder and remove the comment marks around the next line:
+  <a class="plate" href="cv.pdf" target="_blank" rel="noopener">OPEN THE TWO-PAGE CV</a>
+  -->
+  <p class="centered"><em>The two-page CV will open from here once its PDF is in place.</em></p>
+  <a class="plate" href="#extended-cv">READ THE EXTENDED CV</a>
+</section>
+
+<section class="panel" id="extended-cv" data-kind="scroll">
+  <div class="kicker">the long version</div>
+  <h2>Extended CV</h2>
+  <h3>Positions</h3>
+  <div class="entry"><p><strong>Role, institution</strong> (years)</p><p>One or two lines on what you did there.</p></div>
+  <div class="entry"><p><strong>Role, institution</strong> (years)</p><p>One or two lines on what you did there.</p></div>
+  <h3>Teaching</h3>
+  <p>The modules you have taught and led.</p>
+  <h3>Skills and tools</h3>
+  <p>What you work with.</p>
+</section>
+
+<!-- ========== THE EIGHT DEGREES ========== -->
+<section class="panel" id="degree-1" data-kind="card">
+  <div class="kicker">first frame</div>
+  <h2>Name of the Degree</h2>
+  <p class="facts">UNIVERSITY &middot; YEAR</p>
+  <p>What this degree was, and why you chose it.</p>
+  <h3>What I learned</h3>
+  <p>The thing you carried out of it and still use.</p>
+</section>
+
+<section class="panel" id="degree-2" data-kind="card">
+  <div class="kicker">second frame</div>
+  <h2>Name of the Degree</h2>
+  <p class="facts">UNIVERSITY &middot; YEAR</p>
+  <p>What this degree was, and why you chose it.</p>
+  <h3>What I learned</h3>
+  <p>The thing you carried out of it and still use.</p>
+</section>
+
+<section class="panel" id="degree-3" data-kind="card">
+  <div class="kicker">third frame</div>
+  <h2>Name of the Degree</h2>
+  <p class="facts">UNIVERSITY &middot; YEAR</p>
+  <p>What this degree was, and why you chose it.</p>
+  <h3>What I learned</h3>
+  <p>The thing you carried out of it and still use.</p>
+</section>
+
+<section class="panel" id="degree-4" data-kind="card">
+  <div class="kicker">fourth frame</div>
+  <h2>Name of the Degree</h2>
+  <p class="facts">UNIVERSITY &middot; YEAR</p>
+  <p>What this degree was, and why you chose it.</p>
+  <h3>What I learned</h3>
+  <p>The thing you carried out of it and still use.</p>
+</section>
+
+<section class="panel" id="degree-5" data-kind="card">
+  <div class="kicker">fifth frame</div>
+  <h2>Name of the Degree</h2>
+  <p class="facts">UNIVERSITY &middot; YEAR</p>
+  <p>What this degree was, and why you chose it.</p>
+  <h3>What I learned</h3>
+  <p>The thing you carried out of it and still use.</p>
+</section>
+
+<section class="panel" id="degree-6" data-kind="card">
+  <div class="kicker">sixth frame</div>
+  <h2>Name of the Degree</h2>
+  <p class="facts">UNIVERSITY &middot; YEAR</p>
+  <p>What this degree was, and why you chose it.</p>
+  <h3>What I learned</h3>
+  <p>The thing you carried out of it and still use.</p>
+</section>
+
+<section class="panel" id="degree-7" data-kind="card">
+  <div class="kicker">seventh frame</div>
+  <h2>Name of the Degree</h2>
+  <p class="facts">UNIVERSITY &middot; YEAR</p>
+  <p>What this degree was, and why you chose it.</p>
+  <h3>What I learned</h3>
+  <p>The thing you carried out of it and still use.</p>
+</section>
+
+<section class="panel" id="degree-8" data-kind="card">
+  <div class="kicker">eighth frame</div>
+  <h2>Name of the Degree</h2>
+  <p class="facts">UNIVERSITY &middot; YEAR</p>
+  <p>What this degree was, and why you chose it.</p>
+  <h3>What I learned</h3>
+  <p>The thing you carried out of it and still use.</p>
+</section>
+
+<!-- ========== RESEARCH (the globe) ========== -->
+<section class="panel" id="research" data-kind="scroll">
+  <div class="kicker">the globe</div>
+  <h2>Research</h2>
+  <p class="first">Your research area goes here, in your own voice: game-based learning, and why a role-playing game can teach mathematics where a worksheet cannot.</p>
+  <h3>The question I keep asking</h3>
+  <p>A paragraph on what you are trying to find out.</p>
+  <h3>What I have built to answer it</h3>
+  <p>The games are the evidence. They live in The Playgrounds.</p>
+  <a class="plate" href="../../pages/playgrounds.html">VISIT THE PLAYGROUNDS</a>
+</section>
+
+<!-- ========== PUBLICATIONS and CONFERENCES ==========
+     These two are books now. Their pages live in their own files,
+     next to this one:  publications.html  and  conferences.html -->
+
+<!-- ========== TEACHING MATERIALS (the small chest) ========== -->
+<section class="panel" id="teaching" data-kind="scroll">
+  <div class="kicker">the small chest</div>
+  <h2>Teaching Materials</h2>
+  <p class="centered">Lecture slides and notes, kept where a student can find them.</p>
+  <div class="entry">
+    <p><strong>Module name</strong></p>
+    <p>What the module covers, and the slides that go with it.</p>
+  </div>
+  <div class="entry">
+    <p><strong>Module name</strong></p>
+    <p>What the module covers, and the slides that go with it.</p>
+  </div>
+</section>
+
+<!-- ========== NOW AND NEXT (the open notebook) ========== -->
+<section class="panel" id="now-and-next" data-kind="scroll">
+  <div class="kicker">the open notebook</div>
+  <h2>Now and Next</h2>
+  <h3>What I am working on</h3>
+  <p>The projects on your desk this term.</p>
+  <h3>What comes next</h3>
+  <p>Where you want the work to go.</p>
+</section>
+
+<script src="../../assets/rooms.js"></script>
+</body>
+</html>
