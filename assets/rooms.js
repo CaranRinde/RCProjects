@@ -202,10 +202,18 @@
   document.body.appendChild(holder);
   holder.addEventListener('click', function (e) { if (e.target === holder) close(); });
 
+  var bookNote = null, bookTimer = null;
   function removeBook() {
+    window.clearTimeout(bookTimer);
     if (bookFrame) { holder.removeChild(bookFrame); bookFrame = null; }
     if (bookClose) { holder.removeChild(bookClose); bookClose = null; }
-    holder.classList.remove('has-book');
+    if (bookNote) { holder.removeChild(bookNote); bookNote = null; }
+    holder.classList.remove('has-book'); holder.classList.remove('book-loading');
+  }
+  // the book stays hidden until it has finished building itself, with a note so the wait never looks like nothing
+  function bookReady() {
+    window.clearTimeout(bookTimer);
+    holder.classList.remove('book-loading');
   }
   // a book is its own file; it opens in a frame over the dimmed room
   function showBook(url, name) {
@@ -214,13 +222,32 @@
     bookClose = document.createElement('button'); bookClose.type = 'button'; bookClose.className = 'book-close';
     bookClose.textContent = 'CLOSE THE BOOK'; bookClose.addEventListener('click', close);
     bookFrame = document.createElement('iframe'); bookFrame.className = 'book-frame';
-    bookFrame.setAttribute('title', name || 'A book'); bookFrame.src = url;
-    holder.appendChild(bookClose); holder.appendChild(bookFrame);
-    holder.classList.add('has-book'); holder.classList.add('is-open'); holder.scrollTop = 0;
+    bookFrame.setAttribute('title', name || 'A book');
+    bookNote = document.createElement('p'); bookNote.className = 'book-note'; bookNote.textContent = '~ the book is opening ~';
+    bookFrame.addEventListener('load', function () { bookTimer = window.setTimeout(bookReady, 650); });
+    bookFrame.src = url;
+    holder.appendChild(bookNote); holder.appendChild(bookClose); holder.appendChild(bookFrame);
+    holder.classList.add('has-book'); holder.classList.add('book-loading'); holder.classList.add('is-open'); holder.scrollTop = 0;
+    bookTimer = window.setTimeout(bookReady, 12000);             // never hide a book for ever, whatever happens
     document.body.style.overflow = 'hidden';
     bookClose.focus({ preventScroll: true });
   }
   window.addEventListener('message', function (e) { if (e.data === 'rc-close-book' && bookFrame) close(); });
+
+  // once the room has loaded, quietly fetch its books and the book machinery,
+  // so the first book opened does not have to wait for the internet
+  var assetsBase = (document.currentScript && document.currentScript.src || '').replace(/rooms\.js(\?.*)?$/, '');
+  window.addEventListener('load', function () {
+    var urls = [];
+    view.querySelectorAll('.spot[data-book]').forEach(function (s) { urls.push(s.getAttribute('data-book')); });
+    if (!urls.length) return;
+    if (assetsBase) urls.push(assetsBase + 'library.js', assetsBase + 'vendor/page-flip.browser.js');
+    window.setTimeout(function () {
+      urls.forEach(function (u) {
+        var l = document.createElement('link'); l.rel = 'prefetch'; l.href = u; document.head.appendChild(l);
+      });
+    }, 1200);
+  });
 
   function show(id) {
     var p = document.getElementById(id);
