@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Pondering — RC Projects</title>
+<meta name="description" content="The Pondering: a quiet pond in watercolour, where each lily pad holds an essay.">
+<link rel="stylesheet" href="../../assets/library.css">
+<!-- ============================================================
+     THE PONDERING — a pond in watercolour, cut out on torn paper.
+     The look comes from  assets/library.css   (shared by every room)
+     The behaviour from   assets/rooms.js      (shared by every room)
+
+     CARAN'S EDITING LEGEND
+
+     THE LILY PADS work like the lanterns on the bridge:
+       <button class="spot pad" data-opens="essay-1" data-sound="plop" ...>Title</button>
+     - A pad WITH  data-opens="essay-1"  opens the scroll further down with id="essay-1".
+     - A pad WITHOUT  data-opens  is empty: it ripples when clicked, and nothing opens.
+     TO WRITE A NEW ESSAY:
+       1. copy a whole essay block below (from <section ...> to </section>),
+          paste it underneath, and change its id to the next number (essay-3)
+       2. on an empty pad's line, add   data-opens="essay-3" data-sound="plop"
+          and change the words between the tags to the essay's title.
+
+     THE FROG'S PICTURES (the pinboard, further down)
+       One picture is one line:
+         <figure><img class="zoomable" src="art/my-picture.jpg" alt=""><figcaption>where it comes from</figcaption></figure>
+       Put the picture in the  art  folder. The words in <figcaption> appear under it,
+       and under the large view; leave them empty if you want none: <figcaption></figcaption>
+     ============================================================ -->
+</head>
+<body style="--page:#F2EBDD">
+
+<header class="top-bar">
+  <a href="../../index.html">&#8592; RETURN TO THE MAP</a>
+  <span class="realm-name">The Pondering</span>
+  <span class="bar-right">
+    <button type="button" class="sound-toggle" id="soundToggle">SOUND: ON</button>
+  </span>
+</header>
+
+<!-- data-ripples: the map of where the water is.  data-ripple-spots: where the ducks sit (x y, in %).
+     data-dragonflies: where they fly (left top right bottom, in %). -->
+<main class="room" data-realm="pondering" data-realm-name="the Pondering"
+      data-ripples="pond-water.png" data-ripple-spots="80.7 43  84.6 53" data-dragonflies="14 28 92 72">
+  <div class="room-view" style="--w:1672;--h:941">
+    <img class="room-pic cutout" src="pondering.webp" width="1672" height="941"
+         alt="A watercolour pond on torn paper: six lily pads, two ducks, a frog on a rock and a small wooden dock.">
+
+    <!-- ===== THE SIX LILY PADS (back row left to right, then front row) ===== -->
+    <button class="spot pad" data-shape="round" style="left:19.4%;top:39.1%;width:11.1%;height:6.1%">An empty pad</button>
+    <button class="spot pad" data-opens="essay-1" data-sound="plop" data-shape="round" style="left:38.0%;top:38.3%;width:10.2%;height:5.5%">A first essay</button>
+    <button class="spot pad" data-shape="round" style="left:56.5%;top:40.4%;width:11.1%;height:6.0%">An empty pad</button>
+    <button class="spot pad" data-opens="essay-2" data-sound="plop" data-shape="round" style="left:12.7%;top:49.7%;width:11.7%;height:6.8%">A second essay</button>
+    <button class="spot pad" data-shape="round" style="left:31.6%;top:48.0%;width:12.0%;height:7.4%">An empty pad</button>
+    <button class="spot pad" data-shape="round" style="left:51.9%;top:49.4%;width:13.0%;height:7.5%">An empty pad</button>
+
+    <!-- ===== THE FROG ===== -->
+    <button class="spot" data-opens="frog" data-sound="croak" style="left:14.5%;top:59.3%;width:10.0%;height:15.3%">The frog&#8217;s pinboard</button>
+
+    <!-- ===== THE DOCK: the way out ===== -->
+    <a class="spot" href="../../index.html" data-sound="steps" style="left:61.6%;top:60.1%;width:32.8%;height:26.8%">Back to the map</a>
+
+    <!-- ===== THE HIDDEN RED CIRCLE: a red ripple near the ducks (no name: it has to be found) ===== -->
+    <button class="spot secret" style="left:76.6%;top:54.4%;width:2.3%;height:1.3%;background-size:100% 100%"></button>
+  </div>
+  <p class="room-hint">~ touch the water ~</p>
+</main>
+
+
+<!-- ============================================================
+     YOUR WORDS. Everything below is placeholder text. Replace it with your own.
+     ============================================================ -->
+
+<!-- ========== ESSAY 1 (lily pad) ========== -->
+<section class="panel parchment" id="essay-1" data-kind="scroll">
+  <div class="kicker">a lily pad</div>
+  <h2>A first essay</h2>
+  <p class="facts">WRITTEN IN · MONTH YEAR</p>
+  <p class="first">The first paragraph of the essay. It opens with a big red letter.</p>
+  <p>Placeholder text. Replace it with your own words. An essay can be as long as you like: the scroll keeps unrolling.</p>
+  <h3>A subheading, if you want one</h3>
+  <p>More placeholder text.</p>
+</section>
+
+<!-- ========== ESSAY 2 (lily pad) ========== -->
+<section class="panel parchment" id="essay-2" data-kind="scroll">
+  <div class="kicker">a lily pad</div>
+  <h2>A second essay</h2>
+  <p class="facts">WRITTEN IN · MONTH YEAR</p>
+  <p class="first">The first paragraph of the essay. It opens with a big red letter.</p>
+  <p>Placeholder text. Replace it with your own words. An essay can be as long as you like: the scroll keeps unrolling.</p>
+  <h3>A subheading, if you want one</h3>
+  <p>More placeholder text.</p>
+</section>
+
+<!-- ========== THE FROG'S PINBOARD ========== -->
+<section class="panel" id="frog" data-kind="scroll">
+  <div class="kicker">the frog on the rock</div>
+  <h2>The Frog&#8217;s Pinboard</h2>
+  <p class="centered">Things that made me laugh, or think, or both.</p>
+  <div class="polaroids">
+    <figure><img class="zoomable" src="art/placeholder-meme.jpg" alt="" loading="lazy"><figcaption>where it comes from</figcaption></figure>
+    <figure><img class="zoomable" src="art/placeholder-meme.jpg" alt="" loading="lazy"><figcaption>where it comes from</figcaption></figure>
+    <figure><img class="zoomable" src="art/placeholder-meme.jpg" alt="" loading="lazy"><figcaption>where it comes from</figcaption></figure>
+    <figure><img class="zoomable" src="art/placeholder-meme.jpg" alt="" loading="lazy"><figcaption>where it comes from</figcaption></figure>
+    <figure><img class="zoomable" src="art/placeholder-meme.jpg" alt="" loading="lazy"><figcaption>where it comes from</figcaption></figure>
+    <figure><img class="zoomable" src="art/placeholder-meme.jpg" alt="" loading="lazy"><figcaption>where it comes from</figcaption></figure>
+  </div>
+</section>
+
+<script src="../../assets/rooms.js"></script>
+</body>
+</html>

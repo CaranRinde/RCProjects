@@ -18,7 +18,7 @@
      2. The spots      (names, the first glow, the list for phones)
      3. The glide      (the camera travels to what you click)
      4. The panels     (open, close, Esc, back to the room; books open here too)
-     5. Dust, fireflies, petals and sparkles (what drifts in the air)
+     5. Dust, fireflies, petals, sparkles, dragonflies and ripples (what moves in the air and water)
      6. The secret     (one hidden Red Circle per room)
      7. Pictures that open large (any <img class="zoomable"> in a panel)
      8. The postcard   (a room painted as a pinned card can be turned over)
@@ -108,6 +108,23 @@
         });
       });
     },
+    plop: function (a) {                  // something touching water
+      var o = a.createOscillator(), g = a.createGain(), at = a.currentTime;
+      o.type = 'sine'; o.frequency.setValueAtTime(820, at); o.frequency.exponentialRampToValueAtTime(260, at + 0.12);
+      g.gain.setValueAtTime(0.0001, at); g.gain.exponentialRampToValueAtTime(0.16, at + 0.008); g.gain.exponentialRampToValueAtTime(0.0001, at + 0.2);
+      o.connect(g); g.connect(a.destination); o.start(at); o.stop(at + 0.22);
+    },
+    croak: function (a) {                 // a frog clearing its throat
+      [0, 0.2].forEach(function (delay) {
+        var o = a.createOscillator(), f = a.createBiquadFilter(), g = a.createGain(), at = a.currentTime + delay;
+        o.type = 'sawtooth'; o.frequency.setValueAtTime(150, at); o.frequency.linearRampToValueAtTime(118, at + 0.14);
+        f.type = 'bandpass'; f.frequency.value = 520; f.Q.value = 2.5;
+        var lfo = a.createOscillator(), lg = a.createGain(); lfo.frequency.value = 38; lg.gain.value = 0.09;   // the rattle
+        lfo.connect(lg); lg.connect(g.gain);
+        g.gain.setValueAtTime(0.0001, at); g.gain.linearRampToValueAtTime(0.13, at + 0.02); g.gain.linearRampToValueAtTime(0.0001, at + 0.16);
+        o.connect(f); f.connect(g); g.connect(a.destination); o.start(at); o.stop(at + 0.17); lfo.start(at); lfo.stop(at + 0.17);
+      });
+    },
     chime: function (a) {                 // something small and bright
       [880, 1318.5, 1760].forEach(function (hz, i) {
         var o = a.createOscillator(), g = a.createGain(), at = a.currentTime + i * 0.11;
@@ -152,6 +169,10 @@
         glow.style.animationDelay = (-i * 1.3) + 's';
         view.appendChild(glow);
       }
+    }
+    // a lily pad (or any spot marked "pad") with nothing to open is simply empty: it ripples, and that is all
+    if (spot.classList.contains('pad') && !(spot.hasAttribute('data-opens') || spot.hasAttribute('data-book'))) {
+      spot.classList.add('unlit'); spot.setAttribute('tabindex', '-1'); spot.setAttribute('aria-disabled', 'true'); return;
     }
     listItems.push({ name: name, spot: spot });
   });
@@ -493,6 +514,109 @@
       }
     });
   })();
+
+  // dragonflies: data-dragonflies="left top right bottom", two of them, darting and hovering
+  (function dragonflies() {
+    var b = readBox('data-dragonflies'); if (!b) return;
+    var c = effectCanvas(); if (!c.g) return;
+    var flies = [];
+    function aim(f) { f.tx = b[0] + Math.random() * (b[2] - b[0]); f.ty = b[1] + Math.random() * (b[3] - b[1]); f.rest = 0.8 + Math.random() * 2.8; }
+    for (var i = 0; i < 2; i++) { var f = { x: b[0] + Math.random() * (b[2] - b[0]), y: b[1] + Math.random() * (b[3] - b[1]), ang: 0, phase: Math.random() * 6 }; aim(f); flies.push(f); }
+    animate(function (t, dt) {
+      var g = c.g, W = c.box.W, H = c.box.H, u = W / 1250;
+      g.clearRect(0, 0, W, H);
+      flies.forEach(function (f) {
+        var dx = f.tx - f.x, dy = (f.ty - f.y) * H / W, d = Math.sqrt(dx * dx + dy * dy);
+        if (d < 0.004) { f.rest -= dt; if (f.rest <= 0) aim(f); }
+        else { var sp = Math.min(d, 0.22 * dt); f.x += dx / d * sp; f.y += dy / d * sp * W / H; f.ang = Math.atan2(dy, dx); }
+        var x = f.x * W, y = (f.y + Math.sin(t * 2.3 + f.phase) * 0.003) * H;
+        g.save(); g.translate(x, y); g.rotate(f.ang);
+        var flap = 0.55 + 0.45 * Math.abs(Math.sin(t * 38 + f.phase));         // wings, a blur of glass
+        g.fillStyle = 'rgba(225,240,255,' + (0.42 * flap).toFixed(3) + ')';
+        [[-1, -1], [-1, 1], [1, -1], [1, 1]].forEach(function (w) {
+          g.beginPath(); g.ellipse(w[0] * 2.5 * u + 1 * u, w[1] * 8 * u, 3 * u, 9 * u, w[1] * (0.35 + w[0] * 0.15), 0, 6.2832); g.fill();
+        });
+        g.strokeStyle = 'rgba(30,110,140,0.95)'; g.lineWidth = 2.6 * u; g.lineCap = 'round';
+        g.beginPath(); g.moveTo(-13 * u, 0); g.lineTo(9 * u, 0); g.stroke();                 // body
+        g.fillStyle = 'rgba(25,95,125,1)'; g.beginPath(); g.arc(10 * u, 0, 2.6 * u, 0, 6.2832); g.fill();   // head
+        g.restore();
+      });
+    });
+  })();
+
+  // ripples on water: data-ripples="water-map.png" is a small black-and-white map of where the water is;
+  // a click on the water ripples, and now and then the pond ripples by itself.
+  // data-ripple-spots="x y  x y ..." (in %) are places that ripple more often, like round a duck
+  var ripple = null;
+  (function ripples() {
+    var src = room.getAttribute('data-ripples'); if (!src) return;
+    var c = effectCanvas(); if (!c.g) return;
+    var map = null, mw = 0, mh = 0;
+    var img = new Image();
+    img.onload = function () {
+      var cv = document.createElement('canvas'); mw = cv.width = img.naturalWidth; mh = cv.height = img.naturalHeight;
+      var g = cv.getContext('2d'); g.drawImage(img, 0, 0); map = g.getImageData(0, 0, mw, mh).data;
+    };
+    img.src = src;
+    function isWater(fx, fy) {
+      if (!map) return false;
+      var x = Math.floor(fx * mw), y = Math.floor(fy * mh);
+      if (x < 0 || y < 0 || x >= mw || y >= mh) return false;
+      return map[(y * mw + x) * 4] > 128;
+    }
+    var rings = [], glints = [];
+    ripple = function (fx, fy, size) { rings.push({ x: fx, y: fy, age: 0, size: size || 1 }); };
+    var hot = (room.getAttribute('data-ripple-spots') || '').trim().split(/\s+/).map(Number), nextHot = 2, nextRandom = 1.5;
+    view.addEventListener('click', function (e) {
+      if (e.target.closest && e.target.closest('.spot:not(.unlit)')) return;
+      var r = view.getBoundingClientRect(), fx = (e.clientX - r.left) / r.width, fy = (e.clientY - r.top) / r.height;
+      if (isWater(fx, fy)) { ripple(fx, fy, 1.2); play('plop'); }
+    });
+    if (reduceMotion) return;
+    animate(function (t, dt) {
+      var g = c.g, W = c.box.W, H = c.box.H, u = W / 1600;
+      g.clearRect(0, 0, W, H);
+      nextRandom -= dt; nextHot -= dt;
+      if (nextRandom <= 0 && map) {                                          // a fish, a falling seed
+        for (var k = 0; k < 20; k++) { var fx = Math.random(), fy = Math.random(); if (isWater(fx, fy)) { ripple(fx, fy, 0.55); break; } }
+        nextRandom = 2 + Math.random() * 4;
+      }
+      if (nextHot <= 0 && hot.length >= 2) {
+        var n = Math.floor(Math.random() * hot.length / 2) * 2;
+        ripple(hot[n] / 100 + (Math.random() - 0.5) * 0.01, hot[n + 1] / 100, 0.8); nextHot = 2.5 + Math.random() * 3;
+      }
+      if (map && glints.length < 7 && Math.random() < 0.25) {                // light on the water
+        for (var j = 0; j < 10; j++) { var gx = Math.random(), gy = Math.random(); if (isWater(gx, gy)) { glints.push({ x: gx, y: gy, age: 0, dur: 0.5 + Math.random() * 0.7 }); break; } }
+      }
+      g.lineWidth = 1.6 * u;
+      rings = rings.filter(function (r) {
+        r.age += dt; var life = 2.6;
+        if (r.age > life) return false;
+        for (var q = 0; q < 3; q++) {
+          var a = r.age - q * 0.32; if (a <= 0) continue;
+          var rad = (10 + a * 34) * u * r.size, alpha = 0.55 * (1 - r.age / life) * (1 - q * 0.25);
+          g.strokeStyle = 'rgba(255,255,255,' + alpha.toFixed(3) + ')';
+          g.beginPath(); g.ellipse(r.x * W, r.y * H, rad, rad * 0.32, 0, 0, 6.2832); g.stroke();
+        }
+        return true;
+      });
+      glints = glints.filter(function (s) {
+        s.age += dt; if (s.age > s.dur) return false;
+        var k = Math.sin(s.age / s.dur * Math.PI);
+        g.fillStyle = 'rgba(255,255,250,' + (0.75 * k).toFixed(3) + ')';
+        g.beginPath(); g.ellipse(s.x * W, s.y * H, 6 * u * k, 1.4 * u * k, 0, 0, 6.2832); g.fill();
+        return true;
+      });
+    });
+  })();
+  // a lily pad ripples where it sits, lit or not
+  view.querySelectorAll('.spot.pad').forEach(function (pad) {
+    pad.addEventListener('click', function () {
+      var l = parseFloat(pad.style.left), t = parseFloat(pad.style.top), w = parseFloat(pad.style.width), h = parseFloat(pad.style.height);
+      if (ripple) ripple((l + w / 2) / 100, (t + h * 0.6) / 100, 2.4);
+      if (pad.classList.contains('unlit')) play('plop');
+    });
+  });
 
   // ---------------------------------------------------------- 6. THE SECRET
   // one hidden Red Circle per room; the browser remembers which ones this visitor has found
