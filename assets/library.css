@@ -211,6 +211,25 @@ body{
   opacity:0.2;transition:opacity .5s, filter .5s, transform .5s;}
 .spot.secret:hover,.spot.secret:focus-visible{opacity:0.7;background-color:transparent;box-shadow:none;transform:scale(1.15);}
 .spot.secret.is-found{opacity:0.95;filter:drop-shadow(0 0 6px rgba(255,240,200,0.9));}
+/* until it is found, it calls out now and then: a red glow and a glint, every 14 seconds (the first after about 5).
+   To make it call more often, make 14s smaller in BOTH lines below. */
+.spot.secret:not(.is-found){animation:secret-call 14s ease-in-out -7s infinite;}
+.spot.secret:not(.is-found)::after{content:'';position:absolute;left:50%;top:50%;width:260%;height:260%;pointer-events:none;
+  transform:translate(-50%,-50%) scale(0);opacity:0;
+  background:radial-gradient(circle, #fff 0 6%, rgba(255,230,220,0.9) 10%, transparent 13%);
+  clip-path:polygon(50% 0, 56% 44%, 100% 50%, 56% 56%, 50% 100%, 44% 56%, 0 50%, 44% 44%);
+  animation:secret-glint 14s ease-out -7s infinite;}
+.spot.secret:hover,.spot.secret:focus-visible{animation:none;}
+.spot.secret:hover::after,.spot.secret:focus-visible::after{animation:none;opacity:0;}
+@keyframes secret-call{
+  0%,84%,100%{opacity:0.2;filter:none;transform:none;}
+  88%{opacity:1;filter:drop-shadow(0 0 3px rgba(255,70,55,1)) drop-shadow(0 0 10px rgba(255,70,55,0.8));transform:scale(1.3);}
+  91%{opacity:0.55;filter:drop-shadow(0 0 3px rgba(255,70,55,0.6));transform:scale(1.1);}
+  94%{opacity:0.95;filter:drop-shadow(0 0 3px rgba(255,70,55,0.9)) drop-shadow(0 0 8px rgba(255,70,55,0.6));transform:scale(1.2);}}
+@keyframes secret-glint{
+  0%,86%,100%{opacity:0;transform:translate(-50%,-50%) scale(0) rotate(0);}
+  88.5%{opacity:1;transform:translate(-50%,-50%) scale(1) rotate(20deg);}
+  92%{opacity:0;transform:translate(-50%,-50%) scale(0.3) rotate(45deg);}}
 
 .toast{position:fixed;left:50%;bottom:2rem;transform:translate(-50%,1.2rem);z-index:90;max-width:calc(100vw - 2rem);
   font-family:'Cinzel',serif;font-size:0.82rem;letter-spacing:0.1em;line-height:1.6;text-align:center;
@@ -350,6 +369,8 @@ body{
   100%{background-position:-1% 1.5%,1.5% -1%,-1.5% 1%,1% 1.5%,-1% 1%,1.5% -1%,-1% 1%;opacity:0.8;}}
 
 @media (prefers-reduced-motion:reduce){
+  .spot.secret:not(.is-found){animation:none !important;opacity:0.4;filter:drop-shadow(0 0 3px rgba(255,70,55,0.8));}
+  .spot.secret::after{display:none;}
   .panel.parchment.is-open{animation:none !important;}
   .postcard-flipper,.postcard-pin,.dapple{transition:none !important;animation:none !important;}
   .postcard-pin::after{animation:none !important;}
