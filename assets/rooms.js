@@ -22,6 +22,7 @@
      6. The secret     (one hidden Red Circle per room)
      7. Pictures that open large (any <img class="zoomable"> in a panel)
      8. The postcard   (a room painted as a pinned card can be turned over)
+     9. Toys and tickets (things that wobble when poked; a roll of riddle tickets)
    ============================================================ */
 (function () {
   'use strict';
@@ -125,6 +126,22 @@
         o.connect(f); f.connect(g); g.connect(a.destination); o.start(at); o.stop(at + 0.17); lfo.start(at); lfo.stop(at + 0.17);
       });
     },
+    coin: function (a) {                  // an arcade machine taking a coin
+      [988, 1319, 1976].forEach(function (hz, i) {
+        var o = a.createOscillator(), g = a.createGain(), at = a.currentTime + i * 0.07;
+        o.type = 'square'; o.frequency.value = hz;
+        g.gain.setValueAtTime(0.0001, at); g.gain.exponentialRampToValueAtTime(0.045, at + 0.005);
+        g.gain.exponentialRampToValueAtTime(0.0001, at + 0.11);
+        o.connect(g); g.connect(a.destination); o.start(at); o.stop(at + 0.12);
+      });
+    },
+    boing: function (a) {                 // a balloon bumped
+      var o = a.createOscillator(), g = a.createGain(), at = a.currentTime;
+      o.type = 'sine'; o.frequency.setValueAtTime(180, at); o.frequency.exponentialRampToValueAtTime(420, at + 0.12);
+      o.frequency.exponentialRampToValueAtTime(240, at + 0.32);
+      g.gain.setValueAtTime(0.0001, at); g.gain.exponentialRampToValueAtTime(0.12, at + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, at + 0.36);
+      o.connect(g); g.connect(a.destination); o.start(at); o.stop(at + 0.38);
+    },
     chime: function (a) {                 // something small and bright
       [880, 1318.5, 1760].forEach(function (hz, i) {
         var o = a.createOscillator(), g = a.createGain(), at = a.currentTime + i * 0.11;
@@ -171,7 +188,8 @@
       }
     }
     // a lily pad (or any spot marked "pad") with nothing to open is simply empty: it ripples, and that is all
-    if ((spot.classList.contains('pad') || spot.classList.contains('arm')) && !(spot.hasAttribute('data-opens') || spot.hasAttribute('data-book'))) {
+    if (spot.hasAttribute('data-poke')) return;           // a toy: it only wobbles, so it is not in the phone list
+    if ((spot.classList.contains('pad') || spot.classList.contains('arm') || spot.classList.contains('cabinet')) && !(spot.hasAttribute('data-opens') || spot.hasAttribute('data-book'))) {
       spot.classList.add('unlit'); spot.setAttribute('tabindex', '-1'); spot.setAttribute('aria-disabled', 'true'); return;
     }
     listItems.push({ name: name, spot: spot });
@@ -701,6 +719,54 @@
     spot.addEventListener('mouseleave', off); spot.addEventListener('blur', off);
   });
 
+  // twinkling lights: data-lights="x,y x,y ..." (in %), each a bulb painted in the picture
+  (function lights() {
+    var attr = room.getAttribute('data-lights'); if (!attr || reduceMotion) return;
+    var c = effectCanvas(); if (!c.g) return;
+    var bulbs = attr.trim().split(/\s+/).map(function (p) { var v = p.split(','); return { x: +v[0] / 100, y: +v[1] / 100, phase: Math.random() * 6.28, speed: 0.6 + Math.random() * 1.6 }; });
+    c.g.canvas.style.mixBlendMode = 'screen';
+    animate(function (t) {
+      var g = c.g, W = c.box.W, H = c.box.H, u = W / 1600;
+      g.clearRect(0, 0, W, H);
+      bulbs.forEach(function (b) {
+        var k = Math.pow(0.5 + 0.5 * Math.sin(t * b.speed + b.phase), 4);         // mostly steady, now and then a bright twinkle
+        if (k < 0.04) return;
+        var r = 16 * u, x = b.x * W, y = b.y * H;
+        var grad = g.createRadialGradient(x, y, 0, x, y, r);
+        grad.addColorStop(0, 'rgba(255,248,215,' + (0.85 * k).toFixed(3) + ')');
+        grad.addColorStop(0.35, 'rgba(255,214,120,' + (0.4 * k).toFixed(3) + ')');
+        grad.addColorStop(1, 'rgba(255,190,90,0)');
+        g.fillStyle = grad; g.beginPath(); g.arc(x, y, r, 0, 6.2832); g.fill();
+      });
+    });
+  })();
+
+  // popcorn: data-popcorn="left top right bottom", a kernel hops up now and then
+  (function popcorn() {
+    var b = readBox('data-popcorn'); if (!b) return;
+    var c = effectCanvas(); if (!c.g) return;
+    var list = [], wait = 0.5;
+    animate(function (t, dt) {
+      var g = c.g, W = c.box.W, H = c.box.H, u = W / 1600;
+      g.clearRect(0, 0, W, H);
+      wait -= dt;
+      if (wait <= 0) {
+        list.push({ x: b[0] + Math.random() * (b[2] - b[0]), y: b[3], vx: (Math.random() - 0.5) * 0.03, vy: -(0.12 + Math.random() * 0.1), age: 0, spin: Math.random() * 6 });
+        wait = 0.25 + Math.random() * 0.9;
+      }
+      list = list.filter(function (k) {
+        k.age += dt; k.vy += 0.5 * dt; k.x += k.vx * dt; k.y += k.vy * dt;
+        if (k.y > b[3] && k.age > 0.1) return false;
+        var x = k.x * W, y = Math.max(b[1], k.y) * H, r = 4.2 * u;
+        g.save(); g.translate(x, y); g.rotate(k.spin + k.age * 6);
+        g.fillStyle = 'rgba(255,250,228,0.95)';
+        g.beginPath(); g.arc(-r * 0.5, 0, r, 0, 6.2832); g.arc(r * 0.5, -r * 0.3, r * 0.9, 0, 6.2832); g.arc(0, r * 0.5, r * 0.8, 0, 6.2832); g.fill();
+        g.restore();
+        return true;
+      });
+    });
+  })();
+
   // ---------------------------------------------------------- 6. THE SECRET
   // one hidden Red Circle per room; the browser remembers which ones this visitor has found
   var TOTAL_CIRCLES = 7;
@@ -776,4 +842,50 @@
       if (e.key === 'Escape' && room.classList.contains('is-turned') && !openPanel && !bookFrame) turn();
     });
   }
+
+  // ---------------------------------------------------------- 9. TOYS AND TICKETS
+  // a spot with data-poke="#something, .other" makes those wobble for a moment (they need a "poke" animation in the css)
+  view.querySelectorAll('.spot[data-poke]').forEach(function (spot) {
+    spot.addEventListener('click', function () {
+      play(spot.getAttribute('data-sound') || 'boing');
+      document.querySelectorAll(spot.getAttribute('data-poke')).forEach(function (el) {
+        el.classList.remove('is-poked'); void el.offsetWidth; el.classList.add('is-poked');
+      });
+    });
+  });
+
+  // a roll of riddle tickets: <div class="ticket-roll"> holds a ticket and, hidden, an <ol class="riddles">
+  // where each <li data-answer="..."> is one riddle. Riddles come out in a shuffled order.
+  document.querySelectorAll('.ticket-roll').forEach(function (roll) {
+    var items = Array.prototype.slice.call(roll.querySelectorAll('.riddles li'));
+    var ticket = roll.querySelector('.ticket'), front = roll.querySelector('.ticket-riddle'), back = roll.querySelector('.ticket-answer');
+    var num = roll.querySelector('.ticket-number'), turnBtn = roll.querySelector('.ticket-turn'), nextBtn = roll.querySelector('.ticket-next');
+    if (!items.length || !ticket) return;
+    var order = [], at = 0;
+    function shuffle() {
+      order = items.map(function (_, i) { return i; });
+      for (var i = order.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var tmp = order[i]; order[i] = order[j]; order[j] = tmp; }
+      at = 0;
+    }
+    function deal(tear) {
+      if (at >= order.length) shuffle();
+      var li = items[order[at++]];
+      function fill() {
+        front.textContent = li.textContent.trim();
+        back.textContent = li.getAttribute('data-answer') || '';
+        if (num) num.textContent = 'No. ' + String(1000 + items.indexOf(li) * 37).slice(-4);
+        ticket.classList.remove('is-turned');
+        if (turnBtn) turnBtn.textContent = 'TURN IT OVER';
+      }
+      if (tear && !reduceMotion) {
+        ticket.classList.add('is-torn'); play('paper');
+        window.setTimeout(function () { fill(); ticket.classList.remove('is-torn'); ticket.classList.add('is-new'); window.setTimeout(function () { ticket.classList.remove('is-new'); }, 450); }, 380);
+      } else fill();
+    }
+    shuffle(); deal(false);
+    function turn() { ticket.classList.toggle('is-turned'); if (turnBtn) turnBtn.textContent = ticket.classList.contains('is-turned') ? 'BACK TO THE RIDDLE' : 'TURN IT OVER'; play('paper'); }
+    if (turnBtn) turnBtn.addEventListener('click', turn);
+    ticket.addEventListener('click', turn);
+    if (nextBtn) nextBtn.addEventListener('click', function () { deal(true); });
+  });
 })();
