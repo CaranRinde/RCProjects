@@ -301,11 +301,29 @@
     }, 1200);
   });
 
+  // pictures in a card load at once when it opens, and are repainted as they arrive,
+  // so a card never shows a blank space, or for a moment another card's pictures
+  function wakePictures(scope) {
+    Array.prototype.forEach.call(scope.querySelectorAll('img'), function (img) {
+      if (img.getAttribute('loading') === 'lazy') img.loading = 'eager';
+      if (!img.complete) img.addEventListener('load', function () {
+        img.style.outline = '1px solid transparent';
+        window.requestAnimationFrame(function () { window.requestAnimationFrame(function () { img.style.outline = ''; }); });
+      }, { once: true });
+    });
+  }
+  // once the room has loaded and settled, quietly fetch every card's pictures, so they are ready before anyone asks
+  window.addEventListener('load', function () {
+    window.setTimeout(function () {
+      Array.prototype.forEach.call(document.querySelectorAll('.panel img[loading="lazy"]'), function (img) { img.loading = 'eager'; });
+    }, 1500);
+  });
   function show(id) {
     var p = document.getElementById(id);
     if (!p || !p.classList.contains('panel')) { glideHome(); return; }
     removeBook();
     if (openPanel) openPanel.classList.remove('is-open');
+    wakePictures(p);
     openPanel = p; p.classList.add('is-open'); holder.classList.add('is-open'); holder.scrollTop = 0;
     document.body.style.overflow = 'hidden';
     var x = p.querySelector('.panel-close'); if (x) x.focus({ preventScroll: true });
