@@ -171,7 +171,7 @@
       }
     }
     // a lily pad (or any spot marked "pad") with nothing to open is simply empty: it ripples, and that is all
-    if (spot.classList.contains('pad') && !(spot.hasAttribute('data-opens') || spot.hasAttribute('data-book'))) {
+    if ((spot.classList.contains('pad') || spot.classList.contains('arm')) && !(spot.hasAttribute('data-opens') || spot.hasAttribute('data-book'))) {
       spot.classList.add('unlit'); spot.setAttribute('tabindex', '-1'); spot.setAttribute('aria-disabled', 'true'); return;
     }
     listItems.push({ name: name, spot: spot });
@@ -389,7 +389,8 @@
   (function fireflies() {
     var attr = room.getAttribute('data-fireflies');
     if (!attr || reduceMotion) return;
-    var box = attr.split(/\s+/).map(Number);
+    // one area "l t r b", or several separated by commas: "l t r b, l t r b"
+    var boxes = attr.split(',').map(function (part) { return part.trim().split(/\s+/).map(Number); });
     var canvas = document.createElement('canvas'); canvas.className = 'room-dust'; canvas.setAttribute('aria-hidden', 'true');
     view.appendChild(canvas);
     var g = canvas.getContext('2d'); if (!g) return;
@@ -407,9 +408,10 @@
       if (!running) return;
       var dt = Math.min(0.05, (now - last) / 1000 || 0); last = now;
       g.clearRect(0, 0, W, H);
-      var x0 = box[0] / 100 * W, y0 = box[1] / 100 * H, bw = (box[2] - box[0]) / 100 * W, bh = (box[3] - box[1]) / 100 * H;
       var unit = W / 1600;
       for (var i = 0; i < n; i++) {
+        var box = boxes[i % boxes.length];
+        var x0 = box[0] / 100 * W, y0 = box[1] / 100 * H, bw = (box[2] - box[0]) / 100 * W, bh = (box[3] - box[1]) / 100 * H;
         var f = flies[i], dx = f.tx - f.x, dy = f.ty - f.y, d = Math.sqrt(dx * dx + dy * dy);
         if (d < 0.02) { f.rest -= dt; if (f.rest <= 0) target(f); }
         else { f.x += dx / d * dt * 0.035; f.y += dy / d * dt * 0.035; }       // they dart, pause, and dart again
@@ -616,6 +618,87 @@
       if (ripple) ripple((l + w / 2) / 100, (t + h * 0.6) / 100, 2.4);
       if (pad.classList.contains('unlit')) play('plop');
     });
+  });
+
+  // fairy sparks: data-sparks="left top right bottom", little lights drifting in the sunbeams.
+  // When something with data-glow is hovered, one spark flies over and settles on it.
+  var callSpark = null, freeSpark = null;
+  (function sparks() {
+    var b = readBox('data-sparks'); if (!b) return;
+    var c = effectCanvas(); if (!c.g) return;
+    var list = [], n = 9, called = null;
+    function drift(s) { s.tx = b[0] + Math.random() * (b[2] - b[0]); s.ty = b[1] + Math.random() * (b[3] - b[1]); }
+    for (var i = 0; i < n; i++) { var s = { x: b[0] + Math.random() * (b[2] - b[0]), y: b[1] + Math.random() * (b[3] - b[1]), phase: Math.random() * 6.28, size: 0.8 + Math.random() * 0.6 }; drift(s); list.push(s); }
+    callSpark = function (fx, fy) {
+      var best = null, bd = 9;
+      list.forEach(function (s) { var d = Math.abs(s.x - fx) + Math.abs(s.y - fy); if (d < bd && s !== called) { bd = d; best = s; } });
+      if (called) drift(called);
+      called = best; if (best) { best.tx = fx; best.ty = fy; best.held = true; }
+    };
+    freeSpark = function () { if (called) { called.held = false; drift(called); called = null; } };
+    animate(function (t, dt) {
+      var g = c.g, W = c.box.W, H = c.box.H, u = W / 1600;
+      g.clearRect(0, 0, W, H);
+      list.forEach(function (s) {
+        var dx = s.tx - s.x, dy = s.ty - s.y, d = Math.sqrt(dx * dx + dy * dy);
+        var speed = s.held ? 0.5 : 0.012;
+        if (d > 0.002) { var st = Math.min(d, speed * dt); s.x += dx / d * st; s.y += dy / d * st; }
+        else if (!s.held) drift(s);
+        var hover = s.held && d < 0.01;
+        var x = (s.x + Math.sin(t * 0.9 + s.phase) * (hover ? 0.003 : 0.008)) * W, y = (s.y + Math.cos(t * 1.1 + s.phase) * (hover ? 0.004 : 0.006)) * H;
+        var tw = 0.55 + 0.45 * Math.sin(t * (hover ? 6 : 2.2) + s.phase), r = (hover ? 15 : 10) * u * s.size;
+        var grad = g.createRadialGradient(x, y, 0, x, y, r);
+        grad.addColorStop(0, 'rgba(255,255,235,' + (0.95 * tw).toFixed(3) + ')');
+        grad.addColorStop(0.3, 'rgba(255,236,160,' + (0.5 * tw).toFixed(3) + ')');
+        grad.addColorStop(1, 'rgba(255,220,120,0)');
+        g.fillStyle = grad; g.beginPath(); g.arc(x, y, r, 0, 6.2832); g.fill();
+        g.strokeStyle = 'rgba(255,255,240,' + (0.7 * tw).toFixed(3) + ')'; g.lineWidth = 1.1 * u;   // a tiny cross of light
+        g.beginPath(); g.moveTo(x - r * 0.7, y); g.lineTo(x + r * 0.7, y); g.moveTo(x, y - r * 0.7); g.lineTo(x, y + r * 0.7); g.stroke();
+      });
+    });
+  })();
+
+  // falling leaves: data-leaves="left top right bottom", where the canopy is; a leaf drops now and then
+  (function leaves() {
+    var b = readBox('data-leaves'); if (!b) return;
+    var c = effectCanvas(); if (!c.g) return;
+    var leaf = null, wait = 3;
+    var colours = [[176, 168, 64], [150, 160, 60], [196, 160, 70], [130, 150, 70]];
+    animate(function (t, dt) {
+      var g = c.g, W = c.box.W, H = c.box.H, u = W / 1600;
+      g.clearRect(0, 0, W, H);
+      if (!leaf) {
+        wait -= dt;
+        if (wait <= 0) leaf = { x: b[0] + Math.random() * (b[2] - b[0]), y: b[1] + Math.random() * (b[3] - b[1]), age: 0, phase: Math.random() * 6, col: colours[Math.floor(Math.random() * colours.length)], floor: 0.62 + Math.random() * 0.28 };
+        return;
+      }
+      leaf.age += dt; leaf.y += 0.032 * dt; leaf.x += Math.sin(leaf.age * 1.4 + leaf.phase) * 0.03 * dt + 0.004 * dt;
+      var fade = Math.min(1, leaf.age * 1.2, (leaf.floor - leaf.y) * 10);
+      if (fade <= 0) { leaf = null; wait = 6 + Math.random() * 8; return; }
+      g.save(); g.translate(leaf.x * W, leaf.y * H); g.rotate(Math.sin(leaf.age * 1.4 + leaf.phase) * 0.9);
+      g.scale(Math.max(0.25, Math.abs(Math.cos(leaf.age * 1.9 + leaf.phase))), 1);
+      g.fillStyle = 'rgba(' + leaf.col.join(',') + ',' + (0.95 * fade).toFixed(3) + ')';
+      g.beginPath(); g.moveTo(0, -11 * u); g.quadraticCurveTo(8 * u, 0, 0, 11 * u); g.quadraticCurveTo(-8 * u, 0, 0, -11 * u); g.fill();
+      g.strokeStyle = 'rgba(110,100,40,' + (0.6 * fade).toFixed(3) + ')'; g.lineWidth = 0.9 * u;
+      g.beginPath(); g.moveTo(0, -10 * u); g.lineTo(0, 12 * u); g.stroke();
+      g.restore();
+    });
+  })();
+
+  // data-glow="some-id" on a spot: while it is hovered, the element with that id glows (and a spark comes, if there are sparks)
+  view.querySelectorAll('.spot[data-glow]').forEach(function (spot) {
+    var el = document.getElementById(spot.getAttribute('data-glow')); if (!el) return;
+    function on() {
+      el.classList.add('is-glowing');
+      if (callSpark) {
+        var l = parseFloat(spot.style.left), t = parseFloat(spot.style.top), w = parseFloat(spot.style.width), h = parseFloat(spot.style.height);
+        var tip = spot.getAttribute('data-tip') === 'right' ? l + w * 0.9 : l + w * 0.1;   // the pointed end of a signpost arm
+        callSpark(tip / 100, (t + h * 0.45) / 100);
+      }
+    }
+    function off() { el.classList.remove('is-glowing'); if (freeSpark) freeSpark(); }
+    spot.addEventListener('mouseenter', on); spot.addEventListener('focus', on);
+    spot.addEventListener('mouseleave', off); spot.addEventListener('blur', off);
   });
 
   // ---------------------------------------------------------- 6. THE SECRET

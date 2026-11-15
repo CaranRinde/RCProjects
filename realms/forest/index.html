@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Forest — RC Projects</title>
+<meta name="description" content="The Forest: a signpost at a crossroads among old trees, pointing to the places of people dear to me.">
+<link rel="stylesheet" href="../../assets/library.css">
+<!-- ============================================================
+     THE FOREST — a crossroads in an old wood, with a signpost of eight arms.
+     The look comes from  assets/library.css   (shared by every room)
+     The behaviour from   assets/rooms.js      (shared by every room)
+
+     CARAN'S EDITING LEGEND
+
+     AN ARM OF THE SIGNPOST is two things:
+       1. its button:  <button class="spot arm" data-opens="mpower" data-glow="name-mpower" ...>MPower</button>
+       2. its name burnt into the wood, in the <svg class="burnt"> below:
+            <text id="name-mpower" x="933" y="206" transform="rotate(-10.5 933 206)">MPower</text>
+     An arm WITHOUT data-opens is empty: "A path not yet named", and nothing opens.
+
+     TO PUT SOMEONE ON AN EMPTY ARM:
+       1. copy a card further down (from <section ...> to </section>), give it a new id
+          (say  id="newsite"), and change the name, picture, words and web address
+       2. on the empty arm's button add   data-opens="newsite" data-glow="name-newsite" data-sound="wood"
+          and change "A path not yet named" to the name
+       3. in the <svg class="burnt">, add a <text> line with id="name-newsite".
+          Each empty arm's x, y and rotate numbers are listed in the comment there.
+     ============================================================ -->
+</head>
+<body style="--page:#F3ECD9">
+
+<header class="top-bar">
+  <a href="../../index.html">&#8592; RETURN TO THE MAP</a>
+  <span class="realm-name">The Forest</span>
+  <span class="bar-right">
+    <button type="button" class="sound-toggle" id="soundToggle">SOUND: ON</button>
+  </span>
+</header>
+
+<!-- data-sparks: the sunbeams, where the fairy sparks drift.  data-dust: pollen in the light.
+     data-leaves: the canopy a leaf falls from.  data-fireflies: the shady places (two areas).
+     All in % of the picture: left top right bottom. -->
+<main class="room" data-realm="forest" data-realm-name="the Forest"
+      data-sparks="58 6 86 52" data-dust="54 2 92 62" data-leaves="8 4 92 22"
+      data-fireflies="2 40 30 92, 74 42 99 92">
+  <div class="room-view" style="--w:1672;--h:941">
+    <img class="room-pic" src="forest.jpg" width="1672" height="941"
+         alt="A sunlit forest crossroads among old mossy trees, where a wooden signpost with eight arms stands between the paths.">
+
+    <!-- mist drifting low between the trees -->
+    <div class="mist far" style="left:0;top:22%;width:100%;height:30%"></div>
+    <div class="mist" style="left:0;top:38%;width:100%;height:26%"></div>
+
+    <!-- ===== THE NAMES, burnt into the arms =====
+         The empty arms, for when you need them (x, y, rotate):
+           second right 936 287 -4.3     third left 744 366 -1     third right 936 366 1.7
+           fourth left 748 441 -11.4     fourth right 930 442 10.5 -->
+    <svg class="burnt" viewBox="0 0 1672 941" aria-hidden="true"
+         style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;mix-blend-mode:multiply">
+      <defs>
+        <filter id="scorch" x="-20%" y="-40%" width="140%" height="180%">
+          <feGaussianBlur in="SourceAlpha" stdDeviation="1.6" result="b"/>
+          <feFlood flood-color="#5a2e10" flood-opacity="0.55"/><feComposite in2="b" operator="in" result="halo"/>
+          <feMerge><feMergeNode in="halo"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <filter id="ember" x="-30%" y="-60%" width="160%" height="220%">
+          <feGaussianBlur in="SourceAlpha" stdDeviation="3" result="b"/>
+          <feFlood flood-color="#ff8a2a" flood-opacity="0.9"/><feComposite in2="b" operator="in" result="glow"/>
+          <feMerge><feMergeNode in="glow"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+      <g font-family="MedievalSharp, cursive" font-size="24" fill="#3b2412" opacity="0.88"
+         text-anchor="middle" dominant-baseline="central" filter="url(#scorch)">
+      <text id="name-iliasbased" x="752" y="206" transform="rotate(12 752 206)" textLength="128" lengthAdjust="spacingAndGlyphs">@IliasBased</text>
+      <text id="name-mpower" x="933" y="206" transform="rotate(-10.5 933 206)">MPower</text>
+      <text id="name-sayyes" x="744" y="284" transform="rotate(5 744 284)">Say Yes</text>
+      </g>
+    </svg>
+
+    <!-- ===== THE EIGHT ARMS (left and right, from the top) ===== -->
+    <button class="spot arm" data-opens="iliasbased" data-glow="name-iliasbased" data-tip="left" data-sound="wood" style="left:39.0%;top:16.6%;width:10.2%;height:9.8%">@IliasBased</button>
+    <button class="spot arm" data-opens="mpower" data-glow="name-mpower" data-tip="right" data-sound="wood" style="left:51.1%;top:17.0%;width:10.3%;height:9.4%">MPower</button>
+    <button class="spot arm" data-opens="sayyes" data-glow="name-sayyes" data-tip="left" data-sound="wood" style="left:38.6%;top:25.9%;width:10.6%;height:7.9%">Say Yes</button>
+    <button class="spot arm" data-tip="right" style="left:51.1%;top:26.1%;width:10.6%;height:7.9%">A path not yet named</button>
+    <button class="spot arm" data-tip="left" style="left:39.0%;top:35.3%;width:10.2%;height:6.6%">A path not yet named</button>
+    <button class="spot arm" data-tip="right" style="left:51.1%;top:35.5%;width:10.3%;height:6.6%">A path not yet named</button>
+    <button class="spot arm" data-tip="left" style="left:39.5%;top:42.5%;width:9.7%;height:8.3%">A path not yet named</button>
+    <button class="spot arm" data-tip="right" style="left:51.1%;top:42.5%;width:9.9%;height:8.5%">A path not yet named</button>
+
+    <!-- ===== THE PATH: back to the map ===== -->
+    <a class="spot" href="../../index.html" data-sound="steps" style="left:38.3%;top:84.0%;width:22.1%;height:15.5%">Back to the map</a>
+
+    <!-- ===== THE HIDDEN RED CIRCLE: a red growth ring on the tree stump (no name: it has to be found) ===== -->
+    <button class="spot secret" style="left:70.3%;top:76.9%;width:2.9%;height:1.9%;background-size:100% 100%"></button>
+  </div>
+  <p class="room-hint">~ follow a name ~</p>
+</main>
+
+
+<!-- ============================================================
+     THE PEOPLE AT THE END OF EACH PATH
+     ============================================================ -->
+
+<!-- ========== @IliasBased ========== -->
+<section class="panel" id="iliasbased" data-kind="card">
+  <div class="kicker">a path through the forest</div>
+  <h2>@IliasBased</h2>
+  <img class="card-photo zoomable" src="iliasbased.jpg" alt="A glimpse of the site: his indie game projects.">
+  <p class="centered"><em>The site of a software engineer and maker of games. One of the two great prides of my life. An intuitive mind, with a rare emotional intelligence.</em></p>
+  <a class="plate" href="https://iliasbased.pb.online/" target="_blank" rel="noopener">VISIT THE SITE &#8599;</a>
+</section>
+
+<!-- ========== MPower ========== -->
+<section class="panel" id="mpower" data-kind="card">
+  <div class="kicker">a path through the forest</div>
+  <h2>MPower</h2>
+  <img class="card-photo zoomable" src="mpower.jpg" alt="A glimpse of the site: training styles.">
+  <p class="centered"><em>The site of a personal trainer. One of the two great prides of my life. Where determination and willpower meet the beauty of a daring dreamer.</em></p>
+  <a class="plate" href="https://www.mpower.fit/" target="_blank" rel="noopener">VISIT THE SITE &#8599;</a>
+</section>
+
+<!-- ========== Say Yes ========== -->
+<section class="panel" id="sayyes" data-kind="card">
+  <div class="kicker">a path through the forest</div>
+  <h2>Say Yes</h2>
+  <img class="card-photo zoomable" src="sayyes.jpg" alt="A glimpse of the site: welcome to Yesland.">
+  <p class="centered"><em>The site of an English teacher. Because love and empathy like hers should shine like a lighthouse in this world, not stay hidden in the dark.</em></p>
+  <a class="plate" href="https://sayyesland.gr/" target="_blank" rel="noopener">VISIT THE SITE &#8599;</a>
+</section>
+
+<script src="../../assets/rooms.js"></script>
+</body>
+</html>
