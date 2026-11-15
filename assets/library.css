@@ -213,12 +213,12 @@ body{
 .spot.secret.is-found{opacity:0.95;filter:drop-shadow(0 0 6px rgba(255,240,200,0.9));}
 /* until it is found, it calls out now and then: a red glow and a glint, every 14 seconds (the first after about 5).
    To make it call more often, make 14s smaller in BOTH lines below. */
-.spot.secret:not(.is-found){animation:secret-call 14s ease-in-out -7s infinite;}
+.spot.secret:not(.is-found){animation:secret-call 8s ease-in-out -7s infinite;}
 .spot.secret:not(.is-found)::after{content:'';position:absolute;left:50%;top:50%;width:260%;height:260%;pointer-events:none;
   transform:translate(-50%,-50%) scale(0);opacity:0;
   background:radial-gradient(circle, #fff 0 6%, rgba(255,230,220,0.9) 10%, transparent 13%);
   clip-path:polygon(50% 0, 56% 44%, 100% 50%, 56% 56%, 50% 100%, 44% 56%, 0 50%, 44% 44%);
-  animation:secret-glint 14s ease-out -7s infinite;}
+  animation:secret-glint 8s ease-out -7s infinite;}
 .spot.secret:hover,.spot.secret:focus-visible{animation:none;}
 .spot.secret:hover::after,.spot.secret:focus-visible::after{animation:none;opacity:0;}
 @keyframes secret-call{
@@ -362,7 +362,7 @@ body{
     radial-gradient(ellipse 9% 6% at 74% 86%, rgba(60,40,20,0.45), transparent 70%);
   -webkit-mask-image:radial-gradient(ellipse at 50% 50%, #000 45%, transparent 75%);
   mask-image:radial-gradient(ellipse at 50% 50%, #000 45%, transparent 75%);
-  animation:dapple-drift 14s ease-in-out infinite alternate;}
+  animation:dapple-drift 8s ease-in-out infinite alternate;}
 @keyframes dapple-drift{
   0%{background-position:0 0,0 0,0 0,0 0,0 0,0 0,0 0;opacity:0.85;}
   50%{background-position:1.5% 1%,-1% 1.5%,1% -1%,-1.5% 0.5%,1% -1.5%,-1% 1%,1.5% -0.5%;opacity:1;}
