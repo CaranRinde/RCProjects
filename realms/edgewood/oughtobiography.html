@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Oughtobiography — Edgewood — RC Projects</title>
+<link rel="stylesheet" href="../../assets/library.css">
+<!-- ============================================================
+     OUGHTOBIOGRAPHY — the book on the stand in Edgewood.
+
+     CARAN'S EDITING LEGEND
+
+     Each chapter is a plain-text file in the  chapters  folder, written in markdown
+     (a # title, blank lines between paragraphs, *italics*, **bold**, ![caption](picture.jpg)).
+     The book lays each chapter out by itself, over as many pages as it needs.
+
+     AN OPEN CHAPTER is one line below:
+       <div class="page" data-src="chapters/03-the-storm.md" data-title="The Storm" data-label="chapter three"></div>
+         data-title  is its name in the Contents
+         data-label  is the small line above its title (you can leave it out)
+
+     A SEALED CHAPTER lives in the warehouse (files.rcprojects.net/sealed) and here is one line:
+       <div class="page" data-sealed="https://files.rcprojects.net/sealed/read.html?f=chapter-03.md" data-title="The Storm"></div>
+       It shows a wax seal, and opens in a new tab after asking for a name and a password.
+
+     A PRIVATE CHAPTER: put it in the private folder of the warehouse, and simply leave it out of this book.
+     ============================================================ -->
+</head>
+<body class="book-page" style="--leather:#2F3E2C;--page:#F2E8D2" data-realm-name="Edgewood">
+
+<header class="top-bar">
+  <a href="index.html">&#8592; BACK TO THE HOUSE</a>
+  <span class="realm-name">Oughtobiography</span>
+  <span class="bar-right"><button type="button" class="sound-toggle" id="soundToggle">SOUND: ON</button></span>
+</header>
+
+<div class="stage">
+  <div id="book">
+
+    <!-- ========== FRONT COVER ========== -->
+    <div class="page cover" data-density="hard">
+      <div class="page-inner">
+        <img class="logo-cover" src="../../assets/img/rc-edgewood.png" alt="">
+        <div class="cover-title">OUGHTOBIOGRAPHY</div>
+        <div class="cover-sub">the life that ought to have been</div>
+      </div>
+    </div>
+
+    <!-- ========== ENDPAPER : the Contents write themselves here ========== -->
+    <div class="page">
+      <div class="page-inner endpaper">
+        <div class="ep-head">
+          <div class="ep-ident">
+            <img class="ep-emblem" src="../../assets/img/rc-edgewood.png" alt="">
+            <div class="ep-name">Oughtobiography</div>
+          </div>
+          <div class="ep-epigraph">Not the life that happened,<br>but the life that ought to have.</div>
+        </div>
+        <h2 class="toc-heading">Contents</h2>
+        <nav class="toc" id="tocList"></nav>
+        <p class="small-note ep-note">~ drag a corner, or click the page edge, to turn ~</p>
+      </div>
+    </div>
+
+    <!-- ========== THE CHAPTERS ========== -->
+    <div class="page" data-src="chapters/01-chapter-one.md" data-title="Chapter One" data-label="chapter one"></div>
+    <div class="page" data-src="chapters/02-chapter-two.md" data-title="Chapter Two" data-label="chapter two"></div>
+    <div class="page" data-sealed="https://files.rcprojects.net/sealed/read.html?f=chapter-three.md" data-title="Chapter Three"></div>
+
+    <!-- To add a chapter, add a line above this one. -->
+
+    <!-- ========== BACK COVER ========== -->
+    <div class="page cover" data-density="hard">
+      <div class="page-inner">
+        <img class="logo-back emb-cream" src="../../assets/img/rc-logo.png" alt="">
+        <div class="cover-sub">rcprojects.net</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="../../assets/markdown.js"></script>
+<script src="../../assets/vendor/page-flip.browser.js"></script>
+<script src="../../assets/library.js"></script>
+</body>
+</html>

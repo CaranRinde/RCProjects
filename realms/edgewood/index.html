@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Edgewood — RC Projects</title>
+<meta name="description" content="Edgewood: a ranch-house room at evening, with the map of Edgewood Lands on the wall, its people along the hallway, and its stories in a chest.">
+<link rel="stylesheet" href="../../assets/library.css">
+<link rel="stylesheet" href="edgewood.css">
+<!-- ============================================================
+     EDGEWOOD — a room in a ranch house, at evening.
+     The look comes from  assets/library.css  and  edgewood.css
+     The behaviour from   assets/rooms.js  and  edgewood.js
+
+     CARAN'S EDITING LEGEND
+
+     THE GREAT MAP (the panel id="map")
+       Each place is one line:  <a class="place" href="#place-briarwick" data-place="briarwick" style="left:..;top:..">
+       Its card is further down:  <section class="panel" id="place-briarwick">
+       Write a few lines about the place in its card. The people appear by themselves,
+       from the characters' data-places in characters.html.
+
+     THE STORIES (the chest)
+       An open story: a file in the stories folder, e.g. stories/the-first-snow.md,
+       plus two things here:
+         1. a line in the chest's list:   <li><span class="scroll-icon"></span><a href="#story-the-first-snow">The First Snow</a></li>
+         2. its scroll further down:      <section class="panel parchment" id="story-the-first-snow" data-kind="scroll" data-md="stories/the-first-snow.md"></section>
+       A sealed story lives in the warehouse instead, and only needs a line in the list:
+         <li class="sealed"><span class="scroll-icon"></span><a href="https://files.rcprojects.net/sealed/read.html?f=its-name.md" target="_blank" rel="noopener">Title</a></li>
+
+     TALES BY THE FIRE are in tales-by-the-fire.md.
+     ============================================================ -->
+</head>
+<body style="--page:#F3E9D3">
+
+<header class="top-bar">
+  <a href="../../index.html">&#8592; RETURN TO THE MAP</a>
+  <span class="realm-name">Edgewood</span>
+  <span class="bar-right">
+    <a href="#map">THE MAP</a>
+    <button type="button" class="sound-toggle" id="soundToggle">SOUND: ON</button>
+  </span>
+</header>
+
+<!-- data-embers: the fire, where the sparks rise (left top right bottom, in %) -->
+<main class="room" data-realm="edgewood" data-realm-name="Edgewood" data-embers="4 60 13 82">
+  <div class="room-view" style="--w:1672;--h:941">
+    <img class="room-pic" src="edgewood-room.jpg" width="1672" height="941"
+         alt="A wooden ranch-house room at evening: a stone fireplace, a window at dusk, a great map of Edgewood in a gold frame, an open book on a stand, a chest of scrolls, and a hallway lined with oval portraits.">
+
+    <!-- the light of the fire and the lamp, breathing; and a star in the window -->
+    <div class="glow-light" style="left:-6%;top:44%;width:32%;height:58%"></div>
+    <div class="glow-light slow" style="left:9.4%;top:27%;width:6%;height:11%"></div>
+    <div class="star" style="left:26.2%;top:24.6%"></div>
+
+    <!-- ===== WHAT OPENS ===== -->
+    <button class="spot" data-opens="map" style="left:32.4%;top:9.9%;width:45.6%;height:46.2%">The map of Edgewood</button>
+    <button class="spot" data-book="oughtobiography.html" data-sound="paper" style="left:42.2%;top:57.2%;width:27.6%;height:17.7%">Oughtobiography</button>
+    <button class="spot" data-opens="chest" data-sound="wood" style="left:17.9%;top:57.4%;width:19.3%;height:33.2%">The chest of stories</button>
+    <button class="spot" data-opens="tales" style="left:1.7%;top:57.4%;width:12.4%;height:31.0%">Tales by the fire</button>
+    <button class="spot" data-opens="world" style="left:15.7%;top:18.3%;width:14.0%;height:27.4%">The world beyond the window</button>
+    <button class="spot" data-book="characters.html" data-sound="paper" style="left:86.6%;top:27.8%;width:11.5%;height:19.8%">The folk of Edgewood</button>
+    <a class="spot" href="../../index.html" data-sound="steps" style="left:83.5%;top:58.2%;width:12.9%;height:16.4%">Back to the map</a>
+
+    <!-- ===== THE HIDDEN RED CIRCLE: a tiny red ring on the map on the wall (no name: it has to be found) ===== -->
+    <button class="spot secret" style="left:63.2%;top:47.3%;width:0.9%;height:1.6%;background-size:100% 100%"></button>
+  </div>
+  <p class="room-hint">~ sit a while ~</p>
+</main>
+
+
+<!-- ============================================================
+     THE GREAT MAP
+     ============================================================ -->
+<section class="panel chart" id="map" data-kind="scroll">
+  <div class="kicker">on the wall</div>
+  <h2>Edgewood Lands</h2>
+  <div class="chart-view">
+    <img src="edgewood-map.jpg" alt="The map of Edgewood Lands: towns joined by red roads among forests, a river and a lake in the west, the sea in the east.">
+        <a class="place" href="#place-blackmere" data-place="blackmere" style="left:18.2%;top:15.5%"><span class="place-name">Blackmere</span></a>
+        <a class="place" href="#place-ashby" data-place="ashby" style="left:12.6%;top:35.6%"><span class="place-name">Ashby</span></a>
+        <a class="place" href="#place-redfern-grove" data-place="redfern-grove" style="left:44.3%;top:27.0%"><span class="place-name">Redfern Grove</span></a>
+        <a class="place" href="#place-greywater-ridge" data-place="greywater-ridge" style="left:62.1%;top:35.6%"><span class="place-name">Greywater Ridge</span></a>
+        <a class="place" href="#place-woodhollow" data-place="woodhollow" style="left:75.8%;top:24.7%"><span class="place-name">Woodhollow</span></a>
+        <a class="place" href="#place-briarwick" data-place="briarwick" style="left:38.7%;top:46.4%"><span class="place-name">Briarwick</span></a>
+        <a class="place" href="#place-hearthstead-ranch" data-place="hearthstead-ranch" style="left:29.5%;top:56.9%"><span class="place-name">Hearthstead Ranch</span></a>
+        <a class="place" href="#place-willow-grove" data-place="willow-grove" style="left:40.4%;top:66.0%"><span class="place-name">Willow Grove</span></a>
+        <a class="place" href="#place-hunters-cabin" data-place="hunters-cabin" style="left:19.2%;top:72.7%"><span class="place-name">Hunter&#8217;s Cabin</span></a>
+        <a class="place water" href="#place-the-river" data-place="the-river" style="left:7.9%;top:57.7%"><span class="place-name">The River</span></a>
+        <a class="place water" href="#place-the-lake" data-place="the-lake" style="left:29.0%;top:78.4%"><span class="place-name">The Lake</span></a>
+        <a class="place" href="#place-comanche" data-place="comanche" style="left:35.0%;top:85.6%"><span class="place-name">Comanche</span></a>
+        <a class="place" href="#place-rosehaven-bay" data-place="rosehaven-bay" style="left:88.2%;top:66.0%"><span class="place-name">Rosehaven Bay</span></a>
+        <a class="place" href="#place-gulls-nest-inn" data-place="gulls-nest-inn" style="left:81.7%;top:78.9%"><span class="place-name">Gull&#8217;s Nest Inn</span></a>
+        <a class="place water" href="#place-the-sea" data-place="the-sea" style="left:92.2%;top:83.0%"><span class="place-name">The Sea</span></a>
+  </div>
+  <p class="chart-legend"><span><i class="pin home"></i>lives here</span><span><i class="pin work"></i>works here</span><span><i class="pin both"></i>both</span><span>~ touch a place to visit it ~</span></p>
+</section>
+
+<!-- ============================================================
+     THE PLACES (one card each)
+     ============================================================ -->
+<section class="panel" id="place-blackmere" data-kind="card">
+  <div class="kicker">a place in Edgewood</div>
+  <h2>Blackmere</h2>
+  <p><em>A few lines about Blackmere: what it is like, what you would see, hear and smell if you walked into it.</em></p>
+  <h3>Who you will find here</h3>
+  <div class="folk" data-place="blackmere"></div>
+  <a class="plate" href="#map">BACK TO THE MAP</a>
+</section>
+
+<section class="panel" id="place-ashby" data-kind="card">
+  <div class="kicker">a place in Edgewood</div>
+  <h2>Ashby</h2>
+  <p><em>A few lines about Ashby: what it is like, what you would see, hear and smell if you walked into it.</em></p>
+  <h3>Who you will find here</h3>
+  <div class="folk" data-place="ashby"></div>
+  <a class="plate" href="#map">BACK TO THE MAP</a>
+</section>
+
+<section class="panel" id="place-redfern-grove" data-kind="card">
+  <div class="kicker">a place in Edgewood</div>
+  <h2>Redfern Grove</h2>
+  <p><em>A few lines about Redfern Grove: what it is like, what you would see, hear and smell if you walked into it.</em></p>
+  <h3>Who you will find here</h3>
+  <div class="folk" data-place="redfern-grove"></div>
+  <a class="plate" href="#map">BACK TO THE MAP</a>
+</section>
+
+<section class="panel" id="place-greywater-ridge" data-kind="card">
+  <div class="kicker">a place in Edgewood</div>
+  <h2>Greywater Ridge</h2>
+  <p><em>A few lines about Greywater Ridge: what it is like, what you would see, hear and smell if you walked into it.</em></p>
+  <h3>Who you will find here</h3>
+  <div class="folk" data-place="greywater-ridge"></div>
+  <a class="plate" href="#map">BACK TO THE MAP</a>
+</section>
+
+<section class="panel" id="place-woodhollow" data-kind="card">
+  <div class="kicker">a place in Edgewood</div>
+  <h2>Woodhollow</h2>
+  <p><em>A few lines about Woodhollow: what it is like, what you would see, hear and smell if you walked into it.</em></p>
+  <h3>Who you will find here</h3>
+  <div class="folk" data-place="woodhollow"></div>
+  <a class="plate" href="#map">BACK TO THE MAP</a>
+</section>
+
+<section class="panel" id="place-briarwick" data-kind="card">
+  <div class="kicker">a place in Edgewood</div>
+  <h2>Briarwick</h2>
+  <p><em>A few lines about Briarwick: what it is like, what you would see, hear and smell if you walked into it.</em></p>
+  <h3>Who you will find here</h3>
+  <div class="folk" data-place="briarwick"></div>
+  <a class="plate" href="#map">BACK TO THE MAP</a>
+</section>
+
+<section class="panel" id="place-hearthstead-ranch" data-kind="card">
+  <div class="kicker">a place in Edgewood</div>
+  <h2>Hearthstead Ranch</h2>
+  <p><em>A few lines about Hearthstead Ranch: what it is like, what you would see, hear and smell if you walked into it.</em></p>
+  <h3>Who you will find here</h3>
+  <div class="folk" data-place="hearthstead-ranch"></div>
+  <a class="plate" href="#map">BACK TO THE MAP</a>
+</section>
+
+<section class="panel" id="place-willow-grove" data-kind="card">
+  <div class="kicker">a place in Edgewood</div>
+  <h2>Willow Grove</h2>
+  <p><em>A few lines about Willow Grove: what it is like, what you would see, hear and smell if you walked into it.</em></p>
+  <h3>Who you will find here</h3>
+  <div class="folk" data-place="willow-grove"></div>
+  <a class="plate" href="#map">BACK TO THE MAP</a>
+</section>
+
+<section class="panel" id="place-hunters-cabin" data-kind="card">
+  <div class="kicker">a place in Edgewood</div>
+  <h2>Hunter&#8217;s Cabin</h2>
+  <p><em>A few lines about Hunter&#8217;s Cabin: what it is like, what you would see, hear and smell if you walked into it.</em></p>
+  <h3>Who you will find here</h3>
+  <div class="folk" data-place="hunters-cabin"></div>
+  <a class="plate" href="#map">BACK TO THE MAP</a>
+</section>
+
+<section class="panel" id="place-the-river" data-kind="card">
+  <div class="kicker">a place in Edgewood</div>
+  <h2>The River</h2>
+  <p><em>A few lines about The River: what it is like, what you would see, hear and smell if you walked into it.</em></p>
+  <h3>Who you will find here</h3>
+  <div class="folk" data-place="the-river"></div>
+  <a class="plate" href="#map">BACK TO THE MAP</a>
+</section>
+
+<section class="panel" id="place-the-lake" data-kind="card">
+  <div class="kicker">a place in Edgewood</div>
+  <h2>The Lake</h2>
+  <p><em>A few lines about The Lake: what it is like, what you would see, hear and smell if you walked into it.</em></p>
+  <h3>Who you will find here</h3>
+  <div class="folk" data-place="the-lake"></div>
+  <a class="plate" href="#map">BACK TO THE MAP</a>
+</section>
+
+<section class="panel" id="place-comanche" data-kind="card">
+  <div class="kicker">a place in Edgewood</div>
+  <h2>Comanche</h2>
+  <p><em>A few lines about Comanche: what it is like, what you would see, hear and smell if you walked into it.</em></p>
+  <h3>Who you will find here</h3>
+  <div class="folk" data-place="comanche"></div>
+  <a class="plate" href="#map">BACK TO THE MAP</a>
+</section>
+
+<section class="panel" id="place-rosehaven-bay" data-kind="card">
+  <div class="kicker">a place in Edgewood</div>
+  <h2>Rosehaven Bay</h2>
+  <p><em>A few lines about Rosehaven Bay: what it is like, what you would see, hear and smell if you walked into it.</em></p>
+  <h3>Who you will find here</h3>
+  <div class="folk" data-place="rosehaven-bay"></div>
+  <a class="plate" href="#map">BACK TO THE MAP</a>
+</section>
+
+<section class="panel" id="place-gulls-nest-inn" data-kind="card">
+  <div class="kicker">a place in Edgewood</div>
+  <h2>Gull&#8217;s Nest Inn</h2>
+  <p><em>A few lines about Gull&#8217;s Nest Inn: what it is like, what you would see, hear and smell if you walked into it.</em></p>
+  <h3>Who you will find here</h3>
+  <div class="folk" data-place="gulls-nest-inn"></div>
+  <a class="plate" href="#map">BACK TO THE MAP</a>
+</section>
+
+<section class="panel" id="place-the-sea" data-kind="card">
+  <div class="kicker">a place in Edgewood</div>
+  <h2>The Sea</h2>
+  <p><em>A few lines about The Sea: what it is like, what you would see, hear and smell if you walked into it.</em></p>
+  <h3>Who you will find here</h3>
+  <div class="folk" data-place="the-sea"></div>
+  <a class="plate" href="#map">BACK TO THE MAP</a>
+</section>
+
+
+<!-- ========== THE CHEST OF STORIES ========== -->
+<section class="panel" id="chest" data-kind="scroll">
+  <div class="kicker">the chest by the fire</div>
+  <h2>Stories of Edgewood</h2>
+  <p class="centered">Some scrolls are open to anyone. Some are sealed, and open only for those who hold a key.</p>
+  <ul class="stories">
+    <li><span class="scroll-icon"></span><a href="#story-the-first-snow">The First Snow<span class="story-note">an open scroll</span></a></li>
+    <li class="sealed"><span class="scroll-icon"></span><a href="https://files.rcprojects.net/sealed/read.html?f=a-sealed-tale.md" target="_blank" rel="noopener">A Sealed Tale<span class="story-note">sealed: it asks for a name and a password</span></a></li>
+  </ul>
+</section>
+
+<!-- ========== THE OPEN STORIES (each reads its words from the stories folder) ========== -->
+<section class="panel parchment" id="story-the-first-snow" data-kind="scroll" data-md="stories/the-first-snow.md">
+  <div class="kicker">a story of Edgewood</div>
+</section>
+
+<!-- ========== TALES BY THE FIRE ========== -->
+<section class="panel parchment" id="tales" data-kind="scroll" data-md="tales-by-the-fire.md">
+  <div class="kicker">by the fire</div>
+</section>
+
+<!-- ========== THE WORLD BEYOND THE WINDOW ========== -->
+<section class="panel" id="world" data-kind="card">
+  <div class="kicker">through the window</div>
+  <h2>The World and Its Era</h2>
+  <p class="first"><em>When and where is Edgewood? A few lines about its time, its seasons, and what lies beyond its borders.</em></p>
+</section>
+
+<script src="../../assets/markdown.js"></script>
+<script src="../../assets/rooms.js"></script>
+<script src="edgewood.js"></script>
+</body>
+</html>

@@ -18,6 +18,12 @@
      5. Keeps links, buttons and videos from turning the page
      6. Sound and music
      7. The seal on a "Write to Me" page
+
+   A chapter can also live in its own plain-text file, and the book lays it out by itself:
+       <div class="page" data-src="chapters/01-arrival.md" data-title="The Arrival"></div>
+   becomes as many pages as the chapter needs. (This needs assets/markdown.js on the page too.)
+   And a sealed chapter, which opens elsewhere behind a password:
+       <div class="page" data-sealed="https://files.rcprojects.net/sealed/read.html?f=chapter-05.md" data-title="..."></div>
    ============================================================ */
 (function () {
   'use strict';
@@ -38,6 +44,115 @@
   if (embedded) document.documentElement.classList.add('is-embedded');
   function askRoomToClose() { try { window.parent.postMessage('rc-close-book', '*'); } catch (e) {} }
 
+  // ---------------------------------------------------------- 1b. CHAPTERS THAT LAY THEMSELVES OUT
+  var BOOK_FILL = 0.96;   // how much of the available height the book uses
+  var PAGE_RATIO = 0.72;  // page width : height, like a real hardback
+  var stage = bookEl.parentNode;
+  function bookWidth() {
+    var availH = (stage.clientHeight || window.innerHeight) - 24;
+    var pageW = availH * BOOK_FILL * PAGE_RATIO;
+    return window.innerWidth < 620 ? Math.min(pageW, window.innerWidth * 0.96) : Math.min(pageW * 2, window.innerWidth * 0.97);
+  }
+  function pageWidth() {
+    var w = window.innerWidth < 620 ? bookWidth() : bookWidth() / 2;
+    return Math.max(260, Math.min(900, w));
+  }
+  // text in laid-out chapters is sized by the page, so the layout holds whatever the size of the window
+  function setPw(w) { bookEl.style.setProperty('--pw', (w || pageWidth()) + 'px'); }
+  setPw();
+
+  function sealedPage(el) {
+    var title = el.getAttribute('data-title') || 'A sealed chapter';
+    el.innerHTML = '<div class="page-inner sealed-inner"><div class="chapter-label">a sealed chapter</div><h2></h2>' +
+      '<div class="wax" aria-hidden="true"></div><p class="centered small-note">This chapter is kept behind a seal.</p>' +
+      '<a class="plate seal-break" target="_blank" rel="noopener">BREAK THE SEAL</a>' +
+      '<p class="centered small-note">It opens in a new tab, and asks for a name and a password.</p>' +
+      '<div class="page-foot"><a class="page-num"></a><a class="toc-return">Contents</a></div></div>';
+    el.querySelector('h2').textContent = title;
+    el.querySelector('.seal-break').href = el.getAttribute('data-sealed');
+  }
+
+  function layOut(el, html) {
+    // a hidden page of the real size, to measure what fits
+    var pw = pageWidth(), ph = pw / PAGE_RATIO;
+    var probe = document.createElement('div');
+    probe.className = 'page flowed';
+    probe.style.cssText = 'position:absolute;left:-9999px;top:0;visibility:hidden;width:' + pw + 'px;height:' + ph + 'px;--pw:' + pw + 'px';
+    probe.innerHTML = '<div class="page-inner"><div class="flow"></div><div class="page-foot"><a class="page-num">0</a></div></div>';
+    document.body.appendChild(probe);
+    var flow = probe.querySelector('.flow');
+    function fits() { return flow.scrollHeight <= flow.clientHeight + 1; }
+
+    var src = document.createElement('div'); src.innerHTML = html;
+    var blocks = Array.prototype.slice.call(src.children);
+    var title = el.getAttribute('data-title') || '';
+    var h = blocks.length && /^H2$/.test(blocks[0].tagName) ? blocks.shift() : null;   // the file's own # title
+    var pages = [], first = true;
+    function newPage() {
+      if (flow.childNodes.length) pages.push(flow.innerHTML);
+      flow.innerHTML = '';
+    }
+    flow.innerHTML = '<div class="chapter-label">' + (el.getAttribute('data-label') || '') + '</div>';
+    var h2 = document.createElement('h2'); h2.innerHTML = h ? h.innerHTML : title; flow.appendChild(h2);
+    var firstPara = true;
+    while (blocks.length) {
+      var b = blocks.shift();
+      if (b.tagName === 'P' && firstPara) { b.className = 'first'; firstPara = false; }
+      flow.appendChild(b);
+      if (fits()) continue;
+      flow.removeChild(b);
+      if (b.tagName === 'P' || b.tagName === 'BLOCKQUOTE') {
+        // split the paragraph by words: as much as fits stays, the rest goes over the page
+        var target = b.tagName === 'P' ? b : b.querySelector('p') || b;
+        var words = target.innerHTML.split(/(\s+)/), lo = 0, hi = words.length, keep = 0;
+        var part = b.cloneNode(true), ptarget = b.tagName === 'P' ? part : part.querySelector('p') || part;
+        flow.appendChild(part);
+        while (lo <= hi) {
+          var mid = (lo + hi) >> 1;
+          ptarget.innerHTML = words.slice(0, mid).join('');
+          if (fits()) { keep = mid; lo = mid + 1; } else hi = mid - 1;
+        }
+        // never leave a word broken inside a tag: step back to a whole word outside any <...>
+        while (keep > 0 && /<[^>]*$/.test(words.slice(0, keep).join(''))) keep--;
+        if (keep < 3) { flow.removeChild(part); newPage(); blocks.unshift(b); continue; }
+        ptarget.innerHTML = words.slice(0, keep).join('');
+        var rest = b.cloneNode(true), rtarget = b.tagName === 'P' ? rest : rest.querySelector('p') || rest;
+        rtarget.innerHTML = words.slice(keep).join('').replace(/^\s+/, '');
+        if (b.tagName === 'P') rest.className = 'cont';
+        newPage(); blocks.unshift(rest);
+      } else if (flow.childNodes.length) {
+        newPage(); flow.appendChild(b);
+        if (!fits() && b.querySelector('img')) b.classList.add('squeeze');
+      } else { flow.appendChild(b); }       // something taller than a page: it is shrunk to fit
+    }
+    newPage();
+    document.body.removeChild(probe);
+
+    // the chapter's pages replace its placeholder
+    var made = pages.map(function (inner, n) {
+      var p = document.createElement('div'); p.className = 'page flowed';
+      if (n === 0 && title) p.setAttribute('data-title', title);
+      p.innerHTML = '<div class="page-inner"><div class="flow">' + inner + '</div><div class="page-foot"><a class="page-num"></a><a class="toc-return">Contents</a></div></div>';
+      return p;
+    });
+    made.forEach(function (p) { el.parentNode.insertBefore(p, el); });
+    el.parentNode.removeChild(el);
+  }
+
+  function prepare() {
+    Array.prototype.forEach.call(bookEl.querySelectorAll('.page[data-sealed]'), sealedPage);
+    var auto = Array.prototype.slice.call(bookEl.querySelectorAll('.page[data-src]'));
+    if (!auto.length || !window.rcMarkdown || !window.fetch) { start(); return; }
+    var fontsReady = document.fonts && document.fonts.ready ? document.fonts.ready.catch(function () {}) : Promise.resolve();
+    Promise.all(auto.map(function (el) {
+      return fetch(el.getAttribute('data-src')).then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); })
+        .catch(function () { return '# ' + (el.getAttribute('data-title') || 'A chapter') + '\n\n*This chapter could not be found. Check its file name: ' + el.getAttribute('data-src') + '*'; });
+    })).then(function (texts) {
+      return fontsReady.then(function () { auto.forEach(function (el, n) { layOut(el, window.rcMarkdown(texts[n])); }); });
+    }).then(start, start);
+  }
+
+  function start() {
   // ---------------------------------------------------------- 2. KEEP THE PAGES EVEN
   var pageEls = Array.prototype.slice.call(bookEl.querySelectorAll('.page'));
   if (pageEls.length % 2 === 1 && pageEls.length > 2) {
@@ -49,15 +164,15 @@
   }
 
   // ---------------------------------------------------------- 3. SIZE AND BUILD
-  var BOOK_FILL = 0.96;   // how much of the available height the book uses
-  var PAGE_RATIO = 0.72;  // page width : height, like a real hardback
-  var stage = bookEl.parentNode;
 
+  var built = false;
   function fitBook() {
     var availH = (stage.clientHeight || window.innerHeight) - 24;
     var pageW = availH * BOOK_FILL * PAGE_RATIO;
     if (window.innerWidth < 620) bookEl.style.width = Math.min(pageW, window.innerWidth * 0.96) + 'px';
     else bookEl.style.width = Math.min(pageW * 2, window.innerWidth * 0.97) + 'px';
+    var real = built && pageEls[1] && pageEls[1].offsetWidth;          // the true width of a page, once the book is built
+    setPw(real > 50 ? real : undefined);
   }
   fitBook();
   window.addEventListener('resize', fitBook);
@@ -68,12 +183,14 @@
     showCover: true, usePortrait: true, maxShadowOpacity: 0.5, mobileScrollSupport: false
   });
   pageFlip.loadFromHTML(pageEls);
+  built = true;
 
   // some browsers hand the book slightly wrong measurements at birth; nudge it once everything has loaded
-  window.addEventListener('load', function () {
+  function nudge() {
     fitBook(); window.dispatchEvent(new Event('resize'));
     window.setTimeout(function () { fitBook(); window.dispatchEvent(new Event('resize')); }, 500);
-  });
+  }
+  if (document.readyState === 'complete') window.setTimeout(nudge, 50); else window.addEventListener('load', nudge);
 
   // ---------------------------------------------------------- 4. NUMBERS AND THE CONTENTS
   // the cover and the endpaper carry no number; page 1 is the first page after them
@@ -191,4 +308,6 @@
       out.appendChild(note);
     });
   }
+  }
+  prepare();
 })();

@@ -1,0 +1,89 @@
+/* ============================================================
+   EDGEWOOD — the look of things only Edgewood has:
+   the oval portraits, the character cards, and the great map.
+   Everything else comes from assets/library.css.
+   ============================================================ */
+
+/* ---------- the pages of oval portraits ---------- */
+.page.portraits .page-inner{padding:clamp(1rem,4%,2.2rem) clamp(0.9rem,4%,2rem) clamp(0.8rem,3%,1.6rem);}
+.page.portraits .chapter-label{text-align:center;margin-bottom:0.4rem;}
+.oval-grid{flex:1;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(3,1fr);gap:0.6rem 0.8rem;min-height:0;}
+.oval{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.3rem;min-height:0;
+  background:none;border:0;padding:0;font:inherit;color:inherit;cursor:pointer;}
+.oval.waiting{cursor:default;}
+.oval-frame{position:relative;height:100%;max-height:calc(100% - 1.6rem);aspect-ratio:3/4;border-radius:50%;padding:5px;
+  background:linear-gradient(145deg,#f2dc9a 0%,#b8893a 30%,#f6e3a8 52%,#9a6c26 78%,#d9b862 100%);
+  box-shadow:0 0 0 1px #7a5420, 0 4px 10px rgba(40,24,8,0.45), inset 0 0 0 2px rgba(255,240,200,0.5);
+  transition:transform .35s, box-shadow .35s;}
+.oval-pic{display:block;width:100%;height:100%;border-radius:50%;background:#e4d6b8 center/cover no-repeat;
+  box-shadow:inset 0 0 0 2px rgba(70,44,14,0.55), inset 0 0 14px rgba(40,24,8,0.35);}
+.oval-pic.own{background-size:cover;background-position:center;}
+.oval-pic.empty{background:radial-gradient(ellipse at 50% 40%, #efe4cc, #d9c8a4);}
+.oval-pic.empty::after{content:'?';display:grid;place-items:center;height:100%;font-family:'Cinzel Decorative',serif;font-size:1.6rem;color:rgba(138,115,68,0.35);}
+.oval:not(.waiting):hover .oval-frame,.oval:focus-visible .oval-frame{transform:translateY(-3px) scale(1.03);
+  box-shadow:0 0 0 1px #7a5420, 0 8px 18px rgba(40,24,8,0.5), 0 0 16px rgba(255,214,140,0.6);}
+.oval:focus-visible{outline:none;}
+.oval-name{font-family:'Cinzel',serif;font-size:clamp(0.62rem,1.25vw,0.82rem);letter-spacing:0.04em;text-align:center;line-height:1.15;color:var(--ink);}
+.oval.waiting .oval-name{font-family:'MedievalSharp',cursive;color:var(--muted);}
+.oval-hint{font-family:'MedievalSharp',cursive;font-size:clamp(0.56rem,1vw,0.7rem);color:var(--brown);margin-top:-0.2rem;}
+
+/* ---------- a character's card, over the book ---------- */
+.char-veil{position:fixed;inset:0;z-index:80;display:flex;align-items:flex-start;justify-content:center;overflow:auto;padding:4vh 1rem;
+  background:rgba(20,12,6,0);visibility:hidden;transition:background .4s, visibility 0s .4s;}
+.char-veil.is-open{background:rgba(20,12,6,0.62);visibility:visible;transition:background .4s;}
+.char-card{position:relative;width:min(36rem,100%);padding:2.2rem 2.2rem 1.8rem;color:var(--ink);
+  background:radial-gradient(ellipse at 50% 0%, #fffaf0, #f2e6cc 70%);border:1px solid var(--gold);outline:1px solid rgba(196,160,78,0.5);outline-offset:-8px;
+  box-shadow:0 24px 60px rgba(0,0,0,0.55);transform:translateY(16px);opacity:0;transition:transform .45s, opacity .4s;}
+.char-veil.is-open .char-card{transform:none;opacity:1;}
+.char-close{position:absolute;top:0.7rem;right:0.9rem;background:none;border:0;font-size:1.6rem;color:var(--brown);cursor:pointer;}
+.char-card .kicker{text-align:center;font-family:'MedievalSharp',cursive;color:var(--brown);font-size:0.9rem;}
+.char-card h2{text-align:center;font-family:'Cinzel Decorative',serif;color:var(--red);margin:0.2rem 0 0.3rem;}
+.char-card .facts{text-align:center;font-family:'Cinzel',serif;font-size:0.78rem;letter-spacing:0.08em;color:var(--brown);margin-bottom:1rem;}
+.char-card h3{font-family:'Cinzel',serif;font-size:1.02rem;margin:1.2rem 0 0.4rem;color:var(--ink);}
+.char-card p{font-family:'Cormorant Garamond',serif;font-size:1.1rem;line-height:1.65;margin:0 0 0.7rem;}
+.char-portrait{display:block;max-width:100%;max-height:70vh;margin:0 auto 1.2rem;border:6px solid #fbf6ea;box-shadow:0 4px 14px rgba(40,26,10,0.35);}
+.char-where ul{list-style:none;padding:0;margin:0;font-family:'Cormorant Garamond',serif;font-size:1.08rem;}
+.char-where li{padding:0.2rem 0;}
+.char-own{margin-top:1.4rem;padding:1rem 1.1rem;border:1px dashed rgba(176,48,48,0.45);background:rgba(196,160,78,0.08);text-align:center;}
+.char-own h3{margin-top:0;}
+.char-own label,.char-own button{display:inline-block;margin:0.4rem 0.2rem 0;font-family:'Cinzel',serif;letter-spacing:0.1em;font-size:0.75rem;
+  padding:0.5rem 0.9rem;cursor:pointer;background:var(--wood);color:var(--gold-soft);border:1px solid var(--gold);}
+.char-own input{position:absolute;width:1px;height:1px;opacity:0;}
+.char-own .small-note{margin:0.3rem 0;}
+.char-key{position:absolute;right:0.9rem;bottom:0.6rem;font-size:0.9rem;text-decoration:none;opacity:0.25;}
+.char-key:hover{opacity:0.8;}
+
+/* ---------- the great map ---------- */
+.panel.chart{max-width:min(96vw,1400px,calc((100vh - 12rem) * 1.672 + 2.4rem));padding:1.2rem 1.2rem 1rem;}
+.panel.chart .kicker,.panel.chart h2{text-align:center;}
+.chart-view{position:relative;width:100%;aspect-ratio:1622/970;margin-top:0.6rem;}
+.chart-view > img{display:block;width:100%;height:100%;border:0;box-shadow:none;margin:0;mix-blend-mode:multiply;}   /* the white around the frame takes the colour of the paper */
+.place{position:absolute;transform:translate(-50%,-50%);width:7%;height:10%;border-radius:40%;text-decoration:none;border:0 !important;}
+.place::before{content:'';position:absolute;inset:0;border-radius:40%;transition:background .3s, box-shadow .3s;}
+.place:hover::before,.place:focus-visible::before{background:rgba(255,236,170,0.28);box-shadow:0 0 18px rgba(255,220,140,0.75);}
+.place-name{position:absolute;left:50%;top:100%;transform:translateX(-50%);white-space:nowrap;pointer-events:none;
+  font-family:'MedievalSharp',cursive;font-size:clamp(0.62rem,1.25vw,1.05rem);color:#3b2412;
+  text-shadow:0 0 3px #f5e3b0, 0 0 6px #f5e3b0, 0 0 10px rgba(245,227,176,0.9);}
+.place.water .place-name{top:50%;transform:translate(-50%,-50%);font-style:italic;color:#1f3a5c;
+  text-shadow:0 0 4px #cfe0ef, 0 0 8px #cfe0ef;}
+.pins{position:absolute;left:50%;bottom:62%;transform:translateX(-50%);display:flex;gap:2px;pointer-events:auto;}
+.pin{position:relative;width:clamp(7px,0.9vw,13px);height:clamp(16px,2vw,28px);font-style:normal;}
+.pin::before{content:'';position:absolute;left:50%;bottom:0;width:1.5px;height:58%;transform:translateX(-50%);background:linear-gradient(#9a8a6a,#4a3a22);}
+.pin::after{content:'';position:absolute;left:0;top:0;width:100%;aspect-ratio:1;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, #ff8a7a, #b03030 55%, #6e1416);box-shadow:0 1px 2px rgba(0,0,0,0.5);}
+.pin.work::after{background:radial-gradient(circle at 35% 30%, #fff1c0, #c4a04e 55%, #7a5a1e);}
+.pin.both::after{background:radial-gradient(circle at 35% 30%, #ff8a7a, #b03030 55%, #6e1416);box-shadow:0 0 0 2px #c4a04e, 0 1px 2px rgba(0,0,0,0.5);}
+.chart-legend{display:flex;justify-content:center;flex-wrap:wrap;gap:0.4rem 1.4rem;margin:0.7rem 0 0;font-family:'MedievalSharp',cursive;font-size:0.85rem;color:var(--brown);}
+.chart-legend .pin{display:inline-block;vertical-align:middle;margin-right:0.35rem;width:10px;height:22px;}
+
+/* ---------- the people of a place ---------- */
+.folk{display:grid;grid-template-columns:repeat(auto-fill,minmax(8.5rem,1fr));gap:1rem 0.8rem;margin:0.8rem 0 1rem;}
+.folk:empty{display:none;}
+.folk button{display:flex;flex-direction:column;align-items:center;gap:0.35rem;background:none;border:0;padding:0;cursor:pointer;font:inherit;color:var(--ink);}
+.folk .oval-frame{width:4.6rem;height:auto;max-height:none;}
+.folk .who{font-family:'Cinzel',serif;font-size:0.78rem;text-align:center;line-height:1.2;}
+.folk .note{font-family:'MedievalSharp',cursive;font-size:0.78rem;color:var(--brown);text-align:center;}
+.folk button:hover .oval-frame{transform:translateY(-3px);}
+.folk-empty{font-family:'MedievalSharp',cursive;text-align:center;color:var(--muted);}
+
+@media (prefers-reduced-motion:reduce){ .oval-frame,.char-card{transition:none;} }

@@ -411,9 +411,84 @@ body{
 .ticket-roll button:hover{background:#3a2e20;}
 .riddles{display:none;}
 
+/* ---------- FIRE AND STARS: light that breathes (used in Edgewood) ---------- */
+.glow-light{position:absolute;pointer-events:none;border-radius:50%;mix-blend-mode:screen;
+  background:radial-gradient(circle, rgba(255,180,90,0.42) 0%, rgba(255,150,60,0.16) 40%, rgba(255,140,50,0) 70%);
+  animation:fire-breathe 2.6s ease-in-out infinite;}
+.glow-light.slow{animation-duration:4.2s;opacity:0.8;}
+@keyframes fire-breathe{0%,100%{opacity:0.75;transform:scale(1);}23%{opacity:1;transform:scale(1.04);}41%{opacity:0.6;transform:scale(0.97);}
+  63%{opacity:0.95;transform:scale(1.03);}82%{opacity:0.7;transform:scale(1);}}
+.star{position:absolute;width:1.2%;aspect-ratio:1;pointer-events:none;
+  background:radial-gradient(circle, #fff 0 12%, rgba(255,250,225,0.8) 22%, transparent 60%);
+  clip-path:polygon(50% 0, 58% 42%, 100% 50%, 58% 58%, 50% 100%, 42% 58%, 0 50%, 42% 42%);
+  animation:star-twinkle 3.8s ease-in-out infinite;}
+@keyframes star-twinkle{0%,100%{opacity:0.35;transform:scale(0.7) rotate(0);}50%{opacity:1;transform:scale(1.15) rotate(20deg);}}
+
+/* a panel whose words come from a text file */
+.panel .md-body figure{margin:1rem 0;}
+.panel .md-body figure img{cursor:zoom-in;}
+.panel .md-body figcaption{text-align:center;font-family:'MedievalSharp',cursive;font-size:0.85rem;color:var(--brown);margin-top:0.3rem;}
+.panel blockquote,.page blockquote{margin:0.6rem 1.2rem 1rem;padding-left:0.9rem;border-left:2px solid var(--gold);font-style:italic;}
+.panel hr,.page.flowed hr{border:0;text-align:center;margin:1rem 0;}
+.panel hr::after,.page.flowed hr::after{content:'\2766';color:var(--gold);font-size:1.2rem;}
+
+/* a list of stories, some open and some sealed */
+.panel .stories{list-style:none;margin:0.8rem 0;padding:0;}
+.panel .stories li{border-top:1px dotted rgba(139,111,78,0.5);padding:0.7rem 0;display:flex;align-items:center;gap:0.8rem;}
+.panel .stories li:last-child{border-bottom:1px dotted rgba(139,111,78,0.5);}
+.panel .stories a{border:0;font-family:'Cinzel',serif;letter-spacing:0.04em;font-size:1.02rem;}
+.panel .stories .story-note{display:block;font-family:'Cormorant Garamond',serif;font-size:0.95rem;color:var(--brown);letter-spacing:0;}
+.panel .stories .scroll-icon{flex:none;width:1.6rem;height:1.6rem;border-radius:50%;
+  background:radial-gradient(circle at 40% 35%, #f6ead0 0 40%, #c9a96e 41% 60%, #8a6a3e 61%);}
+.panel .stories li.sealed .scroll-icon{background:radial-gradient(circle at 36% 30%, #d4524a 0%, #a3262a 50%, #6e1416 100%);
+  box-shadow:inset 0 -2px 4px rgba(0,0,0,0.35);}
+
+/* chapters laid out from text files: everything is sized by the page itself (--pw), so the layout holds at any size */
+.page.flowed .page-inner{padding:calc(var(--pw) * 0.075) calc(var(--pw) * 0.085) calc(var(--pw) * 0.05);}
+.page.flowed .flow{flex:1 1 auto;min-height:0;overflow:hidden;}
+.page.flowed .flow p,.page.flowed .flow li{font-size:calc(var(--pw) * 0.031);line-height:1.62;margin-bottom:0.62em;text-align:justify;hyphens:auto;}
+.page.flowed .flow p.cont{text-indent:0;}
+.page.flowed .flow h2{font-size:calc(var(--pw) * 0.05);margin:0.2em 0 0.8em;}
+.page.flowed .flow h3,.page.flowed .flow h4{font-size:calc(var(--pw) * 0.036);margin:0.8em 0 0.4em;}
+.page.flowed .chapter-label{font-size:calc(var(--pw) * 0.028);}
+.page.flowed .flow ul,.page.flowed .flow ol{font-size:calc(var(--pw) * 0.031);}
+.page.flowed figure{margin:0.5em 0 0.8em;text-align:center;}
+.page.flowed figure img,.page.flowed .flow > p img{display:block;max-width:100%;max-height:calc(var(--pw) * 0.85);margin:0 auto;
+  border:4px solid #fffdf5;box-shadow:0 2px 8px rgba(59,47,32,0.3);}
+.page.flowed figure.squeeze img{max-height:calc(var(--pw) * 1.05);}
+.page.flowed figcaption{font-family:'MedievalSharp',cursive;font-size:calc(var(--pw) * 0.024);color:var(--brown);margin-top:0.4em;}
+.page.flowed blockquote p{font-size:calc(var(--pw) * 0.03);}
+@media (max-width:620px){ .page.flowed .flow p{text-align:left;} }
+
+/* a sealed chapter in a book */
+.page .sealed-inner{align-items:center;text-align:center;}
+.page .sealed-inner h2{margin-top:2rem;}
+.page .sealed-inner .page-foot{align-self:stretch;}
+.page .wax,.panel .wax{width:5.2rem;height:5.2rem;margin:1.2rem auto;border-radius:50%;
+  background:radial-gradient(circle at 36% 30%, #d4524a 0%, #a3262a 45%, #6e1416 100%);
+  box-shadow:inset 0 0 0 0.5rem rgba(0,0,0,0.12), inset 0 -4px 10px rgba(0,0,0,0.35), 0 4px 10px rgba(60,10,10,0.45);
+  display:grid;place-items:center;}
+.page .wax::after{content:'';width:2.3rem;height:2.3rem;border-radius:50%;border:3px solid rgba(255,210,190,0.35);}
+.page a.plate.seal-break{display:inline-block;margin:0.6rem auto;}
+
+/* seven of seven: red circles rain, and a note opens */
+.confetti{position:fixed;inset:0;width:100vw;height:100vh;z-index:120;pointer-events:none;}
+.seven{position:fixed;inset:0;z-index:110;display:grid;place-items:center;padding:1rem;background:rgba(20,12,8,0);
+  visibility:hidden;transition:background .6s, visibility 0s .6s;}
+.seven.is-open{background:rgba(20,12,8,0.72);visibility:visible;transition:background .6s;}
+.seven-card{max-width:30rem;max-height:86vh;overflow:auto;text-align:center;padding:2rem 2rem 1.6rem;color:var(--ink);
+  background:radial-gradient(ellipse at 50% 20%, #fffaf0, #f3e7cd);border:1px solid var(--gold);outline:1px solid rgba(196,160,78,0.5);outline-offset:-8px;
+  box-shadow:0 24px 70px rgba(0,0,0,0.6);transform:scale(0.9);opacity:0;transition:transform .6s cubic-bezier(.2,1.4,.4,1), opacity .5s;}
+.seven.is-open .seven-card{transform:none;opacity:1;}
+.seven-logo{width:5.5rem;height:auto;margin:0 auto 0.6rem;display:block;}
+.seven-card h2{font-family:'Cinzel Decorative',serif;color:var(--red);margin:0.2rem 0 0.8rem;}
+.seven-card p{font-family:'Cormorant Garamond',serif;font-size:1.15rem;line-height:1.6;}
+.seven-close{margin-top:0.8rem;font-family:'Cinzel',serif;letter-spacing:0.12em;font-size:0.78rem;padding:0.55rem 1.1rem;cursor:pointer;
+  background:var(--wood);color:var(--gold-soft);border:1px solid var(--gold);}
+
 /* a sealed card: nothing inside yet */
 .panel.sealed{text-align:center;}
-.panel .wax{width:5.2rem;height:5.2rem;margin:0.4rem auto 1.1rem;border-radius:50%;
+.panel.sealed .wax{width:5.2rem;height:5.2rem;margin:0.4rem auto 1.1rem;border-radius:50%;
   background:radial-gradient(circle at 36% 30%, #d4524a 0%, #a3262a 45%, #6e1416 100%);
   box-shadow:inset 0 0 0 0.5rem rgba(0,0,0,0.12), inset 0 -4px 10px rgba(0,0,0,0.35), 0 4px 10px rgba(60,10,10,0.45);
   display:grid;place-items:center;}
@@ -464,6 +539,7 @@ body{
   100%{background-position:-1% 1.5%,1.5% -1%,-1.5% 1%,1% 1.5%,-1% 1%,1.5% -1%,-1% 1%;opacity:0.8;}}
 
 @media (prefers-reduced-motion:reduce){
+  .glow-light,.star{animation:none !important;}
   .arcade img,.arcade::after,.arcade.static,.arcade.signal::before,.balloon{animation:none !important;}
   .mist{animation:none !important;}
   .spot.secret:not(.is-found){animation:none !important;opacity:0.4;filter:drop-shadow(0 0 3px rgba(255,70,55,0.8));}

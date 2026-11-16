@@ -285,6 +285,7 @@
     bookClose.focus({ preventScroll: true });
   }
   window.addEventListener('message', function (e) { if (e.data === 'rc-close-book' && bookFrame) close(); });
+  window.rcRoom = { showBook: function (url, name) { showBook(url, name); }, show: function (id) { show(id); }, play: function (n) { play(n); } };
 
   // once the room has loaded, quietly fetch its books and the book machinery,
   // so the first book opened does not have to wait for the internet
@@ -318,12 +319,29 @@
       Array.prototype.forEach.call(document.querySelectorAll('.panel img[loading="lazy"]'), function (img) { img.loading = 'eager'; });
     }, 1500);
   });
+  // a panel with data-md="story.md" reads its words from that file the first time it opens
+  function loadWords(p) {
+    var src = p.getAttribute('data-md');
+    if (!src || p.hasAttribute('data-md-loaded') || !window.fetch) return;
+    p.setAttribute('data-md-loaded', '');
+    var box = p.querySelector('.md-body');
+    if (!box) { box = document.createElement('div'); box.className = 'md-body'; p.appendChild(box); }
+    box.innerHTML = '<p class="centered small-note">~ unrolling ~</p>';
+    fetch(src).then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); }).then(function (t) {
+      box.innerHTML = window.rcMarkdown ? window.rcMarkdown(t) : '<p>' + t.replace(/&/g, '&amp;').replace(/</g, '&lt;') + '</p>';
+      var first = box.querySelector('p'); if (first && !p.querySelector('p.first')) first.className = 'first';
+      Array.prototype.forEach.call(box.querySelectorAll('img'), function (img) { img.classList.add('zoomable'); });
+    }).catch(function () {
+      box.innerHTML = '<p class="centered small-note">These words could not be found. Check the file name: ' + src.replace(/</g, '') + '</p>';
+      p.removeAttribute('data-md-loaded');
+    });
+  }
   function show(id) {
     var p = document.getElementById(id);
     if (!p || !p.classList.contains('panel')) { glideHome(); return; }
     removeBook();
     if (openPanel) openPanel.classList.remove('is-open');
-    wakePictures(p);
+    wakePictures(p); loadWords(p);
     openPanel = p; p.classList.add('is-open'); holder.classList.add('is-open'); holder.scrollTop = 0;
     document.body.style.overflow = 'hidden';
     var x = p.querySelector('.panel-close'); if (x) x.focus({ preventScroll: true });
@@ -785,6 +803,32 @@
     });
   })();
 
+  // embers: data-embers="left top right bottom", the fire; sparks rise from its bottom and fade as they climb
+  (function embers() {
+    var b = readBox('data-embers'); if (!b) return;
+    var c = effectCanvas(); if (!c.g) return;
+    var list = [];
+    animate(function (t, dt) {
+      var g = c.g, W = c.box.W, H = c.box.H, u = W / 1600;
+      g.clearRect(0, 0, W, H);
+      if (list.length < 22 && Math.random() < 0.35) {
+        list.push({ x: b[0] + Math.random() * (b[2] - b[0]), y: b[3], vy: 0.05 + Math.random() * 0.07, phase: Math.random() * 6, age: 0, life: 1.2 + Math.random() * 1.8, size: 0.6 + Math.random() * 0.9 });
+      }
+      list = list.filter(function (e) {
+        e.age += dt; if (e.age > e.life) return false;
+        e.y -= e.vy * dt; e.x += Math.sin(e.age * 3 + e.phase) * 0.006 * dt;
+        var k = 1 - e.age / e.life, flick = 0.6 + 0.4 * Math.sin(t * 20 + e.phase);
+        var x = e.x * W, y = e.y * H, r = 3.2 * u * e.size;
+        var grad = g.createRadialGradient(x, y, 0, x, y, r * 2.4);
+        grad.addColorStop(0, 'rgba(255,236,170,' + (k * flick).toFixed(3) + ')');
+        grad.addColorStop(0.35, 'rgba(255,150,50,' + (0.7 * k * flick).toFixed(3) + ')');
+        grad.addColorStop(1, 'rgba(255,90,20,0)');
+        g.fillStyle = grad; g.beginPath(); g.arc(x, y, r * 2.4, 0, 6.2832); g.fill();
+        return true;
+      });
+    });
+  })();
+
   // ---------------------------------------------------------- 6. THE SECRET
   // one hidden Red Circle per room; the browser remembers which ones this visitor has found
   var TOTAL_CIRCLES = 7;
@@ -807,11 +851,54 @@
       if (isNew) { list.push(realm); store('rc-circles', JSON.stringify(list)); }
       secret.classList.add('is-found'); play('chime');
       var count = Math.min(list.length, TOTAL_CIRCLES);
+      if (count >= TOTAL_CIRCLES) { finale(isNew); return; }
       say(count >= TOTAL_CIRCLES
         ? 'You have found every hidden Red Circle. All ' + TOTAL_CIRCLES + ' of ' + TOTAL_CIRCLES + '.'
         : (isNew ? 'You found the Red Circle hidden in ' + realmName + '. ' : 'The Red Circle of ' + realmName + '. ') +
           count + ' of ' + TOTAL_CIRCLES + ' found.');
     });
+  }
+
+  // all seven found: red circles rain down, and a note opens. The note's words live in assets/seven-of-seven.md
+  function finale(firstTime) {
+    if (!reduceMotion) {
+      var cv = document.createElement('canvas'); cv.className = 'confetti'; document.body.appendChild(cv);
+      var g = cv.getContext('2d'), dpr = Math.min(window.devicePixelRatio || 1, 2);
+      cv.width = window.innerWidth * dpr; cv.height = window.innerHeight * dpr;
+      var logo = new Image(); logo.src = assetsBase + 'img/rc-logo-small.png';
+      var bits = [];
+      for (var i = 0; i < 140; i++) bits.push({ x: Math.random(), y: -Math.random() * 0.9 - 0.05, vy: 0.12 + Math.random() * 0.2, vx: (Math.random() - 0.5) * 0.05,
+        r: (8 + Math.random() * 22) * dpr, spin: Math.random() * 6, vs: (Math.random() - 0.5) * 4, phase: Math.random() * 6 });
+      var began = performance.now(), last = began;
+      (function frame(now) {
+        var dt = Math.min(0.05, (now - last) / 1000); last = now;
+        var age = (now - began) / 1000, fade = Math.min(1, Math.max(0, 6.5 - age));
+        g.clearRect(0, 0, cv.width, cv.height);
+        bits.forEach(function (b) {
+          b.y += b.vy * dt; b.x += (b.vx + Math.sin(age * 2 + b.phase) * 0.03) * dt; b.spin += b.vs * dt;
+          var x = b.x * cv.width, y = b.y * cv.height;
+          g.save(); g.globalAlpha = fade; g.translate(x, y); g.rotate(b.spin); g.scale(Math.max(0.2, Math.abs(Math.cos(age * 2.5 + b.phase))), 1);
+          if (logo.complete && logo.naturalWidth) g.drawImage(logo, -b.r, -b.r, b.r * 2, b.r * 2);
+          else { g.strokeStyle = '#B03030'; g.lineWidth = b.r * 0.22; g.beginPath(); g.arc(0, 0, b.r * 0.8, 0.3, 6.0); g.stroke(); }
+          g.restore();
+        });
+        if (age < 7) window.requestAnimationFrame(frame); else document.body.removeChild(cv);
+      })(began);
+    }
+    play('chime'); window.setTimeout(function () { play('chime'); }, 350);
+    var veil = document.createElement('div'); veil.className = 'seven';
+    veil.innerHTML = '<div class="seven-card" role="dialog" aria-label="Seven of seven"><img class="seven-logo" src="' + assetsBase + 'img/rc-logo.png" alt="">' +
+      '<div class="kicker">' + (firstTime ? 'the last one' : 'all seven, again') + '</div><h2>Seven of Seven</h2><div class="seven-words"></div>' +
+      '<button type="button" class="seven-close">BACK TO ' + realmName.toUpperCase() + '</button></div>';
+    document.body.appendChild(veil);
+    var words = veil.querySelector('.seven-words');
+    words.innerHTML = '<p>You found every hidden Red Circle on the island.</p>';
+    if (window.fetch) fetch(assetsBase + 'seven-of-seven.md').then(function (r) { if (!r.ok) throw 0; return r.text(); })
+      .then(function (t) { words.innerHTML = window.rcMarkdown ? window.rcMarkdown(t) : '<p>' + t.replace(/</g, '&lt;') + '</p>'; }).catch(function () {});
+    window.setTimeout(function () { veil.classList.add('is-open'); }, reduceMotion ? 0 : 900);
+    function shut() { veil.classList.remove('is-open'); window.setTimeout(function () { if (veil.parentNode) veil.parentNode.removeChild(veil); }, 500); }
+    veil.querySelector('.seven-close').addEventListener('click', shut);
+    veil.addEventListener('click', function (e) { if (e.target === veil) shut(); });
   }
 
   // ---------------------------------------------------------- 7. PICTURES THAT OPEN LARGE
