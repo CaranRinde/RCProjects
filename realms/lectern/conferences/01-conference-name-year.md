@@ -3,11 +3,10 @@ facts: The title of your talk
 
 # Conference Name
 
-<div class="plate">
-<div class="small-note">[ a photo from the conference ]</div>
-<div class="small-note">replace this box with &lt;img class="img-full" src="photo.jpg" alt=""&gt;</div>
-</div>
+![A few words under the photo](photo-placeholder.jpg)
 
 What you presented, who was in the room, and what you brought home from it.
 
-// If you have slides: <a class="plate" href="https://files.rcprojects.net/slides.pdf" target="_blank" rel="noopener">SEE THE SLIDES</a>
+// The photo: put it in this conferences folder, and write its name in the brackets above.
+// If you have slides, take away the two slashes at the start of the next line, and put in their address:
+// [SEE THE SLIDES](https://files.rcprojects.net/slides.pdf)

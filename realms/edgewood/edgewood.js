@@ -27,6 +27,12 @@
       });
     });
 
+    // fetch every portrait straight away, so the ovals on the place cards are ready before anyone opens one
+    Array.prototype.forEach.call(doc.querySelectorAll('article.character'), function (art) {
+      var src = art.getAttribute('data-portrait') || art.getAttribute('data-veil');
+      if (src) { var im = new Image(); im.src = src; }
+    });
+
     // pins on the map
     Array.prototype.forEach.call(document.querySelectorAll('.place[data-place]'), function (pl) {
       var people = byPlace[pl.getAttribute('data-place')]; if (!people) return;

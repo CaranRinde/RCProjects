@@ -56,7 +56,37 @@
   paintToggle();
   if (toggle) toggle.addEventListener('click', function () {
     soundOn = !soundOn; store('rc-sound', soundOn ? 'on' : 'off'); paintToggle();
+    if (music) { if (soundOn) fadeMusic(true); else fadeMusic(false); }
   });
+
+  // music: if a file called music.mp3 sits in the room's folder, it plays softly, on a loop.
+  // Browsers only allow music after the visitor's first click, so it begins then. The SOUND switch stops it.
+  var music = null, MUSIC_VOLUME = 0.25, musicFade = null;
+  function fadeMusic(on) {
+    if (!music) return;
+    window.clearInterval(musicFade);
+    if (on) { music.play().catch(function () {}); }
+    musicFade = window.setInterval(function () {
+      var v = music.volume + (on ? 0.02 : -0.03);
+      if (on && v >= MUSIC_VOLUME) { music.volume = MUSIC_VOLUME; window.clearInterval(musicFade); return; }
+      if (!on && v <= 0) { music.volume = 0; music.pause(); window.clearInterval(musicFade); return; }
+      music.volume = Math.max(0, Math.min(MUSIC_VOLUME, v));
+    }, 80);
+  }
+  (function musicLoader() {
+    var src = document.body.getAttribute('data-music');
+    if (src === 'none' || !window.fetch) return;
+    src = src || 'music.mp3';
+    fetch(src, { method: 'HEAD' }).then(function (r) {
+      if (!r.ok) return;
+      music = new Audio(src); music.loop = true; music.volume = 0; music.preload = 'auto';
+      function begin() {
+        document.removeEventListener('pointerdown', begin, true); document.removeEventListener('keydown', begin, true);
+        if (soundOn) fadeMusic(true);
+      }
+      document.addEventListener('pointerdown', begin, true); document.addEventListener('keydown', begin, true);
+    }).catch(function () {});
+  })();
 
   function ctx() {
     if (!audio) { var C = window.AudioContext || window.webkitAudioContext; if (C) audio = new C(); }
@@ -244,13 +274,15 @@
   var panels = Array.prototype.slice.call(document.querySelectorAll('.panel'));
   var holder = document.createElement('div'); holder.className = 'panels';
   var openPanel = null, bookFrame = null, bookClose = null, lastFocus = null, pending = null;
+  // the cards opened one from another (a map, then a place on it): the ✕ steps back through them
+  var trail = [];
 
   panels.forEach(function (p) {
     p.setAttribute('role', 'dialog'); p.setAttribute('aria-modal', 'true');
     var heading = p.querySelector('h2');
     if (heading) { if (!heading.id) heading.id = p.id + '-title'; p.setAttribute('aria-labelledby', heading.id); }
     var x = document.createElement('button'); x.type = 'button'; x.className = 'panel-close';
-    x.setAttribute('aria-label', 'Close'); x.innerHTML = '&times;'; x.addEventListener('click', close);
+    x.setAttribute('aria-label', 'Close'); x.innerHTML = '&times;'; x.addEventListener('click', stepBack);
     p.insertBefore(x, p.firstChild);
     var back = document.createElement('button'); back.type = 'button'; back.className = 'panel-back';
     back.textContent = '~ back to the room ~'; back.addEventListener('click', close);
@@ -258,7 +290,7 @@
     holder.appendChild(p);
   });
   document.body.appendChild(holder);
-  holder.addEventListener('click', function (e) { if (e.target === holder) close(); });
+  holder.addEventListener('click', function (e) { if (e.target === holder) stepBack(); });
 
   var bookNote = null, bookTimer = null;
   function removeBook() {
@@ -385,10 +417,17 @@
     window.clearTimeout(pending);
     pending = window.setTimeout(function () {
       pending = null;
+      trail = [];
       if (book) showBook(book, spot.getAttribute('aria-label')); else show(id);
     }, glideTo(spot));
   }
+  // ✕, Esc or a click beside the card: back to the card it was opened from, or to the room
+  function stepBack() {
+    if (openPanel && !bookFrame && trail.length) { play('paper'); show(trail.pop()); return; }
+    close();
+  }
   function close() {
+    trail = [];
     window.clearTimeout(pending); pending = null;
     if (openPanel) openPanel.classList.remove('is-open');
     openPanel = null; holder.classList.remove('is-open'); document.body.style.overflow = '';
@@ -403,7 +442,7 @@
     if (spot.tagName === 'A') { spot.addEventListener('click', function () { play(spot.getAttribute('data-sound') || 'wood'); }); return; }
     spot.addEventListener('click', function () { openFromSpot(spot); });
   });
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && (openPanel || bookFrame || pending)) close(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && (openPanel || bookFrame || pending)) stepBack(); });
 
   // links such as <a href="#cv"> open that panel, from the top bar or from inside another panel
   document.addEventListener('click', function (e) {
@@ -412,7 +451,13 @@
     if (!target || !target.classList.contains('panel')) return;
     e.preventDefault();
     var spot = view.querySelector('.spot[data-opens="' + id + '"]');
-    if (openPanel || bookFrame || !spot) { play('paper'); if (!openPanel && !bookFrame) lastFocus = a; show(id); }
+    if (openPanel || bookFrame || !spot) {
+      play('paper'); if (!openPanel && !bookFrame) lastFocus = a;
+      var at = trail.indexOf(id);
+      if (at > -1) trail = trail.slice(0, at);                    // going back to a card already on the way
+      else if (openPanel && openPanel.id !== id) trail.push(openPanel.id);
+      show(id);
+    }
     else openFromSpot(spot, a);
   });
   // a web address ending in #cv opens straight onto the CV
@@ -745,26 +790,63 @@
   (function leaves() {
     var b = readBox('data-leaves'); if (!b) return;
     var c = effectCanvas(); if (!c.g) return;
-    var leaf = null, wait = 1;                        // the first leaf falls a second after you arrive
-    var colours = [[176, 168, 64], [150, 160, 60], [196, 160, 70], [130, 150, 70]];
+    var MAX = 5, leaves = [], wait = 0.4;              // up to five leaves in the air; the first falls almost at once
+    var colours = [[176, 168, 64], [150, 160, 60], [196, 160, 70], [130, 150, 70], [204, 140, 60]];
     animate(function (t, dt) {
       var g = c.g, W = c.box.W, H = c.box.H, u = W / 1600;
       g.clearRect(0, 0, W, H);
-      if (!leaf) {
-        wait -= dt;
-        if (wait <= 0) leaf = { x: b[0] + Math.random() * (b[2] - b[0]), y: b[1] + Math.random() * (b[3] - b[1]), age: 0, phase: Math.random() * 6, col: colours[Math.floor(Math.random() * colours.length)], floor: 0.62 + Math.random() * 0.28 };
-        return;
+      wait -= dt;
+      if (wait <= 0 && leaves.length < MAX) {
+        leaves.push({ x: b[0] + Math.random() * (b[2] - b[0]), y: b[1] + Math.random() * (b[3] - b[1]), age: 0, phase: Math.random() * 6,
+          col: colours[Math.floor(Math.random() * colours.length)], floor: 0.62 + Math.random() * 0.28, size: 0.8 + Math.random() * 0.5, speed: 0.026 + Math.random() * 0.014 });
+        wait = 0.5 + Math.random() * 1.1;
       }
-      leaf.age += dt; leaf.y += 0.032 * dt; leaf.x += Math.sin(leaf.age * 1.4 + leaf.phase) * 0.03 * dt + 0.004 * dt;
-      var fade = Math.min(1, leaf.age * 1.2, (leaf.floor - leaf.y) * 10);
-      if (fade <= 0) { leaf = null; wait = 1.5 + Math.random() * 2.5; return; }
-      g.save(); g.translate(leaf.x * W, leaf.y * H); g.rotate(Math.sin(leaf.age * 1.4 + leaf.phase) * 0.9);
-      g.scale(Math.max(0.25, Math.abs(Math.cos(leaf.age * 1.9 + leaf.phase))), 1);
-      g.fillStyle = 'rgba(' + leaf.col.join(',') + ',' + (0.95 * fade).toFixed(3) + ')';
-      g.beginPath(); g.moveTo(0, -11 * u); g.quadraticCurveTo(8 * u, 0, 0, 11 * u); g.quadraticCurveTo(-8 * u, 0, 0, -11 * u); g.fill();
-      g.strokeStyle = 'rgba(110,100,40,' + (0.6 * fade).toFixed(3) + ')'; g.lineWidth = 0.9 * u;
-      g.beginPath(); g.moveTo(0, -10 * u); g.lineTo(0, 12 * u); g.stroke();
-      g.restore();
+      leaves = leaves.filter(function (leaf) {
+        leaf.age += dt; leaf.y += leaf.speed * dt; leaf.x += Math.sin(leaf.age * 1.4 + leaf.phase) * 0.03 * dt + 0.004 * dt;
+        var fade = Math.min(1, leaf.age * 1.2, (leaf.floor - leaf.y) * 10);
+        if (fade <= 0) return false;
+        var s = u * leaf.size;
+        g.save(); g.translate(leaf.x * W, leaf.y * H); g.rotate(Math.sin(leaf.age * 1.4 + leaf.phase) * 0.9);
+        g.scale(Math.max(0.25, Math.abs(Math.cos(leaf.age * 1.9 + leaf.phase))), 1);
+        g.fillStyle = 'rgba(' + leaf.col.join(',') + ',' + (0.95 * fade).toFixed(3) + ')';
+        g.beginPath(); g.moveTo(0, -11 * s); g.quadraticCurveTo(8 * s, 0, 0, 11 * s); g.quadraticCurveTo(-8 * s, 0, 0, -11 * s); g.fill();
+        g.strokeStyle = 'rgba(110,100,40,' + (0.6 * fade).toFixed(3) + ')'; g.lineWidth = 0.9 * s;
+        g.beginPath(); g.moveTo(0, -10 * s); g.lineTo(0, 12 * s); g.stroke();
+        g.restore();
+        return true;
+      });
+    });
+  })();
+
+  // lily pads (or anything marked "pad") that hold something shimmer: little golden motes rise from them
+  (function padGlitter() {
+    var pads = Array.prototype.filter.call(view.querySelectorAll('.spot.pad'), function (p) { return !p.classList.contains('unlit'); });
+    if (!pads.length || reduceMotion) return;
+    var c = effectCanvas(); if (!c.g) return;
+    var boxes = pads.map(function (p) { return [parseFloat(p.style.left) / 100, parseFloat(p.style.top) / 100, parseFloat(p.style.width) / 100, parseFloat(p.style.height) / 100]; });
+    var motes = [];
+    animate(function (t, dt) {
+      var g = c.g, W = c.box.W, H = c.box.H, u = W / 1600;
+      g.clearRect(0, 0, W, H);
+      boxes.forEach(function (b) {
+        if (Math.random() < dt * 9) motes.push({ x: b[0] + b[2] * (0.15 + Math.random() * 0.7), y: b[1] + b[3] * (0.3 + Math.random() * 0.5),
+          vy: 0.012 + Math.random() * 0.014, age: 0, life: 1.4 + Math.random() * 1.4, ph: Math.random() * 6, size: 0.6 + Math.random() * 0.8 });
+      });
+      motes = motes.filter(function (m) {
+        m.age += dt; if (m.age > m.life) return false;
+        m.y -= m.vy * dt; var x = (m.x + Math.sin(m.age * 2.4 + m.ph) * 0.003) * W, y = m.y * H;
+        var k = Math.sin(Math.PI * m.age / m.life) * (0.6 + 0.4 * Math.sin(t * 9 + m.ph)), r = 11 * u * m.size;
+        g.globalCompositeOperation = 'lighter';
+        var grad = g.createRadialGradient(x, y, 0, x, y, r);
+        grad.addColorStop(0, 'rgba(255,252,225,' + k.toFixed(3) + ')');
+        grad.addColorStop(0.25, 'rgba(255,220,110,' + (0.6 * k).toFixed(3) + ')');
+        grad.addColorStop(1, 'rgba(255,200,80,0)');
+        g.fillStyle = grad; g.beginPath(); g.arc(x, y, r, 0, 6.2832); g.fill();
+        g.strokeStyle = 'rgba(255,255,240,' + (0.8 * k).toFixed(3) + ')'; g.lineWidth = 1.2 * u;      // a tiny cross of light
+        g.beginPath(); g.moveTo(x - r * 0.9, y); g.lineTo(x + r * 0.9, y); g.moveTo(x, y - r * 0.9); g.lineTo(x, y + r * 0.9); g.stroke();
+        g.globalCompositeOperation = 'source-over';
+        return true;
+      });
     });
   })();
 
@@ -883,16 +965,22 @@
     });
   })();
 
-  // snow: data-snow="left top right bottom", snow falling behind a window
+  // snow: data-snow="left top right bottom", snow falling behind a window.
+  // Several panes of glass can be given, separated by commas; the snow shows only on them
   (function snow() {
-    var b = readBox('data-snow'); if (!b) return;
+    var attr = room.getAttribute('data-snow'); if (!attr || reduceMotion) return;
+    var panes = attr.split(',').map(function (part) { return part.trim().split(/\s+/).map(function (v) { return Number(v) / 100; }); });
+    var b = [Math.min.apply(null, panes.map(function (q) { return q[0]; })), Math.min.apply(null, panes.map(function (q) { return q[1]; })),
+             Math.max.apply(null, panes.map(function (q) { return q[2]; })), Math.max.apply(null, panes.map(function (q) { return q[3]; }))];
     var c = effectCanvas(); if (!c.g) return;
     var flakes = [];
     for (var i = 0; i < 60; i++) flakes.push({ x: Math.random(), y: Math.random(), s: 0.5 + Math.random(), sp: 0.05 + Math.random() * 0.06, ph: Math.random() * 6 });
     animate(function (t, dt) {
       var g = c.g, W = c.box.W, H = c.box.H, u = W / 1600;
       g.clearRect(0, 0, W, H);
-      g.save(); g.beginPath(); g.rect(b[0] * W, b[1] * H, (b[2] - b[0]) * W, (b[3] - b[1]) * H); g.clip();
+      g.save(); g.beginPath();
+      panes.forEach(function (q) { g.rect(q[0] * W, q[1] * H, (q[2] - q[0]) * W, (q[3] - q[1]) * H); });
+      g.clip();
       flakes.forEach(function (f) {
         f.y += f.sp * dt * f.s; if (f.y > 1) { f.y = 0; f.x = Math.random(); }
         var x = (b[0] + (f.x + Math.sin(t * 0.8 + f.ph) * 0.03) * (b[2] - b[0])) * W, y = (b[1] + f.y * (b[3] - b[1])) * H;

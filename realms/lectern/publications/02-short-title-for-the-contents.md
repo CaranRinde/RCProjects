@@ -8,3 +8,7 @@ button: READ THE ARTICLE | https://example.org
 ## Abstract
 
 The abstract goes here, in a paragraph. A page holds roughly 250 words beside the title, so a long abstract is best trimmed to its heart, or continued on a second page.
+
+## How to Cite
+
+> Surname, A., & Surname, B. (Year). Full title of the article. *Journal Name*, volume(issue), pages. https://doi.org/...

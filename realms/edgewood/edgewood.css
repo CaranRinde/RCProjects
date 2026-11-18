@@ -71,8 +71,8 @@
 .pin::before{content:'';position:absolute;left:50%;bottom:0;width:1.5px;height:58%;transform:translateX(-50%);background:linear-gradient(#9a8a6a,#4a3a22);}
 .pin::after{content:'';position:absolute;left:0;top:0;width:100%;aspect-ratio:1;border-radius:50%;
   background:radial-gradient(circle at 35% 30%, #ff8a7a, #b03030 55%, #6e1416);box-shadow:0 1px 2px rgba(0,0,0,0.5);}
-.pin.work::after{background:radial-gradient(circle at 35% 30%, #8fb0ee, #2c4a8a 55%, #142a5a);}
-.pin.both::after{background:linear-gradient(90deg, #b03030 0 50%, #2c4a8a 50% 100%);box-shadow:inset 0 0 0 1px rgba(255,255,255,0.35), 0 1px 2px rgba(0,0,0,0.5);}
+.pin.work::after{background:radial-gradient(circle at 35% 30%, #a9c0d4, #5f7f9e 55%, #3c5672);}   /* the blue of the sea on the map */
+.pin.both::after{background:radial-gradient(circle at 35% 30%, #a9c0d4, #5f7f9e 55%, #3c5672);box-shadow:0 0 0 2px #b03030, 0 1px 2px rgba(0,0,0,0.5);}
 .chart-legend{display:flex;justify-content:center;flex-wrap:wrap;gap:0.4rem 1.4rem;margin:0.7rem 0 0;font-family:'MedievalSharp',cursive;font-size:0.85rem;color:var(--brown);}
 .chart-legend .pin{display:inline-block;vertical-align:middle;margin-right:0.35rem;width:10px;height:22px;}
 
@@ -95,21 +95,8 @@
   animation:candle 2.3s ease-in-out infinite;}
 @keyframes candle{0%,100%{opacity:0.35;}18%{opacity:0.9;}27%{opacity:0.55;}46%{opacity:1;}62%{opacity:0.45;}80%{opacity:0.8;}}
 
-/* a page of the book on the stand, turning by itself: every 7 seconds, the first about 2 seconds after you arrive */
-.page-turn{position:absolute;pointer-events:none;perspective:900px;}
-.page-turn::before{content:'';position:absolute;inset:0;transform-origin:0 50%;border-radius:0 3px 3px 0;
-  background:linear-gradient(90deg, rgba(120,80,40,0.45) 0%, #e9c98e 10%, #f1d9a8 55%, #dcb478 100%);
-  box-shadow:0 2px 6px rgba(60,40,10,0.25);
-  clip-path:polygon(0 0, 92% 1%, 100% 100%, 0 100%);
-  opacity:0;animation:page-turn 7s ease-in-out -5s infinite;}
-@keyframes page-turn{
-  0%{opacity:0;transform:rotateY(0deg);}
-  6%{opacity:1;transform:rotateY(-8deg);}
-  30%{opacity:1;transform:rotateY(-95deg);}
-  52%{opacity:1;transform:rotateY(-176deg);}
-  58%,100%{opacity:0;transform:rotateY(-180deg);}}
 
 /* the great map comes alive: birds and the moving sea are drawn here */
 .chart-life{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;}
 
-@media (prefers-reduced-motion:reduce){ .candle,.page-turn::before{animation:none;} .page-turn{display:none;} }
+@media (prefers-reduced-motion:reduce){ .candle{animation:none;} }
