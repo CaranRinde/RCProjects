@@ -1,3 +1,5 @@
+kicker: by the fire
+
 # Tales by the Fire
 
 *The history of Edgewood, as it is told on long evenings.*

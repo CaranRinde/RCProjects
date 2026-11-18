@@ -7,8 +7,11 @@
   'use strict';
   var PER_PAGE = 6;
   var book = document.getElementById('book'), folk = document.getElementById('folk');
-  if (!book || !folk) return;
-
+  if (!book || !folk || !window.rcFolk) return;
+  // the book waits until the characters have been read from their files (library.js looks for rcBookGate)
+  window.rcBookGate = window.rcFolk(folk).then(build, function () {
+    folk.innerHTML = '<section class="group" data-title="The Folk of Edgewood" data-empty="6"></section>'; build();
+  });
   function store(key, value) {           // read with store(key); write with store(key, value); remove with store(key, null)
     try {
       if (value === undefined) return window.localStorage.getItem(key);
@@ -29,7 +32,7 @@
     pic.className = 'oval-pic';
     pic.style.backgroundImage = ''; pic.style.backgroundSize = ''; pic.style.backgroundPosition = '';
     if (own) { pic.style.backgroundImage = 'url(' + own + ')'; pic.classList.add('own'); }
-    else if (art.hasAttribute('data-veiled')) { pic.style.backgroundImage = 'url(portraits/veil-' + art.id + '.jpg)'; pic.classList.add('veiled'); }
+    else if (art.hasAttribute('data-veiled')) { pic.style.backgroundImage = 'url(' + (art.getAttribute('data-veil') || '') + ')'; pic.classList.add('veiled'); }
     else if (art.getAttribute('data-portrait')) {
       pic.style.backgroundImage = 'url(' + art.getAttribute('data-portrait') + ')';
       pic.style.backgroundSize = art.getAttribute('data-zoom') || '210%';
@@ -39,6 +42,7 @@
   var ovalsById = {};
 
   // ---------------------------------------------------------- build the pages
+  function build() {
   var backCover = book.lastElementChild;
   Array.prototype.forEach.call(folk.querySelectorAll('.group'), function (group) {
     var title = group.getAttribute('data-title') || '';
@@ -84,6 +88,8 @@
       book.insertBefore(page, backCover);
     }
   });
+
+  }   // build
 
   // ---------------------------------------------------------- the card
   var veil = document.createElement('div'); veil.className = 'char-veil';
@@ -181,5 +187,5 @@
   }, true);
 
   // characters.html#cal-weston opens straight onto Cal's card
-  if (location.hash.length > 1) window.setTimeout(function () { openCard(decodeURIComponent(location.hash.slice(1))); }, 900);
+  if (location.hash.length > 1) window.rcBookGate.then(function () { window.setTimeout(function () { openCard(decodeURIComponent(location.hash.slice(1))); }, 900); });
 })();

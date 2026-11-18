@@ -7,23 +7,10 @@
 <link rel="stylesheet" href="../../assets/library.css">
 <!-- ============================================================
      OUGHTOBIOGRAPHY — the book on the stand in Edgewood.
-
-     CARAN'S EDITING LEGEND
-
-     Each chapter is a plain-text file in the  chapters  folder, written in markdown
-     (a # title, blank lines between paragraphs, *italics*, **bold**, ![caption](picture.jpg)).
+     You never need to edit this file. The chapters live in the chapters folder:
+       chapters/list.md             the chapters, in order, one line each
+       chapters/01-chapter-one.md   one chapter, in plain text
      The book lays each chapter out by itself, over as many pages as it needs.
-
-     AN OPEN CHAPTER is one line below:
-       <div class="page" data-src="chapters/03-the-storm.md" data-title="The Storm" data-label="chapter three"></div>
-         data-title  is its name in the Contents
-         data-label  is the small line above its title (you can leave it out)
-
-     A SEALED CHAPTER lives in the warehouse (files.rcprojects.net/sealed) and here is one line:
-       <div class="page" data-sealed="https://files.rcprojects.net/sealed/read.html?f=chapter-03.md" data-title="The Storm"></div>
-       It shows a wax seal, and opens in a new tab after asking for a name and a password.
-
-     A PRIVATE CHAPTER: put it in the private folder of the warehouse, and simply leave it out of this book.
      ============================================================ -->
 </head>
 <body class="book-page" style="--leather:#2F3E2C;--page:#F2E8D2" data-realm-name="Edgewood">
@@ -35,7 +22,7 @@
 </header>
 
 <div class="stage">
-  <div id="book">
+  <div id="book" data-chapters="chapters/list.md">
 
     <!-- ========== FRONT COVER ========== -->
     <div class="page cover" data-density="hard">
@@ -62,12 +49,10 @@
       </div>
     </div>
 
-    <!-- ========== THE CHAPTERS ========== -->
-    <div class="page" data-src="chapters/01-chapter-one.md" data-title="Chapter One" data-label="chapter one"></div>
-    <div class="page" data-src="chapters/02-chapter-two.md" data-title="Chapter Two" data-label="chapter two"></div>
-    <div class="page" data-sealed="https://files.rcprojects.net/sealed/read.html?f=chapter-three.md" data-title="Chapter Three"></div>
+    <!-- ========== THE CHAPTERS come from chapters/list.md, and are laid out here ========== -->
+    <div class="chapters-here" hidden></div>
 
-    <!-- To add a chapter, add a line above this one. -->
+
 
     <!-- ========== BACK COVER ========== -->
     <div class="page cover" data-density="hard">

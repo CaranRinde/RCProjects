@@ -8,30 +8,14 @@
 <link rel="stylesheet" href="edgewood.css">
 <!-- ============================================================
      THE FOLK OF EDGEWOOD — the book of portraits in the hallway.
-     The pages of ovals build themselves from the characters written
-     further down. You only ever edit the characters.
+     You never need to edit this file. The characters live in the
+     characters folder, one plain-text file each:
 
-     CARAN'S EDITING LEGEND
+       characters/list.md          who is in the book, group by group, in order
+       characters/cal-weston.md    one character
+       characters/cal-weston.jpg   their picture
 
-     A GROUP is a <section class="group" data-title="Kindred" data-empty="0">.
-       Its title becomes a heading and a line in the Contents.
-       data-empty="15" adds that many empty ovals at the end of the group,
-       waiting for characters still to come. When you add a character to a group,
-       make its data-empty one smaller.
-
-     A CHARACTER is one <article class="character" ...> ... </article>:
-       id="cal-weston"                        a short name: lowercase, hyphens, no spaces
-       data-title="FIRE LIEUTENANT · ..."     the line under the name
-       data-portrait="portraits/cal-weston.jpg"   the picture, in the portraits folder
-       data-focus="50% 15%"                   where the face is in the picture (across, down)
-       data-zoom="230%"                       how close the oval comes in on the face
-       data-places="Briarwick: home; Briarwick: work"
-                                              where they live and work, separated by ;
-                                              The place names must match the map exactly.
-       data-veiled                            a veiled oval, and no picture on the card
-       data-private="https://files.rcprojects.net/private/jim-adams.png"
-                                              your own key to the real portrait
-     Inside it, write as in any panel: <h2>Name</h2>, <p>...</p>, <h3>His Story</h3>.
+     The pages of ovals build themselves from those files.
      ============================================================ -->
 </head>
 <body class="book-page" style="--leather:#4E2A1E;--page:#F2E8D2" data-realm-name="Edgewood">
@@ -83,192 +67,11 @@
   </div>
 </div>
 
-<!-- ============================================================
-     THE CHARACTERS
-     ============================================================ -->
-<div id="folk" hidden>
+<!-- the characters are read from the characters folder, and placed here, unseen -->
+<div id="folk" hidden></div>
 
-  <!-- ==================== AT THE HEART OF EDGEWOOD ==================== -->
-  <section class="group" data-title="At the Heart of Edgewood" data-empty="0">
-
-    <article class="character" id="jim-adams"
-             data-title="DEPUTY FIRE CHIEF · BRIARWICK &amp; BLACKMERE"
-             data-places="Hearthstead Ranch: home; Briarwick: work (Thu&#8211;Sun); Blackmere: work (Mon&#8211;Wed)"
-             data-veiled
-             data-private="https://files.rcprojects.net/private/jim-adams.png">
-      <h2>Jim Adams</h2>
-      <p><strong>Personality:</strong> Quiet, decisive and fiercely protective. A man of few words, dry humour and unwavering loyalty. Calm under pressure, commanding without arrogance, and unexpectedly playful with those he loves.</p>
-      <p><strong>Occupation:</strong> Deputy Chief of the Edgewood Fire Department, formerly Lieutenant of the Briarwick Fire Department.</p>
-      <p><strong>Fond Of:</strong> Horse riding, playing guitar, the company of his closest friends, peaceful evenings at Hearthstead, and teasing Diana whenever the opportunity presents itself.</p>
-      <p><strong>Home &amp; Heart:</strong> Hearthstead Ranch. Engaged to Diana Morrison. His black stallion, Thunder, has been his faithful companion for years.</p>
-      <h3>His Story</h3>
-      <p>Jim Adams grew up knowing that courage sometimes comes at a terrible price. His father lost his life saving others from a flooded creek, leaving a young boy in the care of Old Thomas, who raised him at Hearthstead Ranch as his own son.</p>
-      <p>Years later, Jim became the man people turn to when everything goes wrong. Beginning his career in the Briarwick Fire Department, he rose to the rank of Lieutenant through courage, discipline and an unwavering devotion to his crew. His reputation eventually reached Blackmere, where he was offered the position of Deputy Chief &#8212; an honour that brought greater responsibility and a life divided between two towns.</p>
-      <p>Yet no matter how far his duties take him, Jim&#8217;s heart remains firmly rooted in Briarwick. Among the familiar faces of his closest friends, the horses waiting at Hearthstead, and the young woman who has somehow managed to turn his carefully ordered world upside down.</p>
-      <p>For beneath the composed fire officer is a man of quiet tenderness and wonderfully dry humour. A man who laughs at his best friend&#8217;s outrageous jokes, who would rather act than make grand promises, and whose formidable composure can be undone by one mischievous smile from Diana.</p>
-      <p>When she unexpectedly enters his life, Jim discovers that protecting someone and loving someone are not quite the same thing. One is a duty he has always understood. The other becomes the greatest certainty of his life.</p>
-      <p>And Jim Adams, once he has given his heart, does not give it halfway.</p>
-    </article>
-
-    <article class="character" id="diana-morrison"
-             data-title="LIBRARIAN · BRIARWICK LIBRARY"
-             data-places="Hearthstead Ranch: home; Briarwick: work"
-             data-veiled
-             data-private="https://files.rcprojects.net/private/diana-morrison.png">
-      <h2>Diana Morrison</h2>
-      <p><strong>Personality:</strong> Intelligent, sensitive, affectionate and delightfully cheeky when comfortable. A playful troublemaker with a sharp little tongue, a tender heart and a remarkable capacity for mischief. Beneath her lively spirit lies a quiet fragility that she rarely allows the world to see.</p>
-      <p><strong>Occupation:</strong> Librarian at Briarwick Library, where she has gradually earned her place among the bookshelves and the people who frequent them.</p>
-      <p><strong>Fond Of:</strong> Books, peaceful corners, red wine, animals, pretty dresses, playful teasing and the simple pleasures of country life. Particularly fond of making Jim lose his composure. Not at all fond of beer.</p>
-      <p><strong>Home &amp; Heart:</strong> Hearthstead Ranch. Engaged to Jim Adams. Devoted to her dog, Beak, and her beloved mare, Flash.</p>
-      <h3>Her Story</h3>
-      <p>Nobody in Briarwick knows exactly where Diana Morrison came from.</p>
-      <p>One day, she simply appeared at Hearthstead Ranch, carrying a backpack and a past she wasn&#8217;t ready to speak about. Exhausted and frightened, she found herself on the doorstep of an elderly gentleman who offered her something to eat, a place to rest, and the rare kindness of asking no questions.</p>
-      <p>For a while, the quiet rhythms of the ranch were enough. The horses in the stable, the warmth of Old Thomas&#8217;s kitchen, the familiar creak of the porch swing. Little by little, Diana began to make a life for herself, eventually finding work among the bookshelves of Briarwick Library and friendships she had never expected to form.</p>
-      <p>Yet there is far more to Diana than her quiet manner suggests. She has a mischievous streak, a wonderfully cheeky sense of humour, and an extraordinary talent for getting herself into situations that leave her friends laughing and a certain blue-eyed fireman shaking his head in disbelief.</p>
-      <p>She loves deeply, feels everything intensely, and sometimes finds the world a frightening place. Beneath her laughter lives a tenderness easily wounded, and a longing for the simple things so many people take for granted: affection, belonging, and the certainty of being loved without conditions.</p>
-      <p>Then there is Jim.</p>
-      <p>The handsome, infuriatingly composed fireman who returned to Hearthstead two weeks after her arrival, entirely unaware that the young woman staying under Old Thomas&#8217;s roof would one day become the centre of his world.</p>
-      <p>Somewhere between their playful quarrels, unexpected adventures and the quiet comfort of his arms, Diana discovers something she had almost stopped believing in.</p>
-      <p>That a place can become home.</p>
-      <p>And that she can be loved, cherished and protected without ever having to become someone other than herself.</p>
-    </article>
-  </section>
-
-  <!-- ==================== KINDRED ==================== -->
-  <section class="group" data-title="Kindred" data-empty="0">
-
-    <article class="character" id="old-thomas-halloway"
-             data-title="OWNER OF HEARTHSTEAD RANCH · RETIRED HORSE TRADER"
-             data-places="Hearthstead Ranch: home"
-             data-portrait="portraits/old-thomas-halloway.jpg"
-             data-focus="46% 0%" data-zoom="219%">
-      <h2>Old Thomas Halloway</h2>
-      <p><strong>Appearance:</strong> 75 years old, with a weathered face, silver-grey hair, gentle eyes and hands shaped by decades of working with horses. His trusty walking stick is seldom far away.</p>
-      <p><strong>Personality:</strong> Kind, wise, compassionate and wonderfully stubborn. A gentleman of firm principles, dry humour and endless patience &#8212; except with foolishness and anyone who forgets the &#8216;Old&#8217; in his name.</p>
-      <p><strong>Occupation:</strong> Retired horse trader and owner of Hearthstead Ranch.</p>
-      <p><strong>Fond Of:</strong> Morning coffee, his newspaper, horses, peaceful afternoons on the porch, unsolicited advice and the increasingly frequent company of a certain mischievous florist.</p>
-      <p><strong>Home &amp; Heart:</strong> Hearthstead Ranch. Widower of his beloved Adele. Raised Jim Adams as his own son, welcomed Diana as family, and shares a tender, flirtatious companionship with Mrs Elsie Bloom.</p>
-      <h3>His Story</h3>
-      <p>There are people who build their lives around grand ambitions, and others who quietly become the reason someone else has a life worth living.</p>
-      <p>Old Thomas Halloway belongs to the latter.</p>
-      <p>Once a respected horse trader, he spent his younger years travelling the roads of Edgewood, learning that horses, much like people, respond better to patience than force. Time has slowed his steps, but neither his humour nor his stubbornness has surrendered to old age. And should anyone address him as simply &#8216;Thomas&#8217;, they will soon discover that the &#8216;Old&#8217; is a title he considers thoroughly earned.</p>
-      <p>Life has given him both great love and great sorrow. After losing his beloved Adele, the old ranch grew quieter, but his heart never closed. Years earlier, when tragedy took the life of his friend Reid Adams, he had taken Reid&#8217;s young son, Jim, into his home and raised him with a father&#8217;s devotion.</p>
-      <p>Then, one day, a frightened young woman appeared on his doorstep, carrying little more than a backpack.</p>
-      <p>He didn&#8217;t ask where she had come from. He simply invited her inside.</p>
-      <p>And somehow, Hearthstead began to fill with laughter again.</p>
-      <p>These days, Old Thomas can often be found on the porch, dispensing wisdom nobody asked for and pretending not to notice the affectionate glances between Jim and Diana. His heart may need a little more care than it once did, but there is still room for those he loves &#8212; and perhaps for the lively Mrs Bloom, whose visits have become suspiciously frequent.</p>
-      <p>Old Thomas has never considered himself a remarkable man.</p>
-      <p>But ask Jim or Diana what home means to them, and somewhere in their answer, you&#8217;ll find him.</p>
-    </article>
-
-    <article class="character" id="cal-weston"
-             data-title="FIRE LIEUTENANT · BRIARWICK FIRE DEPARTMENT"
-             data-places="Briarwick: home; Briarwick: work"
-             data-portrait="portraits/cal-weston.jpg"
-             data-focus="63% 0%" data-zoom="163%">
-      <h2>Cal Weston</h2>
-      <p><strong>Appearance:</strong> 35 years old, 197 cm (6&#8217;6") tall. Broad-shouldered and muscular, with long dirty-blond hair tied in a low ponytail, a slight beard and an unmistakably mischievous grin.</p>
-      <p><strong>Personality:</strong> Loud, charismatic, flirtatious and gloriously troublesome. Fearless, quick-witted and fiercely loyal, with a surprisingly perceptive heart beneath all that swagger.</p>
-      <p><strong>Occupation:</strong> Lieutenant at the Briarwick Fire Department, promoted following Jim Adams&#8217;s appointment as Deputy Chief. A highly capable firefighter who thrives in demanding rescues.</p>
-      <p><strong>Fond Of:</strong> Tavern evenings, friendly competitions, outrageous jokes, drumming in the firehouse band and calling Jim &#8216;Shorty&#8217;. Particularly fond of provoking Beatrice Elwood, despite knowing perfectly well she&#8217;ll win.</p>
-      <p><strong>Home &amp; Heart:</strong> Briarwick. Jim&#8217;s oldest and closest friend, and a devoted member of the firehouse brotherhood. Romantically involved with Bea Elwood, the one woman capable of silencing him with a single look.</p>
-      <h3>His Story</h3>
-      <p>If laughter suddenly erupts from a quiet corner of Briarwick, there&#8217;s a fair chance Cal Weston has something to do with it.</p>
-      <p>And if a chair has been overturned or Jim Adams is standing nearby looking thoroughly unimpressed, the chances are considerably higher.</p>
-      <p>Cal has never believed that life should be lived quietly.</p>
-      <p>Blessed with more confidence than most men know what to do with, he has spent much of his life turning ordinary afternoons into memorable adventures. His friendship with Jim began in childhood, and somewhere between boyhood mischief, scraped knuckles and years of firefighting, the two became something closer to brothers.</p>
-      <p>Where Jim is composed, Cal is a whirlwind. Yet behind his playful recklessness stands an exceptional firefighter. When danger comes, the jokes disappear, his instincts sharpen, and the man who was laughing a moment earlier becomes someone others can trust with their lives.</p>
-      <p>Cal loves his friends fiercely, even if he&#8217;d rather wrestle Jim into a headlock than admit anything sentimental. He notices more than his constant joking suggests, especially when someone he cares about is hurting.</p>
-      <p>And then there&#8217;s Bea.</p>
-      <p>The sharp-tongued, immaculately organised mayor&#8217;s assistant who somehow manages to bring Briarwick&#8217;s most unruly firefighter to heel with nothing more than a raised eyebrow.</p>
-      <p>Naturally, Cal insists he&#8217;s the one in charge.</p>
-      <p>Nobody believes him.</p>
-      <p>For all his noise, swagger and spectacular talent for causing trouble, Cal Weston possesses something far more valuable than charm: a heart that never abandons its own.</p>
-    </article>
-
-    <article class="character" id="steve-connors"
-             data-title="SENIOR FIREFIGHTER · BRIARWICK FIRE DEPARTMENT"
-             data-places="Briarwick: home; Briarwick: work"
-             data-portrait="portraits/steve-connors.jpg"
-             data-focus="50% 0%" data-zoom="206%">
-      <h2>Steve Connors</h2>
-      <p><strong>Appearance:</strong> 36 years old, with a strong, medium build, neat hair and observant eyes. Quick and precise in his movements, with an understated smile that often conceals a joke.</p>
-      <p><strong>Personality:</strong> Calm, practical and deeply loyal. Patient under pressure, quietly perceptive and blessed with a wonderfully dry sense of humour.</p>
-      <p><strong>Occupation:</strong> Senior firefighter at Briarwick Fire Department, skilled in search and rescue and maintaining the station&#8217;s engines and equipment.</p>
-      <p><strong>Fond Of:</strong> Tinkering with machinery, playing the keyboard, composing music, good coffee and gently teasing his friends.</p>
-      <p><strong>Home &amp; Heart:</strong> Briarwick. One of Jim Adams&#8217;s closest friends and a trusted member of the firehouse crew. Romantically involved with Maggie Delane, the spirited baker who regularly leaves him speechless.</p>
-      <h3>His Story</h3>
-      <p>Every close-knit group has someone who keeps things from falling apart.</p>
-      <p>At Briarwick Fire Station, that someone is usually Steve Connors.</p>
-      <p>While Cal is making trouble and Jim is deciding how much of it to tolerate, Steve can generally be found at the workbench, listening with half a smile. Then something breaks, someone needs help, or the alarm sounds &#8212; and he&#8217;s already moving.</p>
-      <p>Steve doesn&#8217;t need to be the centre of attention. Years of rescue work have taught him that courage can be quiet: a steady hand in smoke, a reassuring voice in darkness, the determination to keep searching.</p>
-      <p>He knows his friends just as well as his tools. He notices when a joke hides a worry and can ease a tense room with one perfectly timed remark. Often, Cal is still working out the insult when everyone else starts laughing.</p>
-      <p>But even Steve&#8217;s composure has its limits.</p>
-      <p>They usually appear behind the counter of Maggie&#8217;s bakery.</p>
-      <p>Maggie Delane can make him lose his words with a single teasing smile &#8212; a remarkable feat for a woman courting a man who scarcely flinches at a burning building.</p>
-      <p>And when the station finally grows quiet, Steve sometimes sits at the keyboard, letting melodies speak where words might not.</p>
-      <p>He&#8217;s seldom the loudest man in Briarwick. But he&#8217;s one of the people everyone is glad to find beside them.</p>
-    </article>
-
-    <article class="character" id="dani-vega"
-             data-title="FIREFIGHTER &amp; RESCUE SPECIALIST · BRIARWICK FIRE DEPARTMENT"
-             data-places="Briarwick: home; Briarwick: work"
-             data-portrait="portraits/dani-vega.jpg"
-             data-focus="45% 0%" data-zoom="178%">
-      <h2>Dani Vega</h2>
-      <p><strong>Appearance:</strong> 32 years old, with a lean, muscular build, olive-toned skin, dark curls and sharp, observant eyes. Moves with quiet precision and effortless confidence.</p>
-      <p><strong>Personality:</strong> Reserved, perceptive and remarkably composed. A man of few words, dry humour and unwavering loyalty. Patient, resourceful and quietly affectionate with those closest to him.</p>
-      <p><strong>Occupation:</strong> Firefighter at Briarwick Fire Department, specialising in rope rescue, climbing, knots and precision throws.</p>
-      <p><strong>Fond Of:</strong> Archery, practical challenges, peaceful company and friendly competitions. Particularly enjoys the occasional opportunity to outshoot Jim Adams.</p>
-      <p><strong>Home &amp; Heart:</strong> Briarwick. A trusted member of Jim&#8217;s firehouse crew and close friend to Cal and Steve. Engaged to Clara Hensley, the gentle leatherworker who understands his silences.</p>
-      <h3>His Story</h3>
-      <p>In a firehouse filled with strong personalities, Dani Vega has never felt the need to compete for attention.</p>
-      <p>He simply gets on with things.</p>
-      <p>While Cal fills the room with laughter and Jim directs the day&#8217;s work, Dani is often the quiet figure checking a rope, securing a knot or noticing something everyone else has overlooked.</p>
-      <p>His extraordinary precision and steady nerves have earned him the trust of his fellow firefighters. Whether climbing towards someone stranded high above the ground or navigating a difficult rescue, Dani possesses the rare ability to remain calm when everything around him is anything but.</p>
-      <p>Yet silence should never be mistaken for solemnity.</p>
-      <p>Dani&#8217;s humour is as sharp as his aim, delivered so unexpectedly that even Cal occasionally finds himself without a comeback. He enjoys his friends&#8217; antics more than he lets on, and his loyalty runs just as deep as theirs.</p>
-      <p>Then there&#8217;s Clara Hensley.</p>
-      <p>The gentle leatherworker entered his life without demanding that he become louder or different. Where others might struggle to fill a silence, Clara is perfectly content to share it.</p>
-      <p>Their affection grew through small gestures, familiar smiles and the comfortable understanding of two people who never needed grand declarations.</p>
-      <p>Now engaged, they have found something quietly beautiful in one another.</p>
-      <p>Dani Vega may not have much to say about love, friendship or courage.</p>
-      <p>But watch what he does when any of them are needed, and you&#8217;ll understand him perfectly.</p>
-    </article>
-
-    <article class="character" id="bea-elwood"
-             data-title="MAYOR&#8217;S PERSONAL ASSISTANT · BRIARWICK TOWN HALL"
-             data-places="Briarwick: home; Briarwick: work"
-             data-portrait="portraits/bea-elwood.jpg"
-             data-focus="50% 0%" data-zoom="196%">
-      <h2>Beatrice &#8216;Bea&#8217; Elwood</h2>
-      <p><strong>Appearance:</strong> 27 years old, petite, with sharp features, a neat bob and spectacles that lend authority to her famous disapproving looks. Favours crisp blouses and pressed skirts, though she secretly enjoys elegant dresses and a little lip gloss.</p>
-      <p><strong>Personality:</strong> Sharp-witted, outspoken, fiercely organised and loyal. Speaks the truth without sugar-coating it. Beneath her conservative appearance lurk a mischievous streak and surprising appetite for adventure.</p>
-      <p><strong>Occupation:</strong> Personal assistant to Mayor Thaddeus Bramble, keeping Briarwick Town Hall running despite its mayor&#8217;s considerable talent for disorder.</p>
-      <p><strong>Fond Of:</strong> Winning competitions, impeccable records, her girlfriends&#8217; company and, privately, the excitement of dressing up for a special occasion.</p>
-      <p><strong>Home &amp; Heart:</strong> Briarwick. A devoted friend with a soft spot for Jonah Merrin. Romantically involved with Cal Weston, who tests her patience daily.</p>
-      <h3>Her Story</h3>
-      <p>If Briarwick Town Hall runs smoothly, Beatrice Elwood has probably corrected three mistakes, rearranged two appointments and located the mayor&#8217;s missing speech.</p>
-      <p>All before breakfast.</p>
-      <p>Bea&#8217;s clipboard is almost as famous as her tongue. She has little patience for foolishness and even less for pretending it isn&#8217;t foolish. Whatever needs saying, Miss Elwood will say it &#8212; directly, precisely and without a spoonful of sugar.</p>
-      <p>But there is more beneath those immaculate blouses and severe spectacles than Briarwick suspects.</p>
-      <p>When her girlfriends coax her towards a beautiful ballroom dress, Bea protests every step of the way. Yet there&#8217;s often a secret smile in the mirror, and perhaps even a little lip gloss. She enjoys feeling lovely far more than she&#8217;ll admit.</p>
-      <p>And when trouble breaks out, nobody should mistake her petite figure for helplessness. Bea has been known to enter a brawl armed with whatever comes to hand &#8212; including cakes and chairs.</p>
-      <p>Her friends know that behind the sharp remarks is a woman who will defend them without a moment&#8217;s hesitation. Even Cal Weston, Briarwick&#8217;s most unruly firefighter, has discovered that her sternest looks sometimes conceal the fondest affection.</p>
-      <p>Bea may prefer everything in its proper place.</p>
-      <p>Fortunately for Edgewood, she knows exactly when to throw the rulebook aside.</p>
-    </article>
-  </section>
-
-  <!-- ==================== FOLKS OF EDGEWOOD ==================== -->
-  <section class="group" data-title="Folks of Edgewood" data-empty="15">
-  </section>
-
-  <!-- ==================== SHADOWS ON THE ROAD ==================== -->
-  <section class="group" data-title="Shadows on the Road" data-empty="8">
-  </section>
-</div>
-
+<script src="../../assets/markdown.js"></script>
+<script src="folk.js"></script>
 <script src="characters.js"></script>
 <script src="../../assets/vendor/page-flip.browser.js"></script>
 <script src="../../assets/library.js"></script>

@@ -1,3 +1,5 @@
+kicker: a story of Edgewood
+
 # The First Snow
 
 This is a placeholder story, so you can see how a scroll unrolls. Replace these words with your own.
