@@ -26,6 +26,12 @@
    ============================================================ */
 (function () {
   'use strict';
+  var thisScript = document.currentScript;
+  // a room whose objects or cards come from text files waits for them first (window.rcRoomGate)
+  function whenReady(fn) { if (window.rcRoomGate && window.rcRoomGate.then) window.rcRoomGate.then(fn, fn); else fn(); }
+  // run something once the page has loaded, even if that has already happened
+  function onLoaded(fn) { if (document.readyState === 'complete') window.setTimeout(fn, 0); else window.addEventListener('load', fn); }
+  whenReady(function () {
 
   var room = document.querySelector('.room');
   if (!room) return;
@@ -289,8 +295,8 @@
 
   // once the room has loaded, quietly fetch its books and the book machinery,
   // so the first book opened does not have to wait for the internet
-  var assetsBase = (document.currentScript && document.currentScript.src || '').replace(/rooms\.js(\?.*)?$/, '');
-  window.addEventListener('load', function () {
+  var assetsBase = (thisScript && thisScript.src || '').replace(/rooms\.js(\?.*)?$/, '');
+  onLoaded(function () {
     var urls = [];
     view.querySelectorAll('.spot[data-book]').forEach(function (s) { urls.push(s.getAttribute('data-book')); });
     if (!urls.length) return;
@@ -314,28 +320,51 @@
     });
   }
   // once the room has loaded and settled, quietly fetch every card's pictures, so they are ready before anyone asks
-  window.addEventListener('load', function () {
+  onLoaded(function () {
     window.setTimeout(function () {
       Array.prototype.forEach.call(document.querySelectorAll('.panel img[loading="lazy"]'), function (img) { img.loading = 'eager'; });
     }, 1500);
   });
-  // a panel with data-md="story.md" reads its words from that file the first time it opens
+  // a panel with data-md="words/cv.md" takes its words (and, if the file says so, its pictures and buttons) from that file
+  var mdCache = window.rcMdCache = window.rcMdCache || {};
+  function fetchText(src) {
+    if (!mdCache[src]) mdCache[src] = fetch(src).then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); });
+    return mdCache[src];
+  }
+  function fillWords(p, text) {
+    var src = p.getAttribute('data-md'), md = window.rcMarkdown;
+    var box = p.querySelector('.md-body');
+    if (!box) { box = document.createElement('div'); box.className = 'md-body'; p.insertBefore(box, p.querySelector('.panel-back')); }
+    if (!md || !md.card) { box.innerHTML = '<p>' + text.replace(/&/g, '&amp;').replace(/</g, '&lt;') + '</p>'; return; }
+    var c = md.card(text, md.folder(src));
+    box.innerHTML = c.html;
+    var back = p.getAttribute('data-back');                      // e.g. "BACK TO THE DRAWINGS | #drawings"
+    if (back && !box.querySelector('.plate-back')) box.insertAdjacentHTML('beforeend', md.plate(back, '', 'plate-back'));
+    var h = box.querySelector('h2');
+    if (h && !p.getAttribute('aria-labelledby')) { h.id = p.id + '-title'; p.setAttribute('aria-labelledby', h.id); }
+    if (p.getAttribute('data-kind') === 'scroll' || p.classList.contains('parchment')) {
+      var first = box.querySelector(':scope > p:not(.facts):not(.series):not(.centered):not(.credits)');
+      if (first && !p.querySelector('p.first')) first.classList.add('first');
+    }
+    Array.prototype.forEach.call(box.querySelectorAll('img:not(.zoomable)'), function (img) { if (!img.closest('.series')) img.classList.add('zoomable'); });
+    wakePictures(box);
+  }
   function loadWords(p) {
     var src = p.getAttribute('data-md');
     if (!src || p.hasAttribute('data-md-loaded') || !window.fetch) return;
     p.setAttribute('data-md-loaded', '');
     var box = p.querySelector('.md-body');
-    if (!box) { box = document.createElement('div'); box.className = 'md-body'; p.appendChild(box); }
-    box.innerHTML = '<p class="centered small-note">~ unrolling ~</p>';
-    fetch(src).then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); }).then(function (t) {
-      box.innerHTML = window.rcMarkdown ? window.rcMarkdown(t) : '<p>' + t.replace(/&/g, '&amp;').replace(/</g, '&lt;') + '</p>';
-      var first = box.querySelector('p'); if (first && !p.querySelector('p.first')) first.className = 'first';
-      Array.prototype.forEach.call(box.querySelectorAll('img'), function (img) { img.classList.add('zoomable'); });
-    }).catch(function () {
+    if (!box) { box = document.createElement('div'); box.className = 'md-body'; p.insertBefore(box, p.querySelector('.panel-back')); }
+    if (!box.innerHTML.trim()) box.innerHTML = '<p class="centered small-note">~ unrolling ~</p>';
+    fetchText(src).then(function (t) { fillWords(p, t); }).catch(function () {
       box.innerHTML = '<p class="centered small-note">These words could not be found. Check the file name: ' + src.replace(/</g, '') + '</p>';
-      p.removeAttribute('data-md-loaded');
+      p.removeAttribute('data-md-loaded'); delete mdCache[src];
     });
   }
+  // a moment after the room has loaded, every card quietly reads its words, so nothing waits when it opens
+  onLoaded(function () {
+    window.setTimeout(function () { Array.prototype.forEach.call(document.querySelectorAll('.panel[data-md]'), loadWords); }, 900);
+  });
   function show(id) {
     var p = document.getElementById(id);
     if (!p || !p.classList.contains('panel')) { glideHome(); return; }
@@ -716,7 +745,7 @@
   (function leaves() {
     var b = readBox('data-leaves'); if (!b) return;
     var c = effectCanvas(); if (!c.g) return;
-    var leaf = null, wait = 3;
+    var leaf = null, wait = 1;                        // the first leaf falls a second after you arrive
     var colours = [[176, 168, 64], [150, 160, 60], [196, 160, 70], [130, 150, 70]];
     animate(function (t, dt) {
       var g = c.g, W = c.box.W, H = c.box.H, u = W / 1600;
@@ -728,7 +757,7 @@
       }
       leaf.age += dt; leaf.y += 0.032 * dt; leaf.x += Math.sin(leaf.age * 1.4 + leaf.phase) * 0.03 * dt + 0.004 * dt;
       var fade = Math.min(1, leaf.age * 1.2, (leaf.floor - leaf.y) * 10);
-      if (fade <= 0) { leaf = null; wait = 6 + Math.random() * 8; return; }
+      if (fade <= 0) { leaf = null; wait = 1.5 + Math.random() * 2.5; return; }
       g.save(); g.translate(leaf.x * W, leaf.y * H); g.rotate(Math.sin(leaf.age * 1.4 + leaf.phase) * 0.9);
       g.scale(Math.max(0.25, Math.abs(Math.cos(leaf.age * 1.9 + leaf.phase))), 1);
       g.fillStyle = 'rgba(' + leaf.col.join(',') + ',' + (0.95 * fade).toFixed(3) + ')';
@@ -826,6 +855,51 @@
         g.fillStyle = grad; g.beginPath(); g.arc(x, y, r * 2.4, 0, 6.2832); g.fill();
         return true;
       });
+    });
+  })();
+
+  // smoke: data-smoke="x,y x,y ..." (in %), thin smoke curling up from those points, like chimneys
+  (function smoke() {
+    var attr = room.getAttribute('data-smoke'); if (!attr || reduceMotion) return;
+    var c = effectCanvas(); if (!c.g) return;
+    var vents = attr.trim().split(/\s+/).map(function (p) { var v = p.split(','); return { x: +v[0] / 100, y: +v[1] / 100, wait: Math.random() * 0.8 }; });
+    var puffs = [];
+    animate(function (t, dt) {
+      var g = c.g, W = c.box.W, H = c.box.H, u = W / 1600;
+      g.clearRect(0, 0, W, H);
+      vents.forEach(function (v) {
+        v.wait -= dt;
+        if (v.wait <= 0) { puffs.push({ x: v.x, y: v.y, age: 0, life: 2.6 + Math.random() * 1.4, drift: 0.004 + Math.random() * 0.004, phase: Math.random() * 6 }); v.wait = 0.35 + Math.random() * 0.35; }
+      });
+      puffs = puffs.filter(function (p) {
+        p.age += dt; if (p.age > p.life) return false;
+        var k = p.age / p.life, x = (p.x + Math.sin(p.age * 1.6 + p.phase) * 0.002 + p.drift * k) * W, y = (p.y - 0.035 * k) * H;
+        var r = (2.2 + 7 * k) * u, a = 0.55 * Math.sin(Math.PI * Math.min(1, k * 1.4)) * (1 - k);
+        var grad = g.createRadialGradient(x, y, 0, x, y, r);
+        grad.addColorStop(0, 'rgba(236,230,220,' + a.toFixed(3) + ')'); grad.addColorStop(1, 'rgba(236,230,220,0)');
+        g.fillStyle = grad; g.beginPath(); g.arc(x, y, r, 0, 6.2832); g.fill();
+        return true;
+      });
+    });
+  })();
+
+  // snow: data-snow="left top right bottom", snow falling behind a window
+  (function snow() {
+    var b = readBox('data-snow'); if (!b) return;
+    var c = effectCanvas(); if (!c.g) return;
+    var flakes = [];
+    for (var i = 0; i < 60; i++) flakes.push({ x: Math.random(), y: Math.random(), s: 0.5 + Math.random(), sp: 0.05 + Math.random() * 0.06, ph: Math.random() * 6 });
+    animate(function (t, dt) {
+      var g = c.g, W = c.box.W, H = c.box.H, u = W / 1600;
+      g.clearRect(0, 0, W, H);
+      g.save(); g.beginPath(); g.rect(b[0] * W, b[1] * H, (b[2] - b[0]) * W, (b[3] - b[1]) * H); g.clip();
+      flakes.forEach(function (f) {
+        f.y += f.sp * dt * f.s; if (f.y > 1) { f.y = 0; f.x = Math.random(); }
+        var x = (b[0] + (f.x + Math.sin(t * 0.8 + f.ph) * 0.03) * (b[2] - b[0])) * W, y = (b[1] + f.y * (b[3] - b[1])) * H;
+        g.fillStyle = 'rgba(255,255,255,' + (0.55 + 0.35 * f.s / 1.5).toFixed(3) + ')';
+        g.beginPath(); g.arc(x, y, (0.9 + 1.4 * f.s) * u, 0, 6.2832); g.fill();
+      });
+      g.restore();
     });
   })();
 
@@ -993,4 +1067,5 @@
     ticket.addEventListener('click', turn);
     if (nextBtn) nextBtn.addEventListener('click', function () { deal(true); });
   });
+  });   // whenReady
 })();

@@ -97,7 +97,7 @@
     var firstPara = true;
     while (blocks.length) {
       var b = blocks.shift();
-      if (b.tagName === 'P' && firstPara) { b.className = 'first'; firstPara = false; }
+      if (b.tagName === 'P' && firstPara && !b.className) { b.className = 'first'; firstPara = false; }
       flow.appendChild(b);
       if (fits()) continue;
       flow.removeChild(b);
@@ -139,7 +139,35 @@
     el.parentNode.removeChild(el);
   }
 
+  // a book with data-chapters="chapters/list.md" takes its chapters from that list:
+  //   - The Arrival: 01-the-arrival.md        an open chapter
+  //   - The Storm: sealed: the-storm.md       a sealed chapter, kept in the warehouse
+  var WORDS = ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen',
+    'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen', 'twenty'];
+  function chaptersFromList() {
+    var src = bookEl.getAttribute('data-chapters');
+    if (!src || !window.fetch || !window.rcMarkdown || !window.rcMarkdown.list) return Promise.resolve();
+    var base = window.rcMarkdown.folder(src), labels = bookEl.getAttribute('data-chapter-labels') !== 'no';
+    var anchor = bookEl.querySelector('.chapters-here') || bookEl.lastElementChild;
+    return fetch(src).then(function (r) { if (!r.ok) throw 0; return r.text(); }).then(function (text) {
+      window.rcMarkdown.list(text).forEach(function (it, n) {
+        var p = document.createElement('div'); p.className = 'page';
+        p.setAttribute('data-title', it.title);
+        if (labels) p.setAttribute('data-label', 'chapter ' + (WORDS[n] || (n + 1)));
+        var m = /^(sealed|private)\s*:\s*(.+)$/i.exec(it.target);
+        if (m) p.setAttribute('data-sealed', 'https://files.rcprojects.net/' + m[1].toLowerCase() + '/read.html?f=' + m[2].trim());
+        else if (it.target) p.setAttribute('data-src', base + it.target);
+        else return;
+        anchor.parentNode.insertBefore(p, anchor);
+      });
+    }).catch(function () {});
+  }
+
   function prepare() {
+    var gate = window.rcBookGate && window.rcBookGate.then ? window.rcBookGate : Promise.resolve();
+    gate.then(chaptersFromList, chaptersFromList).then(prepareChapters, prepareChapters);
+  }
+  function prepareChapters() {
     Array.prototype.forEach.call(bookEl.querySelectorAll('.page[data-sealed]'), sealedPage);
     var auto = Array.prototype.slice.call(bookEl.querySelectorAll('.page[data-src]'));
     if (!auto.length || !window.rcMarkdown || !window.fetch) { start(); return; }
@@ -148,7 +176,13 @@
       return fetch(el.getAttribute('data-src')).then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); })
         .catch(function () { return '# ' + (el.getAttribute('data-title') || 'A chapter') + '\n\n*This chapter could not be found. Check its file name: ' + el.getAttribute('data-src') + '*'; });
     })).then(function (texts) {
-      return fontsReady.then(function () { auto.forEach(function (el, n) { layOut(el, window.rcMarkdown(texts[n])); }); });
+      return fontsReady.then(function () { auto.forEach(function (el, n) {
+        var md = window.rcMarkdown, base = md.folder ? md.folder(el.getAttribute('data-src')) : '';
+        if (!md.card) { layOut(el, md(texts[n], base)); return; }
+        var c = md.card(texts[n], base);                                   // the card lines: label, facts, picture, button...
+        if (md.one(c.meta, 'label')) el.setAttribute('data-label', md.one(c.meta, 'label'));
+        layOut(el, c.html);
+      }); });
     }).then(start, start);
   }
 
