@@ -8,32 +8,22 @@
 <link rel="stylesheet" href="../../assets/library.css">
 <!-- ============================================================
      THE PLAYGROUNDS — a circus tent at night, with seven arcade cabinets.
-     The look comes from  assets/library.css   (shared by every room)
-     The behaviour from   assets/rooms.js      (shared by every room)
 
-     CARAN'S EDITING LEGEND
+     YOUR WORDS live in plain-text files, not here:
+       games/beginning.md   (and adventures, offcourse, thirteenth, edgewood)  a game's card
+       words/maker.md        The Maker, on the popcorn cart
+       riddles.md            the riddles on the tickets
+     A game's pictures go in the games folder: NAME-screen.jpg for its screen,
+     and the screenshots named in its file (shots: ...).
 
-     A CABINET is three things:
-       1. its screen:   <div class="arcade playing" id="screen-beginning" ...><img src="games/beginning-screen.jpg" alt=""></div>
-            playing  = a finished game: the picture drifts slowly, like an attract screen
-            signal   = a game in the making: the picture flickers, a bar rolls through it
-            static   = no game yet: just static (no picture needed)
-       2. its button:   <button class="spot cabinet" data-opens="beginning" data-glow="screen-beginning" ...>Name</button>
-            A cabinet WITHOUT data-opens is waiting: "A game yet to be made".
-       3. its card, further down:  <section class="panel" id="beginning"> ... </section>
-     The pictures live in the  games  folder: NAME-screen.jpg for the screen,
-     NAME-shot-1.jpg and NAME-shot-2.jpg for the card.
-
-     TO PUT A NEW GAME IN THE TEAL OR PINK CABINET:
-       copy a whole card and give it a new id (say  id="newgame"), put the pictures in  games ,
-       then change that cabinet's screen to   class="arcade playing" id="screen-newgame"
-       with an <img src="games/newgame-screen.jpg" alt=""> inside, and add to its button
-       data-opens="newgame" data-glow="screen-newgame" data-sound="coin"  and the game's name.
-
-     THE RIDDLE TICKETS
-       The riddles are in the list near the bottom, one per line:
-         <li data-answer="The answer.">The riddle?</li>
-       Add, change or remove lines as you like. They come out in a shuffled order.
+     A CABINET on the picture is three lines here:
+       its screen:   <div class="arcade playing" id="screen-beginning" ...><img src="games/beginning-screen.jpg" alt=""></div>
+                     playing = finished (drifts)   signal = in the making (flickers)   static = no game yet
+       its button:   <button class="spot cabinet" data-opens="beginning" data-glow="screen-beginning" ...>Name</button>
+       its card:     <section class="panel" id="beginning" data-kind="scroll" data-md="games/beginning.md"></section>
+     To put a new game in the teal or pink cabinet: write games/newgame.md, then change that
+     cabinet's screen to "arcade playing" with its picture, add data-opens="newgame" to its button,
+     and add a card line like the one above.
      ============================================================ -->
 </head>
 <body style="--page:#F5ECD8">
@@ -113,96 +103,25 @@
 </section>
 
 <!-- ========== THE GREEN CABINET ========== -->
-<section class="panel" id="adventures" data-kind="scroll">
-  <div class="kicker">the green cabinet</div>
-  <h2>The Red Circle: Immersive Adventures in Higher Maths</h2>
-  <p class="series"><img src="../../assets/img/rc-series-logo.png" alt="">2nd Game of The Red Circle series</p>
-  <p class="facts">UNITY &middot; 2023 &middot; PhD RESEARCH</p>
-  <p class="first">The Red Circle came back, rebuilt from everything the first game taught me, and this time for higher maths. There are very few immersive games for mathematics beyond school level, and I wanted to make one.</p>
-  <p>I designed it as part of my PhD. Instead of putting questions in front of you, the game is built from the patterns and structures of mathematics itself. You explore a mysterious village and help its people escape an evil spirit, and through six of the game&#8217;s mechanics you gradually pick up the rules of derivatives, without ever stopping to study them.</p>
-  <p>It&#8217;s made for adults, whatever your background in maths or in games, and it works well alongside a course as well as on its own.</p>
-  <div class="shots">
-    <figure><img class="zoomable" src="games/adventures-shot-1.jpg" alt="Four puzzle chests, opened with shapes" loading="lazy"><figcaption hidden>Four puzzle chests, opened with shapes</figcaption></figure>
-    <figure><img class="zoomable" src="games/adventures-shot-2.jpg" alt="Collecting pig hides in the village" loading="lazy"><figcaption hidden>Collecting pig hides in the village</figcaption></figure>
-  </div>
-  <a class="plate" href="https://drive.google.com/drive/folders/1nWEFEpkUIzy9rNlq2ZmiGbrjV1EGUx9r?usp=drive_link" target="_blank" rel="noopener">DOWNLOAD THE GAME &#8599;</a>
-  <p class="centered small-note">Windows only. Download the whole folder, then open RC.exe to play.</p>
-  <p class="credits"><strong>Credits:</strong> Prof Paul Newbury and Prof Kate Howland, University of Sussex (supervision) &middot; Ilias Olivotos (development) &middot; Moira Olivotou (proofreading) &middot; Fredi Prenga (support)</p>
-</section>
+<section class="panel" id="adventures" data-kind="scroll" data-md="games/adventures.md"></section>
 
 <!-- ========== THE YELLOW CABINET ========== -->
-<section class="panel" id="offcourse" data-kind="scroll">
-  <div class="kicker">the yellow cabinet</div>
-  <h2>Off Course: Air Investigation</h2>
-  <p class="series"><img src="games/offcourse-logo.png" alt="">3rd Game of The Red Circle series</p>
-  <p class="facts">UNITY &middot; 2026 &middot; SPONSORED BY THE CIVIL AVIATION AUTHORITY AND THE DEPARTMENT FOR TRANSPORT</p>
-  <p class="first">A plane vanishes from the radar, and you&#8217;re the apprentice incident investigator sent to find out why.</p>
-  <p>This was my work as a research fellow, with a team from the Department of Informatics at the University of Sussex: I designed the maths, the story and the SavviPad. It&#8217;s made for students of aeronautical engineering, but anyone who likes a good mystery can play.</p>
-  <p>You start in the investigation lab: gathering evidence, watching briefing videos, and working on the SavviPad, your investigator&#8217;s tablet, with the theory, the evidence, a map, a calculator and room to work things out. Your maths finds the crash site. Then you travel there to examine the wreck: checking the fuel tanks and working through low-altitude flight, a headwind and some cargo nobody declared, until you can tell whether the plane simply ran out of fuel, or something else brought it down.</p>
-  <p>It&#8217;s built for the classroom, to work alongside the teacher, not instead of them. The maths is real and so is the setting, so abstract ideas finally have somewhere to land.</p>
-  <div class="shots">
-    <figure><img class="zoomable" src="games/offcourse-shot-1.jpg" alt="Welcome to Aeronspire: the air accident investigation centre" loading="lazy"><figcaption hidden>Welcome to Aeronspire: the air accident investigation centre</figcaption></figure>
-    <figure><img class="zoomable" src="games/offcourse-shot-2.jpg" alt="The crash site" loading="lazy"><figcaption hidden>The crash site</figcaption></figure>
-  </div>
-  <a class="plate" href="https://drive.google.com/drive/folders/1yApypoVykrlDqmo1Ej0F0pybKyL0ll5X?usp=drive_link" target="_blank" rel="noopener">DOWNLOAD THE GAME &#8599;</a>
-  <p class="centered small-note">Windows only. Download the whole folder, then open the game&#8217;s .exe file to play.</p>
-  <p class="credits"><strong>Credits:</strong> Dr Daniel Creed (research collaborator) &middot; the Civil Aviation Authority and the Department for Transport (funding)</p>
-</section>
+<section class="panel" id="offcourse" data-kind="scroll" data-md="games/offcourse.md"></section>
 
 <!-- ========== THE PURPLE CABINET ========== -->
-<section class="panel" id="thirteenth" data-kind="scroll">
-  <div class="kicker">the purple cabinet</div>
-  <h2>The Red Circle: The Thirteenth Hour <span class="small-note">(working title)</span></h2>
-  <p class="series"><img src="../../assets/img/rc-series-logo.png" alt="">4th Game of The Red Circle series</p>
-  <p class="facts">BROWSER CARD GAME &middot; IN THE MAKING</p>
-  <p class="centered"><span class="stamp">IN THE MAKING</span></p>
-  <p class="first">Still in its early days.</p>
-  <p>The Thirteenth Hour is a competitive fantasy card game built around the trigonometric circle. In a mysterious city governed by an ancient celestial clock, you play a thief, racing your rivals to unlock magical vaults and claim their treasures. You collect and combine cards, manipulate angles and use clever tactics to outwit your opponent, and to succeed, you must master the clock&#8217;s mechanisms.</p>
-  <p>It&#8217;s planned as a browser game, for two players or one against the AI, blending tactical decisions, deck-building and an intriguing story. The maths isn&#8217;t presented as exercises: it&#8217;s how the clock works, and so it&#8217;s how you win.</p>
-  <div class="shots">
-    <figure><img class="zoomable" src="games/thirteenth-shot-1.jpg" alt="The trigonometric circle" loading="lazy"><figcaption hidden>The trigonometric circle</figcaption></figure>
-    <figure><img class="zoomable" src="games/thirteenth-shot-2.jpg" alt="At the gate" loading="lazy"><figcaption hidden>At the gate</figcaption></figure>
-  </div>
-  <p class="credits"><strong>Credits:</strong> Ilias Olivotos (development)</p>
-</section>
+<section class="panel" id="thirteenth" data-kind="scroll" data-md="games/thirteenth.md"></section>
 
 <!-- ========== THE RED CABINET ========== -->
-<section class="panel" id="edgewood" data-kind="scroll">
-  <div class="kicker">the red cabinet</div>
-  <h2>Edgewood Lands: An Oughtobiography</h2>
-  <p class="facts">UNREAL ENGINE &middot; IN THE MAKING</p>
-  <p class="centered"><span class="stamp">IN THE MAKING</span></p>
-  <p class="first">Edgewood has lived inside me since I was ten. It has followed me ever since, growing as I grew: a slow, grounded rural world with a touch of cosy magic, where people still have time for each other. It&#8217;s the place I go when reality gets too much.</p>
-  <p>An Oughtobiography is the life that ought to have been. I&#8217;m autistic, and what others call &#8216;the real world&#8217; can be full of lies and injustice that make no sense to me. Edgewood embraces my own reality.</p>
-  <p>I&#8217;m writing Edgewood as a book, and this game is the same story. You explore the land and meet the people who live there. Each character knows who they are, what they&#8217;ve lived through and what they&#8217;re doing here, because each one carries their own part of the story, and AI gives them a voice. Ask them anything. They&#8217;ll answer as themselves, and conversation by conversation, the story tells itself back to you.</p>
-  <p>A book you don&#8217;t read. A book you walk into.</p>
-  <div class="shots">
-    <figure><img class="zoomable" src="games/edgewood-shot-1.jpg" alt="Building the first room of the house" loading="lazy"><figcaption hidden>Building the first room of the house</figcaption></figure>
-    <figure><img class="zoomable" src="games/edgewood-shot-2.jpg" alt="A character taking shape" loading="lazy"><figcaption hidden>A character taking shape</figcaption></figure>
-  </div>
-  <p class="credits"><strong>Credits:</strong> Me, myself and I</p>
-</section>
+<section class="panel" id="edgewood" data-kind="scroll" data-md="games/edgewood.md"></section>
 
 <!-- ========== THE MAKER (the popcorn cart) : to be written ========== -->
-<section class="panel" id="maker" data-kind="scroll">
-  <div class="kicker">behind the scenes</div>
-  <h2>The Maker</h2>
-  <p class="series"><img src="../../assets/img/rc-series-logo.png" alt="">The Red Circle series</p>
-  <h3>Who am I as a game maker?</h3>
-  <p><em>To be written.</em></p>
-  <h3>The Red Circle series</h3>
-  <p><em>To be written.</em></p>
-  <h3>Why games for learning?</h3>
-  <p><em>To be written.</em></p>
-  <h3>What comes next</h3>
-  <p><em>To be written.</em></p>
-</section>
+<section class="panel" id="maker" data-kind="scroll" data-md="words/maker.md"></section>
 
 <!-- ========== THE RIDDLE TICKETS ========== -->
 <section class="panel" id="tickets" data-kind="card">
   <div class="kicker">found on the floor</div>
   <h2>A Riddle Ticket</h2>
-  <div class="ticket-roll">
+  <div class="ticket-roll" data-list="riddles.md">
     <div class="ticket">
       <div class="ticket-inner">
         <div class="ticket-face front"><div class="ticket-head">ADMIT ONE &middot; A RIDDLE</div><div class="ticket-riddle"></div><div class="ticket-number"></div></div>
@@ -211,32 +130,12 @@
     </div>
     <button type="button" class="ticket-turn">TURN IT OVER</button>
     <button type="button" class="ticket-next">ANOTHER TICKET</button>
-    <!-- THE RIDDLES: one per line. The answer goes in data-answer="..." -->
-    <ol class="riddles">
-      <li data-answer="A circle.">I have no beginning and no end, yet every point on me is the same distance from my heart. What am I?</li>
-      <li data-answer="5p. (Not 10p: then the bat would be &#163;1.10, and the two together &#163;1.20.)">A bat and a ball cost &#163;1.10 together. The bat costs &#163;1 more than the ball. How much is the ball?</li>
-      <li data-answer="44 times: 22 times every twelve hours.">How many times a day do the hands of a clock make a right angle?</li>
-      <li data-answer="Seven. Take away the s, and you have even.">I&#8217;m an odd number. Take away one letter and I become even. What am I?</li>
-      <li data-answer="A clock.">What has hands and a face, but can&#8217;t hold anything or smile?</li>
-      <li data-answer="5. Three fives are 15, and 5 + 10 is 15.">Three times a number is the same as that number plus ten. What is the number?</li>
-      <li data-answer="11 seconds. Six strikes have 5 gaps of a second; twelve strikes have 11.">A clock takes 5 seconds to strike six. How long does it take to strike twelve?</li>
-      <li data-answer="9.">A farmer has 17 sheep. All but 9 run away. How many are left?</li>
-      <li data-answer="1, 2 and 3. (1 + 2 + 3 = 6, and 1 &#215; 2 &#215; 3 = 6.)">Which three positive whole numbers give the same answer whether you add them or multiply them?</li>
-      <li data-answer="194.">I&#8217;m a three-digit number. My tens digit is five more than my ones digit, and my hundreds digit is eight less than my tens digit. What am I?</li>
-      <li data-answer="888 + 88 + 8 + 8 + 8 = 1,000.">How can you add eight 8s to make 1,000?</li>
-      <li data-answer="7.5&#176;. By 3:15 the hour hand has crept a quarter of the way towards the 4.">What is the angle between the hands of a clock at a quarter past three?</li>
-      <li data-answer="On the 8th day. After seven days and nights it is 7 metres up, and on the 8th day it climbs the last 3.">A snail climbs 3 metres up a 10-metre well each day, and slips back 2 metres each night. On which day does it reach the top?</li>
-      <li data-answer="225&#176;.">On the trigonometric circle, at which angle between 0&#176; and 360&#176; are the sine and the cosine equal, and both negative?</li>
-      <li data-answer="Pumpkin pi.">What do you get if you divide the circumference of a pumpkin by its diameter?</li>
-      <li data-answer="Because seven eight nine.">Why was six afraid of seven?</li>
-      <li data-answer="Nine.">If two&#8217;s company and three&#8217;s a crowd, what are four and five?</li>
-      <li data-answer="Forty.">I&#8217;m the only number whose letters, written in English, are in alphabetical order. What am I?</li>
-      <li data-answer="Once. After that, you are subtracting it from 90.">How many times can you subtract 10 from 100?</li>
-      <li data-answer="Three.">A drawer in the dark holds black socks and white socks. How many must you take out to be sure of a matching pair?</li>
-    </ol>
+    <ol class="riddles"></ol>
   </div>
 </section>
 
+<script src="../../assets/markdown.js"></script>
+<script src="../../assets/collections.js"></script>
 <script src="../../assets/rooms.js"></script>
 </body>
 </html>

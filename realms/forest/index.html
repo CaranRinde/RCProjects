@@ -20,8 +20,9 @@
      An arm WITHOUT data-opens is empty: "A path not yet named", and nothing opens.
 
      TO PUT SOMEONE ON AN EMPTY ARM:
-       1. copy a card further down (from <section ...> to </section>), give it a new id
-          (say  id="newsite"), and change the name, picture, words and web address
+       1. write their card as a plain-text file: copy words/mpower.md to words/newsite.md,
+          change the words, the picture and the web address, and put their picture in the words folder.
+          Then copy a card line further down and change it to  id="newsite"  data-md="words/newsite.md"
        2. on the empty arm's button add   data-opens="newsite" data-glow="name-newsite" data-sound="wood"
           and change "A path not yet named" to the name
        3. in the <svg class="burnt">, add a <text> line with id="name-newsite".
@@ -103,32 +104,15 @@
      ============================================================ -->
 
 <!-- ========== @IliasBased ========== -->
-<section class="panel" id="iliasbased" data-kind="card">
-  <div class="kicker">a path through the forest</div>
-  <h2>@IliasBased</h2>
-  <img class="card-photo zoomable" src="iliasbased.jpg" alt="A glimpse of the site: his indie game projects.">
-  <p class="centered"><em>The site of a software engineer and maker of games. One of the two great prides of my life. An intuitive mind, with a rare emotional intelligence.</em></p>
-  <a class="plate" href="https://iliasbased.pb.online/" target="_blank" rel="noopener">VISIT THE SITE &#8599;</a>
-</section>
+<section class="panel" id="iliasbased" data-kind="card" data-md="words/iliasbased.md"></section>
 
 <!-- ========== MPower ========== -->
-<section class="panel" id="mpower" data-kind="card">
-  <div class="kicker">a path through the forest</div>
-  <h2>MPower</h2>
-  <img class="card-photo zoomable" src="mpower.jpg" alt="A glimpse of the site: training styles.">
-  <p class="centered"><em>The site of a personal trainer. One of the two great prides of my life. Where determination and willpower meet the beauty of a daring dreamer.</em></p>
-  <a class="plate" href="https://www.mpower.fit/" target="_blank" rel="noopener">VISIT THE SITE &#8599;</a>
-</section>
+<section class="panel" id="mpower" data-kind="card" data-md="words/mpower.md"></section>
 
 <!-- ========== Say Yes ========== -->
-<section class="panel" id="sayyes" data-kind="card">
-  <div class="kicker">a path through the forest</div>
-  <h2>Say Yes</h2>
-  <img class="card-photo zoomable" src="sayyes.jpg" alt="A glimpse of the site: welcome to Yesland.">
-  <p class="centered"><em>The site of an English teacher. Because love and empathy like hers should shine like a lighthouse in this world, not stay hidden in the dark.</em></p>
-  <a class="plate" href="https://sayyesland.gr/" target="_blank" rel="noopener">VISIT THE SITE &#8599;</a>
-</section>
+<section class="panel" id="sayyes" data-kind="card" data-md="words/sayyes.md"></section>
 
+<script src="../../assets/markdown.js"></script>
 <script src="../../assets/rooms.js"></script>
 </body>
 </html>

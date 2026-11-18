@@ -1,124 +1,74 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Conferences — The Lectern — RC Projects</title>
-<link rel="stylesheet" href="../../assets/library.css">
+<link href="../../assets/library.css" rel="stylesheet"/>
 <!-- ============================================================
-     CONFERENCES — a book that lives in the Lectern.
-     It opens over the room when its object is clicked, and it also
-     works by itself if someone opens this file directly.
-     The look comes from  assets/library.css,  the behaviour from  assets/library.js.
-
-     ONE CONFERENCE = ONE PAGE.
-     To add one: copy a whole block, from  <div class="page" data-title="...">
-     down to its matching  </div>,  and paste it above the colophon.
-     - data-title="..." is the name shown in the Contents
-
-     Inside a page you can use everything the other books use:
-     <p>, <p class="first">, <p class="centered">, <h3>, <strong>, <em>,
-     <img class="img-full" src="photo.jpg" alt="">, <div class="plate-caption">,
-     <a class="plate" href="...">WORDS</a>  (a link dressed as a button).
-
-     Pages do not flow: text that does not fit on a page is cut off,
-     so check each page after you fill it. A long piece can continue on
-     a second page: add a page WITHOUT data-title right after it.
-     The page count never needs to be even; the book fixes that itself.
+     CONFERENCES — a book.
+     You never need to edit this file. Its pages live in the conferences folder:
+       conferences/list.md        what is in the book, in order, one line each:  - Title: its-file.md
+       conferences/01-....md      one chapter (or entry), in plain text
+     The book lays each one out by itself, over as many pages as it needs.
+     Pictures go in the conferences folder too.
      ============================================================ -->
 </head>
-<body class="book-page" style="--leather:#223148;--page:#EFEBDB" data-realm-name="the Lectern" data-music="">
-
+<body class="book-page" data-music="" data-realm-name="the Lectern" style="--leather:#223148;--page:#EFEBDB">
 <header class="top-bar">
-  <a href="index.html">&#8592; BACK TO THE LECTERN</a>
-  <span class="realm-name">Conferences</span>
-  <span class="bar-right"><button type="button" class="sound-toggle" id="soundToggle">SOUND: ON</button></span>
+<a href="index.html">← BACK TO THE LECTERN</a>
+<span class="realm-name">Conferences</span>
+<span class="bar-right"><button class="sound-toggle" id="soundToggle" type="button">SOUND: ON</button></span>
 </header>
-
 <div class="stage">
-  <div id="book">
-
-    <!-- ========== FRONT COVER ========== -->
-    <div class="page cover" data-density="hard">
-      <div class="page-inner">
-        <img class="logo-cover emb-gold" src="../../assets/img/rc-lectern.png" alt="">
-        <div class="cover-title">CONFERENCES</div>
-        <div class="cover-sub">rooms I have spoken in</div>
-      </div>
-    </div>
-
-    <!-- ========== ENDPAPER : the Contents write themselves here ========== -->
-    <div class="page">
-      <div class="page-inner endpaper">
-        <div class="ep-head">
-          <div class="ep-ident">
-            <img class="ep-emblem emb-red" src="../../assets/img/rc-lectern.png" alt="">
-            <div class="ep-name">Conferences</div>
-          </div>
-          <div class="ep-epigraph">A badge, a lanyard, a room of strangers,<br>and twenty minutes to say what matters.</div>
-        </div>
-        <h2 class="toc-heading">Contents</h2>
-        <nav class="toc" id="tocList"></nav>
-        <p class="small-note ep-note">~ drag a corner, or click the page edge, to turn ~</p>
-      </div>
-    </div>
-
-    <!-- ========== A CONFERENCE (first) ========== -->
-    <div class="page" data-title="Conference name, year">
-      <div class="page-inner">
-        <div class="chapter-label">city &middot; month year</div>
-        <h2>Conference Name</h2>
-        <p class="facts">The title of your talk</p>
-        <div class="plate">
-          <div class="small-note">[ a photo from the conference ]</div>
-          <div class="small-note">replace this box with &lt;img class="img-full" src="photo.jpg" alt=""&gt;</div>
-        </div>
-        <p>What you presented, who was in the room, and what you brought home from it.</p>
-        <!-- If you have slides: <a class="plate" href="https://files.rcprojects.net/slides.pdf" target="_blank" rel="noopener">SEE THE SLIDES</a> -->
-        <div class="page-foot"><a class="page-num"></a><a class="toc-return">Contents</a></div>
-      </div>
-    </div>
-
-    <!-- ========== A CONFERENCE (second) ========== -->
-    <div class="page" data-title="Conference name, year">
-      <div class="page-inner">
-        <div class="chapter-label">city &middot; month year</div>
-        <h2>Conference Name</h2>
-        <p class="facts">The title of your talk</p>
-        <div class="plate">
-          <div class="small-note">[ a photo from the conference ]</div>
-          <div class="small-note">replace this box with &lt;img class="img-full" src="photo.jpg" alt=""&gt;</div>
-        </div>
-        <p>What you presented, who was in the room, and what you brought home from it.</p>
-        <!-- If you have slides: <a class="plate" href="https://files.rcprojects.net/slides.pdf" target="_blank" rel="noopener">SEE THE SLIDES</a> -->
-        <div class="page-foot"><a class="page-num"></a><a class="toc-return">Contents</a></div>
-      </div>
-    </div>
-
-    <!-- ========== COLOPHON ========== -->
-    <div class="page">
-      <div class="page-inner">
-        <div style="margin:auto 0 0;text-align:center;">
-          <p class="centered" style="font-style:italic;">More badges will be pinned here.</p>
-          <p class="small-note">rcprojects.net</p>
-        </div>
-        <div class="page-foot"><a class="page-num"></a><a class="toc-return">Contents</a></div>
-      </div>
-    </div>
-
-    <!-- To add more pages, paste them ABOVE the colophon. -->
-
-    <!-- ========== BACK COVER ========== -->
-    <div class="page cover" data-density="hard">
-      <div class="page-inner">
-        <img class="logo-back emb-cream" src="../../assets/img/rc-logo.png" alt="">
-        <div class="cover-sub">rcprojects.net</div>
-      </div>
-    </div>
-
-  </div>
+<div data-chapter-labels="no" data-chapters="conferences/list.md" id="book">
+<!-- ========== FRONT COVER ========== -->
+<div class="page cover" data-density="hard">
+<div class="page-inner">
+<img alt="" class="logo-cover emb-gold" src="../../assets/img/rc-lectern.png"/>
+<div class="cover-title">CONFERENCES</div>
+<div class="cover-sub">rooms I have spoken in</div>
 </div>
+</div>
+<!-- ========== ENDPAPER : the Contents write themselves here ========== -->
+<div class="page">
+<div class="page-inner endpaper">
+<div class="ep-head">
+<div class="ep-ident">
+<img alt="" class="ep-emblem emb-red" src="../../assets/img/rc-lectern.png"/>
+<div class="ep-name">Conferences</div>
+</div>
+<div class="ep-epigraph">A badge, a lanyard, a room of strangers,<br/>and twenty minutes to say what matters.</div>
+</div>
+<h2 class="toc-heading">Contents</h2>
+<nav class="toc" id="tocList"></nav>
+<p class="small-note ep-note">~ drag a corner, or click the page edge, to turn ~</p>
+</div>
+</div>
+<div class="chapters-here" hidden=""></div>
 
+<!-- ========== COLOPHON ========== -->
+<div class="page">
+<div class="page-inner">
+<div style="margin:auto 0 0;text-align:center;">
+<p class="centered" style="font-style:italic;">More badges will be pinned here.</p>
+<p class="small-note">rcprojects.net</p>
+</div>
+<div class="page-foot"><a class="page-num"></a><a class="toc-return">Contents</a></div>
+</div>
+</div>
+<!-- To add more pages, paste them ABOVE the colophon. -->
+<!-- ========== BACK COVER ========== -->
+<div class="page cover" data-density="hard">
+<div class="page-inner">
+<img alt="" class="logo-back emb-cream" src="../../assets/img/rc-logo.png"/>
+<div class="cover-sub">rcprojects.net</div>
+</div>
+</div>
+</div>
+</div>
+<script src="../../assets/markdown.js"></script>
 <script src="../../assets/vendor/page-flip.browser.js"></script>
 <script src="../../assets/library.js"></script>
 </body>

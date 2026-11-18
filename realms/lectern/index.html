@@ -26,19 +26,13 @@
      - data-sound="paper" or "wood" chooses the sound
      - data-shape="round" makes the glow round
 
-     PART TWO — YOUR WORDS (the <section class="panel"> blocks)
-     One panel = one thing that opens.
-       data-kind="card"    small: a degree, a short note
-       data-kind="scroll"  long and scrolling: an essay, a list
-     Inside a panel you can use:
-       <p>...</p>              a paragraph        <p class="first"> big red first letter
-       <strong>bold</strong>   <em>italics</em>   <h3>A subheading</h3>
-       <ul><li>...</li></ul>   bullet points
-       <img src="photo.jpg" alt="">               a picture (put the file in this folder)
-       <a href="https://...">words</a>            a link
-       <a class="plate" href="cv.pdf">Open</a>    a link dressed as a button
-       <div class="wall"> ... </div>              a grid of small cards
-       <div class="entry"> ... </div>             one item in a list, with a dotted line above
+     PART TWO — YOUR WORDS
+     The words of every card live in the words folder, one plain-text file each:
+       words/cv.md, words/degree-1.md ... words/degree-8.md, words/research.md,
+       words/teaching.md, words/now-and-next.md, words/extended-cv.md
+     The two books have their own folders: publications/ and conferences/
+     (each with a list.md saying what is in the book, in order).
+     Edit those files; this one only says what is where on the picture.
      ============================================================ -->
 </head>
 <body style="--page:#EFEBDB">
@@ -85,148 +79,45 @@
 
 
 <!-- ============================================================
-     YOUR WORDS. Everything below is placeholder text keeping the
-     panels warm. Replace it with your own.
+     THE CARDS. Their words are in the words folder.
      ============================================================ -->
 
 <!-- ========== THE CV ========== -->
-<section class="panel" id="cv" data-kind="card">
-  <div class="kicker">on the desk</div>
-  <h2>Curriculum Vitae</h2>
-  <p class="centered">Two pages for those in a hurry, and the long version for those who are not.</p>
-  <!-- When your PDF is ready, put cv.pdf in this folder and remove the comment marks around the next line:
-  <a class="plate" href="cv.pdf" target="_blank" rel="noopener">OPEN THE TWO-PAGE CV</a>
-  -->
-  <p class="centered"><em>The two-page CV will open from here once its PDF is in place.</em></p>
-  <a class="plate" href="#extended-cv">READ THE EXTENDED CV</a>
-</section>
+<section class="panel" id="cv" data-kind="card" data-md="words/cv.md"></section>
 
-<section class="panel" id="extended-cv" data-kind="scroll">
-  <div class="kicker">the long version</div>
-  <h2>Extended CV</h2>
-  <h3>Positions</h3>
-  <div class="entry"><p><strong>Role, institution</strong> (years)</p><p>One or two lines on what you did there.</p></div>
-  <div class="entry"><p><strong>Role, institution</strong> (years)</p><p>One or two lines on what you did there.</p></div>
-  <h3>Teaching</h3>
-  <p>The modules you have taught and led.</p>
-  <h3>Skills and tools</h3>
-  <p>What you work with.</p>
-</section>
+<section class="panel" id="extended-cv" data-kind="scroll" data-md="words/extended-cv.md"></section>
 
 <!-- ========== THE EIGHT DEGREES ========== -->
-<section class="panel" id="degree-1" data-kind="card">
-  <div class="kicker">first frame</div>
-  <h2>Name of the Degree</h2>
-  <p class="facts">UNIVERSITY &middot; YEAR</p>
-  <p>What this degree was, and why you chose it.</p>
-  <h3>What I learned</h3>
-  <p>The thing you carried out of it and still use.</p>
-</section>
+<section class="panel" id="degree-1" data-kind="card" data-md="words/degree-1.md"></section>
 
-<section class="panel" id="degree-2" data-kind="card">
-  <div class="kicker">second frame</div>
-  <h2>Name of the Degree</h2>
-  <p class="facts">UNIVERSITY &middot; YEAR</p>
-  <p>What this degree was, and why you chose it.</p>
-  <h3>What I learned</h3>
-  <p>The thing you carried out of it and still use.</p>
-</section>
+<section class="panel" id="degree-2" data-kind="card" data-md="words/degree-2.md"></section>
 
-<section class="panel" id="degree-3" data-kind="card">
-  <div class="kicker">third frame</div>
-  <h2>Name of the Degree</h2>
-  <p class="facts">UNIVERSITY &middot; YEAR</p>
-  <p>What this degree was, and why you chose it.</p>
-  <h3>What I learned</h3>
-  <p>The thing you carried out of it and still use.</p>
-</section>
+<section class="panel" id="degree-3" data-kind="card" data-md="words/degree-3.md"></section>
 
-<section class="panel" id="degree-4" data-kind="card">
-  <div class="kicker">fourth frame</div>
-  <h2>Name of the Degree</h2>
-  <p class="facts">UNIVERSITY &middot; YEAR</p>
-  <p>What this degree was, and why you chose it.</p>
-  <h3>What I learned</h3>
-  <p>The thing you carried out of it and still use.</p>
-</section>
+<section class="panel" id="degree-4" data-kind="card" data-md="words/degree-4.md"></section>
 
-<section class="panel" id="degree-5" data-kind="card">
-  <div class="kicker">fifth frame</div>
-  <h2>Name of the Degree</h2>
-  <p class="facts">UNIVERSITY &middot; YEAR</p>
-  <p>What this degree was, and why you chose it.</p>
-  <h3>What I learned</h3>
-  <p>The thing you carried out of it and still use.</p>
-</section>
+<section class="panel" id="degree-5" data-kind="card" data-md="words/degree-5.md"></section>
 
-<section class="panel" id="degree-6" data-kind="card">
-  <div class="kicker">sixth frame</div>
-  <h2>Name of the Degree</h2>
-  <p class="facts">UNIVERSITY &middot; YEAR</p>
-  <p>What this degree was, and why you chose it.</p>
-  <h3>What I learned</h3>
-  <p>The thing you carried out of it and still use.</p>
-</section>
+<section class="panel" id="degree-6" data-kind="card" data-md="words/degree-6.md"></section>
 
-<section class="panel" id="degree-7" data-kind="card">
-  <div class="kicker">seventh frame</div>
-  <h2>Name of the Degree</h2>
-  <p class="facts">UNIVERSITY &middot; YEAR</p>
-  <p>What this degree was, and why you chose it.</p>
-  <h3>What I learned</h3>
-  <p>The thing you carried out of it and still use.</p>
-</section>
+<section class="panel" id="degree-7" data-kind="card" data-md="words/degree-7.md"></section>
 
-<section class="panel" id="degree-8" data-kind="card">
-  <div class="kicker">eighth frame</div>
-  <h2>Name of the Degree</h2>
-  <p class="facts">UNIVERSITY &middot; YEAR</p>
-  <p>What this degree was, and why you chose it.</p>
-  <h3>What I learned</h3>
-  <p>The thing you carried out of it and still use.</p>
-</section>
+<section class="panel" id="degree-8" data-kind="card" data-md="words/degree-8.md"></section>
 
 <!-- ========== RESEARCH (the globe) ========== -->
-<section class="panel" id="research" data-kind="scroll">
-  <div class="kicker">the globe</div>
-  <h2>Research</h2>
-  <p class="first">Your research area goes here, in your own voice: game-based learning, and why a role-playing game can teach mathematics where a worksheet cannot.</p>
-  <h3>The question I keep asking</h3>
-  <p>A paragraph on what you are trying to find out.</p>
-  <h3>What I have built to answer it</h3>
-  <p>The games are the evidence. They live in The Playgrounds.</p>
-  <a class="plate" href="../playgrounds/index.html">VISIT THE PLAYGROUNDS</a>
-</section>
+<section class="panel" id="research" data-kind="scroll" data-md="words/research.md"></section>
 
 <!-- ========== PUBLICATIONS and CONFERENCES ==========
      These two are books now. Their pages live in their own files,
      next to this one:  publications.html  and  conferences.html -->
 
 <!-- ========== TEACHING MATERIALS (the small chest) ========== -->
-<section class="panel" id="teaching" data-kind="scroll">
-  <div class="kicker">the small chest</div>
-  <h2>Teaching Materials</h2>
-  <p class="centered">Lecture slides and notes, kept where a student can find them.</p>
-  <div class="entry">
-    <p><strong>Module name</strong></p>
-    <p>What the module covers, and the slides that go with it.</p>
-  </div>
-  <div class="entry">
-    <p><strong>Module name</strong></p>
-    <p>What the module covers, and the slides that go with it.</p>
-  </div>
-</section>
+<section class="panel" id="teaching" data-kind="scroll" data-md="words/teaching.md"></section>
 
 <!-- ========== NOW AND NEXT (the open notebook) ========== -->
-<section class="panel" id="now-and-next" data-kind="scroll">
-  <div class="kicker">the open notebook</div>
-  <h2>Now and Next</h2>
-  <h3>What I am working on</h3>
-  <p>The projects on your desk this term.</p>
-  <h3>What comes next</h3>
-  <p>Where you want the work to go.</p>
-</section>
+<section class="panel" id="now-and-next" data-kind="scroll" data-md="words/now-and-next.md"></section>
 
+<script src="../../assets/markdown.js"></script>
 <script src="../../assets/rooms.js"></script>
 </body>
 </html>

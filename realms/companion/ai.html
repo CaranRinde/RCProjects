@@ -1,155 +1,76 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>The AI Companion — The Companion — RC Projects</title>
-<link rel="stylesheet" href="../../assets/library.css">
+<link href="../../assets/library.css" rel="stylesheet"/>
 <!-- ============================================================
-     THE AI COMPANION — a book that hangs in the second lantern on the bridge.
-     It opens over the bridge when its lantern is clicked, and it also
-     works by itself if someone opens this file directly.
-     The look comes from  assets/library.css,  the behaviour from  assets/library.js.
-
-     ONE PAGE = one block, from  <div class="page" ...>  down to its matching  </div>.
-     - A page WITH  data-title="..."  starts a chapter and is listed in the Contents.
-     - A page WITHOUT  data-title  simply continues the chapter before it.
-     To add a page: copy a whole block and paste it where you want it,
-     always ABOVE the colophon.
-
-     Inside a page you can use:
-       <p>...</p>   <p class="first"> (big red first letter)   <p class="centered">
-       <h3>A subheading</h3>   <strong>bold</strong>   <em>italics</em>
-       <img class="img-full" src="photo.jpg" alt="">     a picture (put the file in this folder)
-       <div class="plate-caption">words under a picture</div>
-       <a class="plate" href="...">WORDS</a>            a link dressed as a button
-
-     Pages do not flow: text that does not fit on a page is cut off,
-     so check each page after you fill it, and continue on a new page
-     WITHOUT data-title when you run out of room (about 250 words a page).
-     The page count never needs to be even; the book fixes that itself.
+     THE AI COMPANION — a book.
+     You never need to edit this file. Its pages live in the ai-chapters folder:
+       ai-chapters/list.md        what is in the book, in order, one line each:  - Title: its-file.md
+       ai-chapters/01-....md      one chapter (or entry), in plain text
+     The book lays each one out by itself, over as many pages as it needs.
+     Pictures go in the ai-chapters folder too.
      ============================================================ -->
 </head>
-<body class="book-page" style="--leather:#2E2749;--page:#F0EAE0" data-realm-name="the Companion" data-music="">
-
+<body class="book-page" data-music="" data-realm-name="the Companion" style="--leather:#2E2749;--page:#F0EAE0">
 <header class="top-bar">
-  <a href="index.html">&#8592; BACK TO THE BRIDGE</a>
-  <span class="realm-name">The AI Companion</span>
-  <span class="bar-right"><button type="button" class="sound-toggle" id="soundToggle">SOUND: ON</button></span>
+<a href="index.html">← BACK TO THE BRIDGE</a>
+<span class="realm-name">The AI Companion</span>
+<span class="bar-right"><button class="sound-toggle" id="soundToggle" type="button">SOUND: ON</button></span>
 </header>
-
 <div class="stage">
-  <div id="book">
-
-    <!-- ========== FRONT COVER ========== -->
-    <div class="page cover" data-density="hard">
-      <div class="page-inner">
-        <img class="logo-cover emb-gold" src="../../assets/img/rc-companion.png" alt="">
-        <div class="cover-title">THE AI COMPANION</div>
-        <div class="cover-sub">learning to be understood</div>
-      </div>
-    </div>
-
-    <!-- ========== ENDPAPER : the Contents write themselves here ========== -->
-    <div class="page">
-      <div class="page-inner endpaper">
-        <div class="ep-head">
-          <div class="ep-ident">
-            <img class="ep-emblem emb-red" src="../../assets/img/rc-companion.png" alt="">
-            <div class="ep-name">The AI Companion</div>
-          </div>
-          <div class="ep-epigraph">To be understood<br>is its own kind of company.</div>
-        </div>
-        <h2 class="toc-heading">Contents</h2>
-        <nav class="toc" id="tocList"></nav>
-        <p class="small-note ep-note">~ drag a corner, or click the page edge, to turn ~</p>
-      </div>
-    </div>
-
-    <!-- ========== CHAPTER 1 ========== -->
-    <div class="page" data-title="Why this lantern is lit">
-      <div class="page-inner">
-        <div class="chapter-label">chapter one</div>
-        <h2>Why This Lantern Is Lit</h2>
-        <p class="first">This is the page where you say why an AI has a lantern on your bridge at all. Not what it is, or how it works, but what it has been to you.</p>
-        <p>Placeholder text, keeping the page warm. Replace it with your own words.</p>
-        <div class="page-foot"><a class="page-num"></a><a class="toc-return">Contents</a></div>
-      </div>
-    </div>
-    <!-- ========== CHAPTER 2 ========== -->
-    <div class="page" data-title="Learning to be understood">
-      <div class="page-inner">
-        <div class="chapter-label">chapter two</div>
-        <h2>Learning to Be Understood</h2>
-        <p class="first">The heart of the book, and the line on its cover. What it is like to explain yourself to people all your life, and then to be met by something that asks what you meant before it decides.</p>
-        <h3>A subheading, if you want one</h3>
-        <p>Placeholder text. Replace it with your own words.</p>
-        <div class="page-foot"><a class="page-num"></a><a class="toc-return">Contents</a></div>
-      </div>
-    </div>
-    <!-- this page has no data-title: it continues chapter two -->
-    <div class="page">
-      <div class="page-inner">
-        <p>A second page for the same chapter. When a chapter outgrows its page, add one like this and carry on writing.</p>
-        <div class="page-foot"><a class="page-num"></a><a class="toc-return">Contents</a></div>
-      </div>
-    </div>
-    <!-- ========== CHAPTER 3 ========== -->
-    <div class="page" data-title="How we work together">
-      <div class="page-inner">
-        <div class="chapter-label">chapter three</div>
-        <h2>How We Work Together</h2>
-        <p class="first">The practical chapter: how a piece of work actually goes between you. Thinking aloud first, building second. Being argued with. This website, for one, was made that way.</p>
-        <p>Placeholder text. Replace it with your own words.</p>
-        <div class="page-foot"><a class="page-num"></a><a class="toc-return">Contents</a></div>
-      </div>
-    </div>
-    <!-- ========== CHAPTER 4 ========== -->
-    <div class="page" data-title="What I am careful about">
-      <div class="page-inner">
-        <div class="chapter-label">chapter four</div>
-        <h2>What I Am Careful About</h2>
-        <p class="first">The honest chapter. What an AI is not, what worries you about how these tools can be used on people, and where you draw your own lines.</p>
-        <p>Placeholder text. Replace it with your own words.</p>
-        <div class="page-foot"><a class="page-num"></a><a class="toc-return">Contents</a></div>
-      </div>
-    </div>
-    <!-- ========== CHAPTER 5 ========== -->
-    <div class="page" data-title="Conversations worth keeping">
-      <div class="page-inner">
-        <div class="chapter-label">chapter five</div>
-        <h2>Conversations Worth Keeping</h2>
-        <p class="first">A place for the exchanges you want to remember: a question, an answer, and what it changed.</p>
-        <h3>A date, or a title</h3>
-        <p>Placeholder text. Replace it with your own words.</p>
-        <div class="page-foot"><a class="page-num"></a><a class="toc-return">Contents</a></div>
-      </div>
-    </div>
-
-    <!-- ========== COLOPHON ========== -->
-    <div class="page">
-      <div class="page-inner">
-        <div style="margin:auto 0 0;text-align:center;">
-          <p class="centered" style="font-style:italic;">Written by one of us,<br>thought through by both.</p>
-          <p class="small-note">rcprojects.net</p>
-        </div>
-        <div class="page-foot"><a class="page-num"></a><a class="toc-return">Contents</a></div>
-      </div>
-    </div>
-
-    <!-- To add more pages, paste them ABOVE the colophon. -->
-
-    <!-- ========== BACK COVER ========== -->
-    <div class="page cover" data-density="hard">
-      <div class="page-inner">
-        <img class="logo-back emb-cream" src="../../assets/img/rc-logo.png" alt="">
-        <div class="cover-sub">rcprojects.net</div>
-      </div>
-    </div>
-
-  </div>
+<div data-chapters="ai-chapters/list.md" id="book">
+<!-- ========== FRONT COVER ========== -->
+<div class="page cover" data-density="hard">
+<div class="page-inner">
+<img alt="" class="logo-cover emb-gold" src="../../assets/img/rc-companion.png"/>
+<div class="cover-title">THE AI COMPANION</div>
+<div class="cover-sub">learning to be understood</div>
 </div>
+</div>
+<!-- ========== ENDPAPER : the Contents write themselves here ========== -->
+<div class="page">
+<div class="page-inner endpaper">
+<div class="ep-head">
+<div class="ep-ident">
+<img alt="" class="ep-emblem emb-red" src="../../assets/img/rc-companion.png"/>
+<div class="ep-name">The AI Companion</div>
+</div>
+<div class="ep-epigraph">To be understood<br/>is its own kind of company.</div>
+</div>
+<h2 class="toc-heading">Contents</h2>
+<nav class="toc" id="tocList"></nav>
+<p class="small-note ep-note">~ drag a corner, or click the page edge, to turn ~</p>
+</div>
+</div>
+<div class="chapters-here" hidden=""></div>
 
+<!-- this page has no data-title: it continues chapter two -->
+
+<!-- ========== COLOPHON ========== -->
+<div class="page">
+<div class="page-inner">
+<div style="margin:auto 0 0;text-align:center;">
+<p class="centered" style="font-style:italic;">Written by one of us,<br/>thought through by both.</p>
+<p class="small-note">rcprojects.net</p>
+</div>
+<div class="page-foot"><a class="page-num"></a><a class="toc-return">Contents</a></div>
+</div>
+</div>
+<!-- To add more pages, paste them ABOVE the colophon. -->
+<!-- ========== BACK COVER ========== -->
+<div class="page cover" data-density="hard">
+<div class="page-inner">
+<img alt="" class="logo-back emb-cream" src="../../assets/img/rc-logo.png"/>
+<div class="cover-sub">rcprojects.net</div>
+</div>
+</div>
+</div>
+</div>
+<script src="../../assets/markdown.js"></script>
 <script src="../../assets/vendor/page-flip.browser.js"></script>
 <script src="../../assets/library.js"></script>
 </body>
