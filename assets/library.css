@@ -257,7 +257,7 @@ body{
   border:6px solid #fbf6ea;box-shadow:0 3px 10px rgba(40,26,10,0.35);}
 .panel figcaption{margin-top:0.4rem;text-align:center;font-family:'MedievalSharp',cursive;font-size:0.85rem;color:var(--brown);}
 @media (max-width:520px){ .panel .before-after{grid-template-columns:1fr;} }
-.panel .card-photo{display:block;width:100%;max-height:22rem;object-fit:cover;margin:0.8rem 0;cursor:zoom-in;
+.panel .card-photo{display:block;width:auto;max-width:100%;height:auto;max-height:min(62vh,32rem);margin:0.8rem auto;cursor:zoom-in;
   border:6px solid #fbf6ea;box-shadow:0 3px 10px rgba(40,26,10,0.35);}
 
 /* a picture opened large */

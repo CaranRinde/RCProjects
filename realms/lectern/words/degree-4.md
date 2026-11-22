@@ -1,10 +1,12 @@
 kicker: fourth frame
-facts: UNIVERSITY · YEAR
+facts: ASCENTIS · KENDAL COLLEGE · 2013
+picture: degree-4.jpg
 
-# Name of the Degree
+# Level 5 Diploma in Teaching in the Lifelong Learning Sector
 
-What this degree was, and why you chose it.
+// Replace the two lines in italics with a few lines in your own words.
+*What this degree was, and why you chose it.*
 
 ## What I learned
 
-The thing you carried out of it and still use.
+*The thing you carried out of it and still use.*
