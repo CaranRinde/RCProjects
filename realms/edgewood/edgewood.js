@@ -61,7 +61,7 @@
         frame.appendChild(pic); b.appendChild(frame);
         var who = document.createElement('span'); who.className = 'who'; who.textContent = p.name; b.appendChild(who);
         var note = document.createElement('span'); note.className = 'note'; note.textContent = p.notes.join(' & '); b.appendChild(note);
-        b.addEventListener('click', function () { if (window.rcRoom) window.rcRoom.showBook('characters.html#' + p.id, 'The Folk of Edgewood'); });
+        b.addEventListener('click', function () { if (window.rcRoom) window.rcRoom.showBook('characters.html?card#' + p.id, p.name, { cardOnly: true }); });
         list.appendChild(b);
       });
     });

@@ -100,3 +100,8 @@
 .chart-life{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;}
 
 @media (prefers-reduced-motion:reduce){ .candle{animation:none;} }
+
+/* a single character's card, opened from a place on the map: no book behind it */
+html.card-only .stage,html.card-only .top-bar{visibility:hidden;}
+html.card-only,html.card-only body{background:transparent !important;}
+html.card-only .char-veil.is-open{background:rgba(20,12,6,0.35);}

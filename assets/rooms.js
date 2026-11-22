@@ -306,11 +306,17 @@
     holder.classList.remove('book-loading');
   }
   // a book is its own file; it opens in a frame over the dimmed room
-  function showBook(url, name) {
+  // a book opened from a card (a portrait on a place card) closes back to that card.
+  // With opts.cardOnly the book shows just one card from inside it, without the book behind
+  var bookFrom = null;
+  function showBook(url, name, opts) {
+    opts = opts || {};
+    bookFrom = openPanel ? openPanel.id : null;
     if (openPanel) { openPanel.classList.remove('is-open'); openPanel = null; }
+    holder.classList.toggle('card-only', !!opts.cardOnly);
     removeBook();
     bookClose = document.createElement('button'); bookClose.type = 'button'; bookClose.className = 'book-close';
-    bookClose.textContent = 'CLOSE THE BOOK'; bookClose.addEventListener('click', close);
+    bookClose.textContent = 'CLOSE THE BOOK'; bookClose.addEventListener('click', stepBack);
     bookFrame = document.createElement('iframe'); bookFrame.className = 'book-frame';
     bookFrame.setAttribute('title', name || 'A book');
     bookNote = document.createElement('p'); bookNote.className = 'book-note'; bookNote.textContent = '~ the book is opening ~';
@@ -322,8 +328,8 @@
     document.body.style.overflow = 'hidden';
     bookClose.focus({ preventScroll: true });
   }
-  window.addEventListener('message', function (e) { if (e.data === 'rc-close-book' && bookFrame) close(); });
-  window.rcRoom = { showBook: function (url, name) { showBook(url, name); }, show: function (id) { show(id); }, play: function (n) { play(n); } };
+  window.addEventListener('message', function (e) { if (e.data === 'rc-close-book' && bookFrame) stepBack(); });
+  window.rcRoom = { showBook: function (url, name, opts) { showBook(url, name, opts); }, show: function (id) { show(id); }, play: function (n) { play(n); } };
 
   // once the room has loaded, quietly fetch its books and the book machinery,
   // so the first book opened does not have to wait for the internet
@@ -423,11 +429,12 @@
   }
   // ✕, Esc or a click beside the card: back to the card it was opened from, or to the room
   function stepBack() {
+    if (bookFrame && bookFrom) { var back = bookFrom; bookFrom = null; removeBook(); holder.classList.remove('card-only'); play('paper'); show(back); return; }
     if (openPanel && !bookFrame && trail.length) { play('paper'); show(trail.pop()); return; }
     close();
   }
   function close() {
-    trail = [];
+    trail = []; bookFrom = null; holder.classList.remove('card-only');
     window.clearTimeout(pending); pending = null;
     if (openPanel) openPanel.classList.remove('is-open');
     openPanel = null; holder.classList.remove('is-open'); document.body.style.overflow = '';

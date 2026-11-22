@@ -177,7 +177,13 @@
     var n = box.querySelector('.own-said'); if (!n) { n = document.createElement('p'); n.className = 'own-said small-note'; box.appendChild(n); }
     n.textContent = text;
   }
-  function closeCard() { veil.classList.remove('is-open'); openId = null; }
+  // opened from a place on the map: only the card shows, and closing it goes back to the place
+  var cardOnly = /[?&]card\b/.test(location.search) && window.self !== window.top;
+  if (cardOnly) document.documentElement.classList.add('card-only');
+  function closeCard() {
+    veil.classList.remove('is-open'); openId = null;
+    if (cardOnly) { try { window.parent.postMessage('rc-close-book', '*'); } catch (e) {} }
+  }
   veil.querySelector('.char-close').addEventListener('click', closeCard);
   veil.addEventListener('click', function (e) { if (e.target === veil) closeCard(); });
   // Esc closes the card first, before it would close the whole book
